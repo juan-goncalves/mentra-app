@@ -30,7 +30,7 @@ class GetCoinsUseCaseTest {
         )
         `when`(coinRepositoryMock.getCoins()).thenReturn(Either.Right(coins))
 
-        // Assess
+        // Act
         val result = useCase.execute()
 
         // Assert
