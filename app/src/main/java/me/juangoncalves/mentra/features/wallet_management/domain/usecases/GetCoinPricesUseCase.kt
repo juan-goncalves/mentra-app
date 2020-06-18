@@ -11,7 +11,6 @@ class GetCoinPricesUseCase(private val coinRepository: CoinRepository) {
     suspend fun execute(
         coins: List<Coin>,
         currency: Currency = Currency.USD
-    ): Either<Failure, Map<Coin, Double>> {
-        return coinRepository.getCoinPrices(coins, currency)
-    }
+    ): Either<Failure, Map<Coin, Double>> = coinRepository.getCoinPrices(coins, currency)
+
 }
