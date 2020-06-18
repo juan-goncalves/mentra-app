@@ -3,9 +3,10 @@ package me.juangoncalves.mentra.features.wallet_management.domain.usecases
 import either.Either
 import either.fold
 import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.core.errors.PriceNotFound
 import me.juangoncalves.mentra.features.wallet_management.Bitcoin
+import me.juangoncalves.mentra.features.wallet_management.Ethereum
 import me.juangoncalves.mentra.features.wallet_management.Ripple
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
 import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.*
@@ -25,7 +26,7 @@ class GetCoinPricesUseCaseTest {
     }
 
     @Test
-    fun `should return the prices of the selected coins from the repository`() = runBlocking<Unit> {
+    fun `should return the prices of the selected coins from the repository`() = runBlocking {
         // Arrange
         val prices = mapOf(
             Bitcoin to 9834.23,
@@ -39,7 +40,7 @@ class GetCoinPricesUseCaseTest {
         ).thenReturn(Either.Right(prices))
 
         // Act
-        val result = useCase.execute(listOf(Bitcoin, Ripple), Currency.USD)
+        val result = useCase.execute(listOf(Bitcoin, Ripple))
 
         // Assess
         val resultData = result.fold(
@@ -51,5 +52,24 @@ class GetCoinPricesUseCaseTest {
         assertThat(resultData[Bitcoin], closeTo(9834.23, 0.001))
         assertThat(resultData[Ripple], closeTo(0.2987, 0.001))
         assertEquals(2, resultData.size)
+    }
+
+    @Test
+    fun `should fail if the price one of the selected coin is not found`() = runBlocking {
+        // Arrange
+        val failure = PriceNotFound(listOf(Ethereum))
+        `when`(
+            coinRepositoryMock.getCoinPrices(
+                eq(listOf(Ethereum)),
+                any()
+            )
+        ).thenReturn(Either.Left(failure))
+
+        // Act
+        val result = useCase.execute(listOf(Ethereum)) as Either.Left
+
+        // Assess
+        assertTrue(result.value is PriceNotFound)
+        assertEquals((result.value as PriceNotFound).coins, listOf(Ethereum))
     }
 }

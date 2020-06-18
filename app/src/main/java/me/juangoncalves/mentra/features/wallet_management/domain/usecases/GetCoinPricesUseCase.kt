@@ -8,7 +8,10 @@ import me.juangoncalves.mentra.features.wallet_management.domain.repositories.Co
 
 class GetCoinPricesUseCase(private val coinRepository: CoinRepository) {
 
-    suspend fun execute(coins: List<Coin>, currency: Currency): Either<Failure, Map<Coin, Double>> =
-        coinRepository.getCoinPrices(coins, currency)
-
+    suspend fun execute(
+        coins: List<Coin>,
+        currency: Currency = Currency.USD
+    ): Either<Failure, Map<Coin, Double>> {
+        return coinRepository.getCoinPrices(coins, currency)
+    }
 }
