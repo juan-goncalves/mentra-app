@@ -4,4 +4,4 @@ import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 
 abstract class Failure
 
-class PriceNotFound(val coins: List<Coin>) : Failure()
+class PriceNotFound(val coin: Coin) : Failure()
