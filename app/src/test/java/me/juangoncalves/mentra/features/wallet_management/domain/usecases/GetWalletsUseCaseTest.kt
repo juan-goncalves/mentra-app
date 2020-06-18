@@ -23,7 +23,7 @@ class GetWalletsUseCaseTest {
     }
 
     @Test
-    fun `should return wallets from the repository`() = runBlocking<Unit> {
+    fun `should return wallets from the repository`() = runBlocking {
         // Arrange
         val walletStubs = listOf(
             Wallet(9231, "BTC #1", Bitcoin, 1.32),
@@ -36,8 +36,8 @@ class GetWalletsUseCaseTest {
         val result = userCase.execute()
 
         // Assert
-        assertEquals(result, Either.Right(walletStubs))
         verify(walletRepositoryMock).getWallets()
+        assertEquals(result, Either.Right(walletStubs))
     }
 
 }

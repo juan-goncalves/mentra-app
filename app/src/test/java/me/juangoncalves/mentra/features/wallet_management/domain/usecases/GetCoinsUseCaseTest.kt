@@ -23,7 +23,7 @@ class GetCoinsUseCaseTest {
     }
 
     @Test
-    fun `should get coin list from the repository`() = runBlocking<Unit> {
+    fun `should get coin list from the repository`() = runBlocking {
         // Arrange
         val coins = listOf(Bitcoin, Ethereum, Ripple)
         `when`(coinRepositoryMock.getCoins()).thenReturn(Either.Right(coins))
@@ -32,8 +32,8 @@ class GetCoinsUseCaseTest {
         val result = useCase.execute()
 
         // Assert
-        assertEquals(Either.Right(coins), result)
         verify(coinRepositoryMock).getCoins()
+        assertEquals(Either.Right(coins), result)
     }
 
 }
