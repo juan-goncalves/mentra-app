@@ -53,7 +53,7 @@ class GetPortfolioValueUseCaseTest {
         // Act
         val result = useCase.execute(currency = Currency.USD) as Either.Right
 
-        // Assess
+        // Assert
         val resultData = result.value
         assertEquals(Currency.USD, resultData.currency)
         assertThat(resultData.value, closeTo(5870.4863, 0.0001))
@@ -67,7 +67,7 @@ class GetPortfolioValueUseCaseTest {
         // Act
         val result = useCase.execute()
 
-        // Assess
+        // Assert
         assertTrue(result is Either.Left<Failure>)
     }
 
@@ -95,7 +95,7 @@ class GetPortfolioValueUseCaseTest {
         // Act
         val result = useCase.execute(currency = Currency.USD) as Either.Right
 
-        // Assess
+        // Assert
         val resultData = result.value
         assertEquals(Currency.USD, resultData.currency)
         assertThat(resultData.value, closeTo(326.2779, 0.0001))

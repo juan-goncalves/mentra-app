@@ -34,7 +34,7 @@ class GetCoinPriceUseCaseTest {
         // Act
         val result = useCase.execute(Bitcoin) as Either.Right
 
-        // Assess
+        // Assert
         assertThat(result.value.value, closeTo(9834.23, 0.001))
         assertEquals(Currency.USD, result.value.currency)
     }
@@ -53,7 +53,7 @@ class GetCoinPriceUseCaseTest {
         // Act
         val result = useCase.execute(Ethereum) as Either.Left
 
-        // Assess
+        // Assert
         assertTrue(result.value is PriceNotFound)
         assertEquals((result.value as PriceNotFound).coin, Ethereum)
     }
