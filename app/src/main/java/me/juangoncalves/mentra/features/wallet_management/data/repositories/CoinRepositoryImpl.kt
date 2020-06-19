@@ -1,7 +1,10 @@
 package me.juangoncalves.mentra.features.wallet_management.data.repositories
 
 import either.Either
-import me.juangoncalves.mentra.core.errors.*
+import me.juangoncalves.mentra.core.errors.Failure
+import me.juangoncalves.mentra.core.errors.ServerException
+import me.juangoncalves.mentra.core.errors.ServerFailure
+import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
@@ -26,10 +29,11 @@ class CoinRepositoryImpl(
         val cachedCoins = try {
             localDataSource.getStoredCoins()
         } catch (e: StorageException) {
-            return Either.Left(StorageFailure())
+            logger.warning(TAG, "Exception while trying to get cached coins.\n$e")
+            null
         }
 
-        if (cachedCoins.isNotEmpty()) {
+        if (cachedCoins != null && cachedCoins.isNotEmpty()) {
             val coins = cachedCoins
                 .map { it.toDomain() }
                 .filterNot { it == Coin.Invalid }

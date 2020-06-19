@@ -5,7 +5,6 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.core.errors.ServerException
 import me.juangoncalves.mentra.core.errors.ServerFailure
 import me.juangoncalves.mentra.core.errors.StorageException
-import me.juangoncalves.mentra.core.errors.StorageFailure
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.*
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
@@ -83,17 +82,19 @@ class CoinRepositoryImplTest {
         }
 
     @Test
-    fun `getCoins returns a StorageFailure when a StorageException is thrown while reading the cached coins`() =
+    fun `getCoins tries to fetch coins from the network when a StorageException is thrown while reading the cached coins`() =
         runBlocking {
             // Arrange
+            `when`(remoteDataSource.fetchCoins()).thenReturn(listOf(BitcoinSchema, EthereumSchema))
             `when`(localDataSource.getStoredCoins()).thenThrow(StorageException())
 
             // Act
             val result = coinRepository.getCoins()
 
             // Assert
-            val failure = (result as Either.Left).value
-            assertTrue(failure is StorageFailure)
+            val value = (result as Either.Right).value
+            verify(loggerMock).warning(any(), any())
+            assertEquals(listOf(Bitcoin, Ethereum), value)
         }
 
     @Test
