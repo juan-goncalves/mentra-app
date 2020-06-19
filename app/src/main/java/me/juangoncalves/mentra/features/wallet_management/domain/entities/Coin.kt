@@ -4,5 +4,10 @@ data class Coin(
     val name: String,
     val symbol: String,
     val imageUrl: String
-    // TODO: Maybe add a price attribute
-)
+) {
+
+    companion object {
+        val Invalid = Coin("INV", "INV", "INV")
+    }
+
+}
