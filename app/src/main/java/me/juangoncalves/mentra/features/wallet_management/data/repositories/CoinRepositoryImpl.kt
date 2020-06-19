@@ -3,7 +3,7 @@ package me.juangoncalves.mentra.features.wallet_management.data.repositories
 import either.Either
 import me.juangoncalves.mentra.core.errors.Failure
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
-import me.juangoncalves.mentra.features.wallet_management.data.models.CoinSchema
+import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinRemoteDataSource
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin

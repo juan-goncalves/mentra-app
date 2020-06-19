@@ -2,7 +2,7 @@ package me.juangoncalves.mentra.features.wallet_management.data.sources
 
 import me.juangoncalves.mentra.core.errors.NotFoundException
 import me.juangoncalves.mentra.core.errors.ServerException
-import me.juangoncalves.mentra.features.wallet_management.data.models.CoinSchema
+import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Money
 

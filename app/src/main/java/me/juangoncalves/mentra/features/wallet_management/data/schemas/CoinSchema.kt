@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_management.data.models
+package me.juangoncalves.mentra.features.wallet_management.data.schemas
 
 data class CoinSchema(
     val symbol: String?,

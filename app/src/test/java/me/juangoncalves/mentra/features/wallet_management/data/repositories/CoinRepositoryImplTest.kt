@@ -5,7 +5,7 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.features.wallet_management.Bitcoin
 import me.juangoncalves.mentra.features.wallet_management.Ethereum
 import me.juangoncalves.mentra.features.wallet_management.Ripple
-import me.juangoncalves.mentra.features.wallet_management.data.models.CoinSchema
+import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinRemoteDataSource
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
@@ -32,9 +32,24 @@ class CoinRepositoryImplTest {
         runBlocking {
             // Arrange
             val schemas = listOf(
-                CoinSchema("BTC", "http://url.com/btc.jpg", "Bitcoin", false),
-                CoinSchema("ETH", "http://url.com/eth.jpg", "Ethereum", false),
-                CoinSchema("XRP", "http://url.com/xrp.jpg", "Ripple", false)
+                CoinSchema(
+                    "BTC",
+                    "http://url.com/btc.jpg",
+                    "Bitcoin",
+                    false
+                ),
+                CoinSchema(
+                    "ETH",
+                    "http://url.com/eth.jpg",
+                    "Ethereum",
+                    false
+                ),
+                CoinSchema(
+                    "XRP",
+                    "http://url.com/xrp.jpg",
+                    "Ripple",
+                    false
+                )
             )
             val coins = listOf(Bitcoin, Ethereum, Ripple)
             `when`(remoteDataSource.fetchCoins()).thenReturn(schemas)
