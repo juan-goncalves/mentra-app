@@ -1,7 +1,8 @@
 package me.juangoncalves.mentra.features.wallet_management.data.repositories
 
 import either.Either
-import me.juangoncalves.mentra.core.errors.Failure
+import me.juangoncalves.mentra.core.errors.*
+import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
@@ -13,11 +14,21 @@ import me.juangoncalves.mentra.features.wallet_management.domain.repositories.Co
 
 class CoinRepositoryImpl(
     private val remoteDataSource: CoinRemoteDataSource,
-    private val localDataSource: CoinLocalDataSource
+    private val localDataSource: CoinLocalDataSource,
+    private val logger: Logger
 ) : CoinRepository {
 
+    companion object {
+        private const val TAG = "CoinRepositoryImpl"
+    }
+
     override suspend fun getCoins(): Either<Failure, List<Coin>> {
-        val cachedCoins = localDataSource.getStoredCoins()
+        val cachedCoins = try {
+            localDataSource.getStoredCoins()
+        } catch (e: StorageException) {
+            return Either.Left(StorageFailure())
+        }
+
         if (cachedCoins.isNotEmpty()) {
             val coins = cachedCoins
                 .map { it.toDomain() }
@@ -25,12 +36,20 @@ class CoinRepositoryImpl(
             return Either.Right(coins)
         }
 
-        val coinSchemas = remoteDataSource.fetchCoins()
-        val coins = coinSchemas
-            .map { it.toDomain() }
-            .filterNot { it == Coin.Invalid }
-        localDataSource.storeCoins(coins)
-        return Either.Right(coins)
+        return try {
+            val coinSchemas = remoteDataSource.fetchCoins()
+            val coins = coinSchemas
+                .map { it.toDomain() }
+                .filterNot { it == Coin.Invalid }
+            try {
+                localDataSource.storeCoins(coins)
+            } catch (e: StorageException) {
+                logger.warning(TAG, "Exception while trying to cache coins.\n$e")
+            }
+            Either.Right(coins)
+        } catch (e: ServerException) {
+            Either.Left(ServerFailure())
+        }
     }
 
     override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Money> {

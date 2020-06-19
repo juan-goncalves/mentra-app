@@ -5,4 +5,4 @@ class ServerException : RuntimeException()
 
 class NotFoundException : RuntimeException()
 
-class LocalDataSourceException : RuntimeException()
+class StorageException : RuntimeException()

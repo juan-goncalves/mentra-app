@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra.features.wallet_management.data.sources
 
-import me.juangoncalves.mentra.core.errors.LocalDataSourceException
 import me.juangoncalves.mentra.core.errors.NotFoundException
+import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Money
@@ -11,21 +11,21 @@ interface CoinLocalDataSource {
     /**
      * Returns the locally stored coins.
      *
-     * @throws LocalDataSourceException for all problems when interacting with the data source.
+     * @throws StorageException for all problems when interacting with the data source.
      */
     suspend fun getStoredCoins(): List<CoinModel>
 
     /**
      * Saves a list of coins into the local data source.
      *
-     * @throws LocalDataSourceException for all problems when interacting with the data source.
+     * @throws StorageException for all problems when interacting with the data source.
      */
     suspend fun storeCoins(coins: List<Coin>)
 
     /**
      * Deletes all the stored coins in the local data source.
      *
-     * @throws LocalDataSourceException for all problems when interacting with the data source.
+     * @throws StorageException for all problems when interacting with the data source.
      */
     suspend fun clearCoins()
 
@@ -33,7 +33,7 @@ interface CoinLocalDataSource {
      * Finds the most recent price available in the local data source for the selected coin.
      *
      * @throws NotFoundException if there isn't a price available in the local data source.
-     * @throws LocalDataSourceException for all problems when interacting with the data source.
+     * @throws StorageException for all problems when interacting with the data source.
      */
     suspend fun getLastCoinPrice(coin: Coin): Money
 
