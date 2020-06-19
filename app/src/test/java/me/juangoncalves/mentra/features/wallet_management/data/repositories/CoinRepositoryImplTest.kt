@@ -2,9 +2,7 @@ package me.juangoncalves.mentra.features.wallet_management.data.repositories
 
 import either.Either
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.features.wallet_management.Bitcoin
-import me.juangoncalves.mentra.features.wallet_management.Ethereum
-import me.juangoncalves.mentra.features.wallet_management.Ripple
+import me.juangoncalves.mentra.features.wallet_management.*
 import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinRemoteDataSource
@@ -59,14 +57,27 @@ class CoinRepositoryImplTest {
             val result = coinRepository.getCoins()
 
             // Assert
-            val resultData = result as Either.Right
+            val resultValue = (result as Either.Right).value
             verify(remoteDataSource).fetchCoins()
             verify(localDataSource).storeCoins(coins)
-            assertEquals(coins, resultData.value)
+            assertEquals(coins, resultValue)
         }
 
-    // 2. Returns the coins from the local storage when it isn't empty without touching the remote
-    //    data source
+    @Test
+    fun `getCoins returns the cached coins when the cache is populated`() = runBlocking {
+        // Arrange
+        val models = listOf(BitcoinModel, RippleModel, EthereumModel)
+        `when`(localDataSource.getStoredCoins()).thenReturn(models)
+
+        // Act
+        val result = coinRepository.getCoins()
+
+        // Assert
+        val resultValue = (result as Either.Right).value
+        verify(localDataSource).getStoredCoins()
+        verifyNoInteractions(remoteDataSource)
+        assertEquals(listOf(Bitcoin, Ripple, Ethereum), resultValue)
+    }
 
     // 3. Returns a Either.Left ServerFailure when the remote server throws a ServerException
 
