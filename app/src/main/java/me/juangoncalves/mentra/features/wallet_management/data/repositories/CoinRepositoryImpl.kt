@@ -12,7 +12,7 @@ import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocal
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinRemoteDataSource
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Money
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
 
 class CoinRepositoryImpl(
@@ -56,7 +56,7 @@ class CoinRepositoryImpl(
         }
     }
 
-    override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Money> {
+    override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Price> {
         TODO("not implemented")
     }
 

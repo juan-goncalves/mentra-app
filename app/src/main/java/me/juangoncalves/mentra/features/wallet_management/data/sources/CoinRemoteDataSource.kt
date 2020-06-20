@@ -4,7 +4,7 @@ import me.juangoncalves.mentra.core.errors.NotFoundException
 import me.juangoncalves.mentra.core.errors.ServerException
 import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Money
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 
 interface CoinRemoteDataSource {
 
@@ -23,6 +23,6 @@ interface CoinRemoteDataSource {
      * @throws NotFoundException when the coin price is not available in the remote source.
      * @throws ServerException for all error codes.
      */
-    suspend fun fetchCoinPrice(coin: Coin): Money
+    suspend fun fetchCoinPrice(coin: Coin): Price
 
 }

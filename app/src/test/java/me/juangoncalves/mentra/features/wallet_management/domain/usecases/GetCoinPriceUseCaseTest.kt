@@ -6,7 +6,7 @@ import me.juangoncalves.mentra.core.errors.PriceNotFound
 import me.juangoncalves.mentra.features.wallet_management.Bitcoin
 import me.juangoncalves.mentra.features.wallet_management.Ethereum
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Money
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
 import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.*
@@ -28,7 +28,7 @@ class GetCoinPriceUseCaseTest {
     @Test
     fun `should return the price of the selected coin from the repository`() = runBlocking {
         // Arrange
-        val dataStub = Either.Right(Money(Currency.USD, 9834.23))
+        val dataStub = Either.Right(Price(Currency.USD, 9834.23))
         `when`(coinRepositoryMock.getCoinPrice(Bitcoin, Currency.USD)).thenReturn(dataStub)
 
         // Act

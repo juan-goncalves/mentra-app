@@ -4,16 +4,16 @@ import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Money
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 
 val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.jpg")
 val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.jpg")
 val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.jpg")
 
 val USDPrices = mapOf(
-    Bitcoin to Money(Currency.USD, 9538.423),
-    Ethereum to Money(Currency.USD, 242.351),
-    Ripple to Money(Currency.USD, 0.2987)
+    Bitcoin to Price(Currency.USD, 9538.423),
+    Ethereum to Price(Currency.USD, 242.351),
+    Ripple to Price(Currency.USD, 0.2987)
 )
 
 val BitcoinModel = CoinModel("BTC", "http://url.com/btc.jpg", "Bitcoin")

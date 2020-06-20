@@ -4,7 +4,7 @@ import me.juangoncalves.mentra.core.errors.NotFoundException
 import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Money
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 
 interface CoinLocalDataSource {
 
@@ -35,6 +35,6 @@ interface CoinLocalDataSource {
      * @throws NotFoundException if there isn't a price available in the local data source.
      * @throws StorageException for all problems when interacting with the data source.
      */
-    suspend fun getLastCoinPrice(coin: Coin): Money
+    suspend fun getLastCoinPrice(coin: Coin): Price
 
 }
