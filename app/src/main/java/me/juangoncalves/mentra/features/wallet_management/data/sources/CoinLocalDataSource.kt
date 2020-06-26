@@ -1,9 +1,10 @@
 package me.juangoncalves.mentra.features.wallet_management.data.sources
 
-import me.juangoncalves.mentra.core.errors.NotFoundException
+import me.juangoncalves.mentra.core.errors.CacheMissException
 import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 
 interface CoinLocalDataSource {
@@ -32,9 +33,16 @@ interface CoinLocalDataSource {
     /**
      * Finds the most recent price available in the local data source for the selected coin.
      *
-     * @throws NotFoundException if there isn't a price available in the local data source.
+     * @throws CacheMissException if there isn't a price available in the local data source.
      * @throws StorageException for all problems when interacting with the data source.
      */
-    suspend fun getLastCoinPrice(coin: Coin): Price
+    suspend fun getLastCoinPrice(coin: Coin, currency: Currency): Price
+
+    /**
+     * Caches the price of a coin.
+     *
+     * @throws StorageException for all problems when interacting with the data source.
+     */
+    suspend fun storeCoinPrice(coin: Coin, price: Price)
 
 }
