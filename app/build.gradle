@@ -35,7 +35,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "0.1.0-dev09"
+        kotlinCompilerExtensionVersion "0.1.0-dev13"
     }
 }
 
@@ -45,13 +45,13 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.ui:ui-framework:0.1.0-dev09'
-    implementation 'androidx.ui:ui-layout:0.1.0-dev09'
-    implementation 'androidx.ui:ui-material:0.1.0-dev09'
-    implementation 'androidx.ui:ui-tooling:0.1.0-dev09'
+    implementation 'androidx.ui:ui-core:0.1.0-dev13'
+    implementation 'androidx.ui:ui-layout:0.1.0-dev13'
+    implementation 'androidx.ui:ui-material:0.1.0-dev13'
+    implementation 'androidx.ui:ui-tooling:0.1.0-dev13'
     implementation 'com.github.adelnizamutdinov:kotlin-either:3.0.0'
     testImplementation 'junit:junit:4.13'
-    testImplementation 'org.hamcrest:hamcrest-library:1.3'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
     testImplementation 'org.mockito:mockito-core:3.3.3'
     testImplementation 'org.mockito:mockito-inline:3.3.3'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
