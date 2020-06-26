@@ -1,10 +1,7 @@
 package me.juangoncalves.mentra.features.wallet_management.data.repositories
 
 import either.Either
-import me.juangoncalves.mentra.core.errors.Failure
-import me.juangoncalves.mentra.core.errors.ServerException
-import me.juangoncalves.mentra.core.errors.ServerFailure
-import me.juangoncalves.mentra.core.errors.StorageException
+import me.juangoncalves.mentra.core.errors.*
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
@@ -57,7 +54,14 @@ class CoinRepositoryImpl(
     }
 
     override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Price> {
-        TODO("not implemented")
+        return try {
+            localDataSource.getLastCoinPrice(coin, currency)
+            Either.Left(ServerFailure())
+        } catch (e: CacheMissException) {
+            val price = remoteDataSource.fetchCoinPrice(coin, currency)
+            localDataSource.storeCoinPrice(coin, price)
+            Either.Right(price)
+        }
     }
 
     private fun CoinModel.toDomain(): Coin {

@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.features.wallet_management.data.repositories
 
 import either.Either
 import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.core.errors.CacheMissException
 import me.juangoncalves.mentra.core.errors.ServerException
 import me.juangoncalves.mentra.core.errors.ServerFailure
 import me.juangoncalves.mentra.core.errors.StorageException
@@ -9,12 +10,14 @@ import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.*
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinRemoteDataSource
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
+import java.util.*
 
 class CoinRepositoryImplTest {
 
@@ -114,8 +117,53 @@ class CoinRepositoryImplTest {
             assertEquals(listOf(Bitcoin), value)
         }
 
-    // 6. Maybe return a failure that stores a Money object when the fetch price from the remote
-    //    source fails so that we can show a warning to the user indicating that it isn't the most
-    //    recent price / he has no internet / shit failed.
+    @Test
+    fun `getCoinPrice fetches and caches the coin price from the remote data source when there isn't a recently cached value`() =
+        runBlocking {
+            // Arrange
+            val price = Price(Currency.USD, 9532.472, Date())
+            `when`(localDataSource.getLastCoinPrice(Bitcoin, Currency.USD))
+                .thenThrow(CacheMissException())
+            `when`(remoteDataSource.fetchCoinPrice(Bitcoin, Currency.USD)).thenReturn(price)
 
+            // Act
+            val result = coinRepository.getCoinPrice(Bitcoin, Currency.USD)
+
+            // Assert
+            val data = (result as Either.Right).value
+            verify(localDataSource).getLastCoinPrice(Bitcoin, Currency.USD)
+            verify(remoteDataSource).fetchCoinPrice(Bitcoin, Currency.USD)
+            verify(localDataSource).storeCoinPrice(Bitcoin, price)
+            assertEquals(price, data)
+        }
+
+    @Test
+    fun `getCoinPrice returns the cached coin price if it was obtained less than 5 minutes ago`() =
+        runBlocking {
+            // Arrange
+            val price = Price(Currency.USD, 321.98, OneMinuteAgo)
+            `when`(localDataSource.getLastCoinPrice(Bitcoin, Currency.USD))
+                .thenReturn(price)
+
+            // Act
+            val result = coinRepository.getCoinPrice(Bitcoin, Currency.USD)
+
+            // Assert
+            val data = (result as Either.Right).value
+            verifyNoInteractions(remoteDataSource)
+            verify(localDataSource.getLastCoinPrice(Bitcoin, Currency.USD))
+            assertEquals(price, data)
+        }
+
+    @Test
+    fun `getCoinPrice returns the most recent coin price when a ServerException is thrown`() =
+        runBlocking {
+            assertFalse(true)
+        }
+
+    @Test
+    fun `getCoinPrice returns a XFailure when a ServerException is thrown and there isn't a cached value`() =
+        runBlocking {
+            assertFalse(true)
+        }
 }
