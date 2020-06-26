@@ -1,31 +1,34 @@
 package me.juangoncalves.mentra.features.wallet_management.domain.usecases
 
-import either.Either
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.core.errors.Failure
-import me.juangoncalves.mentra.features.wallet_management.Bitcoin
-import me.juangoncalves.mentra.features.wallet_management.Ethereum
-import me.juangoncalves.mentra.features.wallet_management.Ripple
-import me.juangoncalves.mentra.features.wallet_management.USDPrices
+import me.juangoncalves.mentra.core.errors.PriceNotFound
+import me.juangoncalves.mentra.features.wallet_management.*
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Wallet
 import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+
 
 class GetPortfolioValueUseCaseTest {
 
-    private lateinit var getWalletsUseCaseMock: GetWalletsUseCase
-    private lateinit var getCoinPriceUseCaseMock: GetCoinPriceUseCase
+    @MockK
+    lateinit var getWalletsUseCaseMock: GetWalletsUseCase
+
+    @MockK
+    lateinit var getCoinPriceUseCaseMock: GetCoinPriceUseCase
+
     private lateinit var useCase: GetPortfolioValueUseCase
 
     @Before
     fun setUp() {
-        getWalletsUseCaseMock = mock(GetWalletsUseCase::class.java)
-        getCoinPriceUseCaseMock = mock(GetCoinPriceUseCase::class.java)
+        MockKAnnotations.init(this)
         useCase = GetPortfolioValueUseCase(getWalletsUseCaseMock, getCoinPriceUseCaseMock)
     }
 
@@ -38,23 +41,16 @@ class GetPortfolioValueUseCaseTest {
             Wallet(3, "BTC second", Bitcoin, 0.01345),
             Wallet(4, "Ripple!", Ripple, 20.53)
         )
-
-        `when`(getWalletsUseCaseMock.execute()).thenReturn(Either.Right(wallets))
-
-        `when`(getCoinPriceUseCaseMock.execute(Bitcoin))
-            .thenReturn(Either.Right(USDPrices.getValue(Bitcoin)))
-
-        `when`(getCoinPriceUseCaseMock.execute(Ethereum))
-            .thenReturn(Either.Right(USDPrices.getValue(Ethereum)))
-
-        `when`(getCoinPriceUseCaseMock.execute(Ripple))
-            .thenReturn(Either.Right(USDPrices.getValue(Ripple)))
+        coEvery { getWalletsUseCaseMock.execute() } returns Right(wallets)
+        coEvery { getCoinPriceUseCaseMock.execute(Bitcoin) } returns Right(USDPrices[Bitcoin]!!)
+        coEvery { getCoinPriceUseCaseMock.execute(Ethereum) } returns Right(USDPrices[Ethereum]!!)
+        coEvery { getCoinPriceUseCaseMock.execute(Ripple) } returns Right(USDPrices[Ripple]!!)
 
         // Act
-        val result = useCase.execute(currency = Currency.USD) as Either.Right
+        val result = useCase.execute(currency = Currency.USD)
 
         // Assert
-        val resultData = result.value
+        val resultData = (result as Right).value
         assertEquals(Currency.USD, resultData.currency)
         assertThat(resultData.value, closeTo(5870.4863, 0.0001))
     }
@@ -62,13 +58,13 @@ class GetPortfolioValueUseCaseTest {
     @Test
     fun `should return a failure if there's and error obtaining the wallets`() = runBlocking {
         // Arrange
-        `when`(getWalletsUseCaseMock.execute()).thenReturn(Either.Left(mock(Failure::class.java)))
+        coEvery { getWalletsUseCaseMock.execute() } returns Left(mockk())
 
         // Act
         val result = useCase.execute()
 
         // Assert
-        assertTrue(result is Either.Left<Failure>)
+        assertTrue(result is Left<Failure>)
     }
 
     @Test
@@ -80,23 +76,16 @@ class GetPortfolioValueUseCaseTest {
             Wallet(3, "BTC second", Bitcoin, 0.01345),
             Wallet(4, "Ripple!", Ripple, 20.53)
         )
-
-        `when`(getWalletsUseCaseMock.execute()).thenReturn(Either.Right(wallets))
-
-        `when`(getCoinPriceUseCaseMock.execute(Bitcoin))
-            .thenReturn(Either.Left(mock(Failure::class.java)))
-
-        `when`(getCoinPriceUseCaseMock.execute(Ethereum))
-            .thenReturn(Either.Right(USDPrices.getValue(Ethereum)))
-
-        `when`(getCoinPriceUseCaseMock.execute(Ripple))
-            .thenReturn(Either.Right(USDPrices.getValue(Ripple)))
+        coEvery { getWalletsUseCaseMock.execute() } returns Right(wallets)
+        coEvery { getCoinPriceUseCaseMock.execute(Bitcoin) } returns Left(PriceNotFound(Bitcoin))
+        coEvery { getCoinPriceUseCaseMock.execute(Ethereum) } returns Right(USDPrices[Ethereum]!!)
+        coEvery { getCoinPriceUseCaseMock.execute(Ripple) } returns Right(USDPrices[Ripple]!!)
 
         // Act
-        val result = useCase.execute(currency = Currency.USD) as Either.Right
+        val result = useCase.execute(currency = Currency.USD)
 
         // Assert
-        val resultData = result.value
+        val resultData = (result as Right).value
         assertEquals(Currency.USD, resultData.currency)
         assertThat(resultData.value, closeTo(326.2779, 0.0001))
     }
