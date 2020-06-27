@@ -19,7 +19,6 @@ import me.juangoncalves.mentra.features.wallet_management.domain.repositories.Co
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 
 class CoinRepositoryImplTest {
 
@@ -50,7 +49,7 @@ class CoinRepositoryImplTest {
             val result = coinRepository.getCoins()
 
             // Assert
-            val resultValue = (result as Either.Right).value
+            val resultValue = (result as Right).value
             coVerify { remoteDataSource.fetchCoins() }
             coVerify { localDataSource.storeCoins(coins) }
             assertEquals(coins, resultValue)
@@ -122,10 +121,10 @@ class CoinRepositoryImplTest {
         }
 
     @Test
-    fun `getCoinPrice fetches and caches the coin price from the remote data source when there isn't a recently cached value`() =
+    fun `getCoinPrice fetches and caches the coin price from the remote data source when there isn't a cached value`() =
         runBlocking {
             // Arrange
-            val price = Price(USD, 9532.472, Date())
+            val price = Price(USD, 9532.472, Now)
             coEvery { localDataSource.getLastCoinPrice(Bitcoin, USD) } throws CacheMissException()
             coEvery { remoteDataSource.fetchCoinPrice(Bitcoin, USD) } returns price
             coEvery { localDataSource.storeCoinPrice(any(), any()) } just Runs

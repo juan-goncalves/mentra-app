@@ -6,10 +6,7 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.core.errors.PriceNotFound
-import me.juangoncalves.mentra.features.wallet_management.Bitcoin
-import me.juangoncalves.mentra.features.wallet_management.Ethereum
-import me.juangoncalves.mentra.features.wallet_management.Left
-import me.juangoncalves.mentra.features.wallet_management.Right
+import me.juangoncalves.mentra.features.wallet_management.*
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
@@ -17,7 +14,6 @@ import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 
 class GetCoinPriceUseCaseTest {
 
@@ -35,7 +31,7 @@ class GetCoinPriceUseCaseTest {
     @Test
     fun `should return the price of the selected coin from the repository`() = runBlocking {
         // Arrange
-        val dataStub = Right(Price(Currency.USD, 9834.23, Date()))
+        val dataStub = Right(Price(Currency.USD, 9834.23, Now))
         coEvery { coinRepositoryMock.getCoinPrice(Bitcoin, Currency.USD) } returns dataStub
 
         // Act

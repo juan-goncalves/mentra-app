@@ -6,8 +6,7 @@ import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchem
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
-import java.time.Instant
-import java.util.*
+import java.time.LocalDateTime
 
 typealias Right<T> = Either.Right<T>
 typealias Left<T> = Either.Left<T>
@@ -16,10 +15,14 @@ val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.jpg")
 val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.jpg")
 val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.jpg")
 
+val Now: LocalDateTime = LocalDateTime.of(2020, 6, 27, 12, 30, 30)
+val OneMinuteAgo: LocalDateTime = Now.minusMinutes(1)
+val TwoHoursAgo: LocalDateTime = Now.minusHours(2)
+
 val USDPrices = mapOf(
-    Bitcoin to Price(Currency.USD, 9538.423, Date()),
-    Ethereum to Price(Currency.USD, 242.351, Date()),
-    Ripple to Price(Currency.USD, 0.2987, Date())
+    Bitcoin to Price(Currency.USD, 9538.423, Now),
+    Ethereum to Price(Currency.USD, 242.351, Now),
+    Ripple to Price(Currency.USD, 0.2987, Now)
 )
 
 val BitcoinModel = CoinModel("BTC", "http://url.com/btc.jpg", "Bitcoin")
@@ -44,7 +47,3 @@ val RippleSchema = CoinSchema(
     "Ripple",
     false
 )
-
-val Now = Date.from(Instant.ofEpochSecond(1592622125))
-val OneMinuteAgo = Date.from(Instant.ofEpochSecond(1592622060))
-val OneHourAgo = Date.from(Instant.ofEpochSecond(1592618580))

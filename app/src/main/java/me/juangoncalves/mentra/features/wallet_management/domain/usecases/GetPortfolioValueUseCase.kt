@@ -5,7 +5,7 @@ import either.fold
 import me.juangoncalves.mentra.core.errors.Failure
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
-import java.util.*
+import java.time.LocalDateTime
 
 class GetPortfolioValueUseCase(
     private val walletsUseCase: GetWalletsUseCase,
@@ -22,7 +22,7 @@ class GetPortfolioValueUseCase(
                         right = { it.value * wallet.amount }
                     )
                 }
-                Either.Right(Price(currency, sum, Date()))
+                Either.Right(Price(currency, sum, LocalDateTime.now()))
             }
         }
     }
