@@ -32,20 +32,26 @@ val EthereumModel = CoinModel("ETH", "http://url.com/eth.jpg", "Ethereum")
 val RippleModel = CoinModel("XRP", "http://url.com/xrp.jpg", "Ripple")
 
 val BitcoinSchema = CoinSchema(
+    "1",
     "BTC",
     "http://url.com/btc.jpg",
     "Bitcoin",
-    false
+    false,
+    "1"
 )
 val EthereumSchema = CoinSchema(
+    "231",
     "ETH",
     "http://url.com/eth.jpg",
     "Ethereum",
-    false
+    false,
+    "2"
 )
 val RippleSchema = CoinSchema(
+    "1293",
     "XRP",
     "http://url.com/xrp.jpg",
     "Ripple",
-    false
+    false,
+    "87"
 )
