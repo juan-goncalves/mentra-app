@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.features.wallet_management.data.repositories
 
 import either.Either
 import me.juangoncalves.mentra.core.errors.*
+import me.juangoncalves.mentra.core.extensions.elapsedMinutes
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.data.schemas.CoinSchema
@@ -11,9 +12,6 @@ import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
-import java.time.Duration
-import java.time.LocalDateTime
-import kotlin.math.abs
 
 class CoinRepositoryImpl(
     private val remoteDataSource: CoinRemoteDataSource,
@@ -59,9 +57,7 @@ class CoinRepositoryImpl(
     override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Price> {
         return try {
             val cachedPrice = localDataSource.getLastCoinPrice(coin, currency)
-            val durationSinceFetch = Duration.between(cachedPrice.date, LocalDateTime.now())
-            val minutesSinceFetch = abs(durationSinceFetch.toMinutes())
-            if (minutesSinceFetch <= 5) {
+            if (cachedPrice.date.elapsedMinutes() <= 5) {
                 Either.Right(cachedPrice)
             } else {
                 throw CacheMissException()
