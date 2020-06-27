@@ -1,6 +1,6 @@
 package me.juangoncalves.mentra.core.errors
 
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
+import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
 
 
 class ServerException : RuntimeException()
