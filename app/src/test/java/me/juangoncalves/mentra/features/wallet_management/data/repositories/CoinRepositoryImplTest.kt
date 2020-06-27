@@ -12,26 +12,25 @@ import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.*
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinRemoteDataSource
-import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency.USD
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 
 class CoinRepositoryImplTest {
 
     @MockK lateinit var loggerMock: Logger
-    @MockK lateinit var remoteDataSource: CoinRemoteDataSource
     @MockK lateinit var localDataSource: CoinLocalDataSource
+    @MockK lateinit var remoteDataSource: CoinRemoteDataSource
 
     private lateinit var coinRepository: CoinRepository
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this)
-        setupLoggerMock()
+        MockKAnnotations.init(this, relaxUnitFun = true)
         coinRepository = CoinRepositoryImpl(remoteDataSource, localDataSource, loggerMock)
     }
 
@@ -43,7 +42,6 @@ class CoinRepositoryImplTest {
             val coins = listOf(Bitcoin, Ethereum, Ripple)
             coEvery { remoteDataSource.fetchCoins() } returns schemas
             coEvery { localDataSource.getStoredCoins() } returns emptyList()
-            coEvery { localDataSource.storeCoins(any()) } just Runs
 
             // Act
             val result = coinRepository.getCoins()
@@ -92,7 +90,6 @@ class CoinRepositoryImplTest {
             // Arrange
             coEvery { remoteDataSource.fetchCoins() } returns listOf(BitcoinSchema, EthereumSchema)
             coEvery { localDataSource.getStoredCoins() } throws StorageException()
-            coEvery { localDataSource.storeCoins(any()) } just Runs
 
             // Act
             val result = coinRepository.getCoins()
@@ -124,10 +121,9 @@ class CoinRepositoryImplTest {
     fun `getCoinPrice fetches and caches the coin price from the remote data source when there isn't a cached value`() =
         runBlocking {
             // Arrange
-            val price = Price(USD, 9532.472, Now)
+            val price = Price(USD, 9532.472, LocalDateTime.now())
             coEvery { localDataSource.getLastCoinPrice(Bitcoin, USD) } throws CacheMissException()
             coEvery { remoteDataSource.fetchCoinPrice(Bitcoin, USD) } returns price
-            coEvery { localDataSource.storeCoinPrice(any(), any()) } just Runs
 
             // Act
             val result = coinRepository.getCoinPrice(Bitcoin, USD)
@@ -144,17 +140,37 @@ class CoinRepositoryImplTest {
     fun `getCoinPrice returns the cached coin price if it was obtained less than 5 minutes ago`() =
         runBlocking {
             // Arrange
-            val price = Price(Currency.USD, 321.98, OneMinuteAgo)
+            val price = Price(USD, 321.98, LocalDateTime.now().minusMinutes(2))
             coEvery { localDataSource.getLastCoinPrice(Bitcoin, USD) } returns price
 
             // Act
-            val result = coinRepository.getCoinPrice(Bitcoin, Currency.USD)
+            val result = coinRepository.getCoinPrice(Bitcoin, USD)
 
             // Assert
             val data = (result as Either.Right).value
             verify { remoteDataSource wasNot Called }
             coVerify { localDataSource.getLastCoinPrice(Bitcoin, USD) }
             assertEquals(price, data)
+        }
+
+    @Test
+    fun `getCoinPrice fetches the coin price if the cached one is more than 5 minutes old`() =
+        runBlocking {
+            // Arrange
+            val localPrice = Price(USD, 321.98, LocalDateTime.now().minusHours(1))
+            val remotePrice = Price(USD, 500.32, LocalDateTime.now())
+            coEvery { localDataSource.getLastCoinPrice(Bitcoin, USD) } returns localPrice
+            coEvery { remoteDataSource.fetchCoinPrice(Bitcoin, USD) } returns remotePrice
+
+            // Act
+            val result = coinRepository.getCoinPrice(Bitcoin, USD)
+
+            // Assert
+            val data = (result as Either.Right).value
+            coVerify { localDataSource.getLastCoinPrice(Bitcoin, USD) }
+            coVerify { remoteDataSource.fetchCoinPrice(Bitcoin, USD) }
+            coVerify { localDataSource.storeCoinPrice(Bitcoin, remotePrice) }
+            assertEquals(remotePrice, data)
         }
 
     @Test
@@ -168,11 +184,4 @@ class CoinRepositoryImplTest {
         runBlocking {
             assertFalse(true)
         }
-
-
-    private fun setupLoggerMock() {
-        coEvery { loggerMock.warning(any(), any()) } just Runs
-        coEvery { loggerMock.error(any(), any()) } just Runs
-        coEvery { loggerMock.info(any(), any()) } just Runs
-    }
 }

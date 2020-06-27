@@ -11,6 +11,9 @@ import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
+import java.time.Duration
+import java.time.LocalDateTime
+import kotlin.math.abs
 
 class CoinRepositoryImpl(
     private val remoteDataSource: CoinRemoteDataSource,
@@ -55,8 +58,14 @@ class CoinRepositoryImpl(
 
     override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Price> {
         return try {
-            localDataSource.getLastCoinPrice(coin, currency)
-            Either.Left(ServerFailure())
+            val cachedPrice = localDataSource.getLastCoinPrice(coin, currency)
+            val durationSinceFetch = Duration.between(cachedPrice.date, LocalDateTime.now())
+            val minutesSinceFetch = abs(durationSinceFetch.toMinutes())
+            if (minutesSinceFetch <= 5) {
+                Either.Right(cachedPrice)
+            } else {
+                throw CacheMissException()
+            }
         } catch (e: CacheMissException) {
             val price = remoteDataSource.fetchCoinPrice(coin, currency)
             localDataSource.storeCoinPrice(coin, price)
