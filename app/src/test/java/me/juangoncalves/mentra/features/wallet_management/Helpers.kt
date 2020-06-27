@@ -15,14 +15,10 @@ val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.jpg")
 val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.jpg")
 val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.jpg")
 
-val Now: LocalDateTime = LocalDateTime.of(2020, 6, 27, 12, 30, 30)
-val OneMinuteAgo: LocalDateTime = Now.minusMinutes(1)
-val TwoHoursAgo: LocalDateTime = Now.minusHours(2)
-
 val USDPrices = mapOf(
-    Bitcoin to Price(Currency.USD, 9538.423, Now),
-    Ethereum to Price(Currency.USD, 242.351, Now),
-    Ripple to Price(Currency.USD, 0.2987, Now)
+    Bitcoin to Price(Currency.USD, 9538.423, LocalDateTime.now()),
+    Ethereum to Price(Currency.USD, 242.351, LocalDateTime.now()),
+    Ripple to Price(Currency.USD, 0.2987, LocalDateTime.now())
 )
 
 val BitcoinModel = CoinModel("BTC", "http://url.com/btc.jpg", "Bitcoin")
