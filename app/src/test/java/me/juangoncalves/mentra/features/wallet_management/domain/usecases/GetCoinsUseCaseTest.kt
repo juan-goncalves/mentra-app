@@ -16,8 +16,7 @@ import org.junit.Test
 
 class GetCoinsUseCaseTest {
 
-    @MockK
-    lateinit var coinRepositoryMock: CoinRepository
+    @MockK lateinit var coinRepositoryMock: CoinRepository
 
     private lateinit var useCase: GetCoinsUseCase
 

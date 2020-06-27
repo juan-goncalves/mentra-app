@@ -16,14 +16,14 @@ import org.junit.Test
 
 class GetWalletsUseCaseTest {
 
-    @MockK
-    lateinit var walletRepositoryMock: WalletRepository
-    private lateinit var userCase: GetWalletsUseCase
+    @MockK lateinit var walletRepositoryMock: WalletRepository
+
+    private lateinit var useCase: GetWalletsUseCase
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this)
-        userCase = GetWalletsUseCase(walletRepositoryMock)
+        MockKAnnotations.init(this, relaxUnitFun = true)
+        useCase = GetWalletsUseCase(walletRepositoryMock)
     }
 
     @Test
@@ -37,7 +37,7 @@ class GetWalletsUseCaseTest {
         coEvery { walletRepositoryMock.getWallets() } returns Right(walletStubs)
 
         // Act
-        val result = userCase.execute()
+        val result = useCase.execute()
 
         // Assert
         assertEquals(result, Right(walletStubs))

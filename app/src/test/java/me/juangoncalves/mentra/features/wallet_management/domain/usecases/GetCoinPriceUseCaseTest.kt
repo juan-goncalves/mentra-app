@@ -21,14 +21,13 @@ import java.time.LocalDateTime
 
 class GetCoinPriceUseCaseTest {
 
-    @MockK
-    lateinit var coinRepositoryMock: CoinRepository
+    @MockK lateinit var coinRepositoryMock: CoinRepository
 
     private lateinit var useCase: GetCoinPriceUseCase
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         useCase = GetCoinPriceUseCase(coinRepositoryMock)
     }
 

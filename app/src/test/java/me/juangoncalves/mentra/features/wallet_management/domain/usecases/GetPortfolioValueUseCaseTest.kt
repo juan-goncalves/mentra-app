@@ -18,17 +18,14 @@ import org.junit.Test
 
 class GetPortfolioValueUseCaseTest {
 
-    @MockK
-    lateinit var getWalletsUseCaseMock: GetWalletsUseCase
-
-    @MockK
-    lateinit var getCoinPriceUseCaseMock: GetCoinPriceUseCase
+    @MockK lateinit var getWalletsUseCaseMock: GetWalletsUseCase
+    @MockK lateinit var getCoinPriceUseCaseMock: GetCoinPriceUseCase
 
     private lateinit var useCase: GetPortfolioValueUseCase
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         useCase = GetPortfolioValueUseCase(getWalletsUseCaseMock, getCoinPriceUseCaseMock)
     }
 
