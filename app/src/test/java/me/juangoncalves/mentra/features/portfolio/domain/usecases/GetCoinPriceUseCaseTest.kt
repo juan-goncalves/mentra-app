@@ -5,11 +5,11 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.Bitcoin
+import me.juangoncalves.mentra.Ethereum
+import me.juangoncalves.mentra.Left
+import me.juangoncalves.mentra.Right
 import me.juangoncalves.mentra.core.errors.PriceNotFound
-import me.juangoncalves.mentra.features.portfolio.Bitcoin
-import me.juangoncalves.mentra.features.portfolio.Ethereum
-import me.juangoncalves.mentra.features.portfolio.Left
-import me.juangoncalves.mentra.features.portfolio.Right
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
 import me.juangoncalves.mentra.features.portfolio.domain.repositories.CoinRepository
@@ -34,7 +34,13 @@ class GetCoinPriceUseCaseTest {
     @Test
     fun `should return the price of the selected coin from the repository`() = runBlocking {
         // Arrange
-        val dataStub = Right(Price(Currency.USD, 9834.23, LocalDateTime.now()))
+        val dataStub = Right(
+            Price(
+                Currency.USD,
+                9834.23,
+                LocalDateTime.now()
+            )
+        )
         coEvery { coinRepositoryMock.getCoinPrice(Bitcoin, Currency.USD) } returns dataStub
 
         // Act
@@ -50,13 +56,18 @@ class GetCoinPriceUseCaseTest {
     fun `should fail if the price of the selected coin is not found`() = runBlocking {
         // Arrange
         val failure = PriceNotFound(Ethereum)
-        coEvery { coinRepositoryMock.getCoinPrice(Ethereum, any()) } returns Left(failure)
+        coEvery { coinRepositoryMock.getCoinPrice(Ethereum, any()) } returns Left(
+            failure
+        )
 
         // Act
         val result = useCase.execute(Ethereum) as Either.Left
 
         // Assert
         assertTrue(result.value is PriceNotFound)
-        assertEquals((result.value as PriceNotFound).coin, Ethereum)
+        assertEquals(
+            (result.value as PriceNotFound).coin,
+            Ethereum
+        )
     }
 }

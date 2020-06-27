@@ -6,9 +6,9 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.features.portfolio.Bitcoin
-import me.juangoncalves.mentra.features.portfolio.Ethereum
-import me.juangoncalves.mentra.features.portfolio.Ripple
+import me.juangoncalves.mentra.Bitcoin
+import me.juangoncalves.mentra.Ethereum
+import me.juangoncalves.mentra.Ripple
 import me.juangoncalves.mentra.features.portfolio.domain.repositories.CoinRepository
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -29,7 +29,11 @@ class GetCoinsUseCaseTest {
     @Test
     fun `should get coin list from the repository`() = runBlocking {
         // Arrange
-        val coins = listOf(Bitcoin, Ethereum, Ripple)
+        val coins = listOf(
+            Bitcoin,
+            Ethereum,
+            Ripple
+        )
         coEvery { coinRepositoryMock.getCoins() } returns Either.Right(coins)
 
         // Act

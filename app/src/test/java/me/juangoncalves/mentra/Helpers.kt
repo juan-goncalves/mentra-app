@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.portfolio
+package me.juangoncalves.mentra
 
 import either.Either
 import me.juangoncalves.mentra.features.portfolio.data.models.CoinModel

@@ -4,9 +4,9 @@ import either.Either
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.core.errors.*
 import me.juangoncalves.mentra.core.log.Logger
-import me.juangoncalves.mentra.features.portfolio.*
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinRemoteDataSource
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency.EUR
@@ -36,8 +36,16 @@ class CoinRepositoryImplTest {
     fun `getCoins fetches and caches the coins from the network when the local storage is empty`() =
         runBlocking {
             // Arrange
-            val schemas = listOf(BitcoinSchema, EthereumSchema, RippleSchema)
-            val coins = listOf(Bitcoin, Ethereum, Ripple)
+            val schemas = listOf(
+                BitcoinSchema,
+                EthereumSchema,
+                RippleSchema
+            )
+            val coins = listOf(
+                Bitcoin,
+                Ethereum,
+                Ripple
+            )
             coEvery { remoteDataSource.fetchCoins() } returns schemas
             coEvery { localDataSource.getStoredCoins() } returns emptyList()
 
@@ -54,7 +62,11 @@ class CoinRepositoryImplTest {
     @Test
     fun `getCoins returns the cached coins when the cache is populated`() = runBlocking {
         // Arrange
-        val models = listOf(BitcoinModel, RippleModel, EthereumModel)
+        val models = listOf(
+            BitcoinModel,
+            RippleModel,
+            EthereumModel
+        )
         coEvery { localDataSource.getStoredCoins() } returns models
 
         // Act
@@ -64,7 +76,13 @@ class CoinRepositoryImplTest {
         val resultValue = (result as Either.Right).value
         coVerify { localDataSource.getStoredCoins() }
         verify { remoteDataSource wasNot Called }
-        assertEquals(listOf(Bitcoin, Ripple, Ethereum), resultValue)
+        assertEquals(
+            listOf(
+                Bitcoin,
+                Ripple,
+                Ethereum
+            ), resultValue
+        )
     }
 
     @Test
@@ -86,7 +104,10 @@ class CoinRepositoryImplTest {
     fun `getCoins tries to fetch coins from the network when a StorageException is thrown and logs the situation`() =
         runBlocking {
             // Arrange
-            coEvery { remoteDataSource.fetchCoins() } returns listOf(BitcoinSchema, EthereumSchema)
+            coEvery { remoteDataSource.fetchCoins() } returns listOf(
+                BitcoinSchema,
+                EthereumSchema
+            )
             coEvery { localDataSource.getStoredCoins() } throws StorageException()
 
             // Act
@@ -95,7 +116,12 @@ class CoinRepositoryImplTest {
             // Assert
             val value = (result as Right).value
             coVerify { loggerMock.warning(any(), any()) }
-            assertEquals(listOf(Bitcoin, Ethereum), value)
+            assertEquals(
+                listOf(
+                    Bitcoin,
+                    Ethereum
+                ), value
+            )
         }
 
     @Test
