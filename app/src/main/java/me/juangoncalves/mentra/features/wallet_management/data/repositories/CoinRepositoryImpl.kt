@@ -60,12 +60,16 @@ class CoinRepositoryImpl(
             if (cachedPrice.date.elapsedMinutes() <= 5) {
                 Either.Right(cachedPrice)
             } else {
-                throw CacheMissException()
+                throw PriceCacheMissException(cachedPrice)
             }
-        } catch (e: CacheMissException) {
-            val price = remoteDataSource.fetchCoinPrice(coin, currency)
-            localDataSource.storeCoinPrice(coin, price)
-            Either.Right(price)
+        } catch (cacheException: PriceCacheMissException) {
+            try {
+                val price = remoteDataSource.fetchCoinPrice(coin, currency)
+                localDataSource.storeCoinPrice(coin, price)
+                Either.Right(price)
+            } catch (serverException: ServerException) {
+                Either.Left(FetchPriceError(cacheException.lastestAvailablePrice))
+            }
         }
     }
 

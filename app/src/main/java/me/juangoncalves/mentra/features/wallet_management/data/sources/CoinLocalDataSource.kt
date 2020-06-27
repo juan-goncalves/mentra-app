@@ -1,6 +1,6 @@
 package me.juangoncalves.mentra.features.wallet_management.data.sources
 
-import me.juangoncalves.mentra.core.errors.CacheMissException
+import me.juangoncalves.mentra.core.errors.PriceCacheMissException
 import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.features.wallet_management.data.models.CoinModel
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Coin
@@ -33,7 +33,7 @@ interface CoinLocalDataSource {
     /**
      * Finds the most recent price available in the local data source for the selected coin.
      *
-     * @throws CacheMissException if there isn't a price available in the local data source.
+     * @throws PriceCacheMissException if there isn't a price available in the local data source.
      * @throws StorageException for all problems when interacting with the data source.
      */
     suspend fun getLastCoinPrice(coin: Coin, currency: Currency): Price

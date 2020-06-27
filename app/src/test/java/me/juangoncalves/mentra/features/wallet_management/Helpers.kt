@@ -21,6 +21,12 @@ val USDPrices = mapOf(
     Ripple to Price(Currency.USD, 0.2987, LocalDateTime.now())
 )
 
+val EURPrices = mapOf(
+    Bitcoin to Price(Currency.EUR, 8300.423, LocalDateTime.now()),
+    Ethereum to Price(Currency.EUR, 210.351, LocalDateTime.now()),
+    Ripple to Price(Currency.EUR, 0.163, LocalDateTime.now())
+)
+
 val BitcoinModel = CoinModel("BTC", "http://url.com/btc.jpg", "Bitcoin")
 val EthereumModel = CoinModel("ETH", "http://url.com/eth.jpg", "Ethereum")
 val RippleModel = CoinModel("XRP", "http://url.com/xrp.jpg", "Ripple")

@@ -4,14 +4,12 @@ import either.Either
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.core.errors.CacheMissException
-import me.juangoncalves.mentra.core.errors.ServerException
-import me.juangoncalves.mentra.core.errors.ServerFailure
-import me.juangoncalves.mentra.core.errors.StorageException
+import me.juangoncalves.mentra.core.errors.*
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.wallet_management.*
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.wallet_management.data.sources.CoinRemoteDataSource
+import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency.EUR
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Currency.USD
 import me.juangoncalves.mentra.features.wallet_management.domain.entities.Price
 import me.juangoncalves.mentra.features.wallet_management.domain.repositories.CoinRepository
@@ -122,7 +120,12 @@ class CoinRepositoryImplTest {
         runBlocking {
             // Arrange
             val price = Price(USD, 9532.472, LocalDateTime.now())
-            coEvery { localDataSource.getLastCoinPrice(Bitcoin, USD) } throws CacheMissException()
+            coEvery {
+                localDataSource.getLastCoinPrice(
+                    Bitcoin,
+                    USD
+                )
+            } throws PriceCacheMissException()
             coEvery { remoteDataSource.fetchCoinPrice(Bitcoin, USD) } returns price
 
             // Act
@@ -174,14 +177,36 @@ class CoinRepositoryImplTest {
         }
 
     @Test
-    fun `getCoinPrice returns the most recent coin price when a ServerException is thrown`() =
+    fun `getCoinPrice returns a FetchPriceError with the most recent stored coin price when a ServerException is thrown`() =
         runBlocking {
-            assertFalse(true)
+            // Arrange
+            val localPrice = Price(EUR, 0.123, LocalDateTime.now().minusHours(2))
+            coEvery { remoteDataSource.fetchCoinPrice(Ripple, EUR) } throws ServerException()
+            coEvery { localDataSource.getLastCoinPrice(Ripple, EUR) } returns localPrice
+
+            // Act
+            val result = coinRepository.getCoinPrice(Ripple, EUR)
+
+            // Assert
+            val failure = (result as Left).value as FetchPriceError
+            assertNotNull(failure.storedPrice)
+            assertEquals(failure.storedPrice, localPrice)
         }
 
     @Test
-    fun `getCoinPrice returns a XFailure when a ServerException is thrown and there isn't a cached value`() =
+    fun `getCoinPrice returns a FetchPriceError without a price when a ServerException is thrown and there isn't a stored coin price`() =
         runBlocking {
-            assertFalse(true)
+            // Arrange
+            coEvery { remoteDataSource.fetchCoinPrice(Ripple, EUR) } throws ServerException()
+            coEvery {
+                localDataSource.getLastCoinPrice(Ripple, EUR)
+            } throws PriceCacheMissException()
+
+            // Act
+            val result = coinRepository.getCoinPrice(Ripple, EUR)
+
+            // Assert
+            val failure = (result as Left).value as FetchPriceError
+            assertNull(failure.storedPrice)
         }
 }
