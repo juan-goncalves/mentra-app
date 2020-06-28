@@ -1,20 +1,18 @@
 package me.juangoncalves.mentra.features.portfolio.data.schemas
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.squareup.moshi.Json
 
-@Serializable
 data class CoinSchema(
-    @SerialName("Id")
+    @field:Json(name = "Id")
     val id: String = "",
-    @SerialName("Symbol")
+    @field:Json(name = "Symbol")
     val symbol: String = "",
-    @SerialName("ImageUrl")
+    @field:Json(name = "ImageUrl")
     val imageUrl: String = "",
-    @SerialName("CoinName")
+    @field:Json(name = "CoinName")
     val name: String = "",
-    @SerialName("Sponsored")
+    @field:Json(name = "Sponsored")
     val sponsored: Boolean = false,
-    @SerialName("SortOrder")
+    @field:Json(name = "SortOrder")
     val sortPosition: String = "${Int.MAX_VALUE}"
 )

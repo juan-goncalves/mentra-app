@@ -1,14 +1,13 @@
 package me.juangoncalves.mentra.features.portfolio.data.schemas
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.squareup.moshi.Json
 
-@Serializable
+
 data class CoinListSchema(
-    @SerialName("BaseImageUrl")
+    @field:Json(name = "BaseImageUrl")
     val baseImageUrl: String = "",
-    @SerialName("BaseLinkUrl")
+    @field:Json(name = "BaseLinkUrl")
     val baseLinkUrl: String = "",
-    @SerialName("Data")
+    @field:Json(name = "Data")
     val data: Map<String, CoinSchema> = mapOf()
 )
