@@ -5,13 +5,13 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
-import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.core.errors.ServerException
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.portfolio.data.schemas.CoinListSchema
 import me.juangoncalves.mentra.fixture
 import me.juangoncalves.mentra.moshi
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
