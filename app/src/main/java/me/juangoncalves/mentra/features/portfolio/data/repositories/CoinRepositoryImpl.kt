@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.features.portfolio.data.repositories
 
 import either.Either
 import me.juangoncalves.mentra.core.errors.*
+import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.extensions.elapsedMinutes
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.portfolio.data.models.CoinModel
@@ -18,10 +19,6 @@ class CoinRepositoryImpl(
     private val localDataSource: CoinLocalDataSource,
     private val logger: Logger
 ) : CoinRepository {
-
-    companion object {
-        private const val TAG = "CoinRepositoryImpl"
-    }
 
     override suspend fun getCoins(): Either<Failure, List<Coin>> {
         val cachedCoins = try {
