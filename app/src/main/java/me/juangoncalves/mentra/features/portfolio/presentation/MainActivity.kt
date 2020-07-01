@@ -8,6 +8,7 @@ import androidx.ui.core.*
 import androidx.ui.foundation.Box
 import androidx.ui.foundation.Text
 import androidx.ui.foundation.drawBackground
+import androidx.ui.foundation.isSystemInDarkTheme
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.HorizontalGradient
@@ -15,13 +16,12 @@ import androidx.ui.layout.*
 import androidx.ui.material.Button
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
-import androidx.ui.res.colorResource
 import androidx.ui.text.TextStyle
 import androidx.ui.text.font.FontWeight
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.TextUnit
 import androidx.ui.unit.dp
-import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.core.presentation.MentraTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +35,11 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun MentraApp(content: @Composable() () -> Unit) {
-    MaterialTheme {
+fun MentraApp(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable() () -> Unit
+) {
+    MentraTheme(darkTheme = darkTheme) {
         Surface {
             content()
         }
@@ -49,14 +52,13 @@ fun PortfolioScreen() {
     Column(modifier = Modifier.fillMaxHeight()) {
         Column(modifier = Modifier.weight(1f)) {
             GradientHeader {
-                Text(
-                    "Clicked the button: ${counterState.value} times",
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = TextUnit.Sp(20),
-                        fontWeight = FontWeight.Bold
-                    )
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalGravity = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    OnGradientTitle("Clicked the button: ${counterState.value} times")
+                }
             }
         }
         Column(
@@ -88,23 +90,27 @@ fun GradientHeader(content: @Composable() () -> Unit) {
                 )
                 .drawBackground(
                     HorizontalGradient(
-                        0.0f to colorResource(R.color.header_gradient_start),
-                        1.0f to colorResource(R.color.header_gradient_end),
+                        0.0f to MaterialTheme.colors.primary,
+                        1.0f to MaterialTheme.colors.primaryVariant,
                         startX = 0f,
                         endX = constraints.maxWidth.value.toFloat()
                     )
                 ),
-            children = {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalGravity = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    content()
-                }
-            }
+            children = content
         )
     }
+}
+
+@Composable
+fun OnGradientTitle(text: String) {
+    Text(
+        text,
+        style = TextStyle(
+            color = Color.White,
+            fontSize = TextUnit.Sp(20),
+            fontWeight = FontWeight.Bold
+        )
+    )
 }
 
 @Composable
@@ -123,8 +129,16 @@ fun Counter(
 
 @Preview(name = "PortfolioScreen preview")
 @Composable
-fun DefaultPreview() {
-    MentraApp {
+fun PortfolioScreenPreview() {
+    MentraApp(darkTheme = false) {
+        PortfolioScreen()
+    }
+}
+
+@Preview(name = "PortfolioScreen Dark preview")
+@Composable
+fun PortfolioScreenDarkPreview() {
+    MentraApp(darkTheme = true) {
         PortfolioScreen()
     }
 }
