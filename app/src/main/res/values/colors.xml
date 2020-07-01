@@ -7,4 +7,7 @@
     <color name="teel_700">#018786</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="header_gradient_start">#8776E5</color>
+    <color name="header_gradient_end">#FF3681</color>
 </resources>
