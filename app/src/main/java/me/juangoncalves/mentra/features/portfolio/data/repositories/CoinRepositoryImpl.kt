@@ -1,11 +1,11 @@
 package me.juangoncalves.mentra.features.portfolio.data.repositories
 
 import either.Either
-import me.juangoncalves.mentra.core.db.models.CoinModel
 import me.juangoncalves.mentra.core.errors.*
 import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.extensions.elapsedMinutes
 import me.juangoncalves.mentra.core.log.Logger
+import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinRemoteDataSource
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
@@ -16,6 +16,7 @@ import me.juangoncalves.mentra.features.portfolio.domain.repositories.CoinReposi
 class CoinRepositoryImpl(
     private val remoteDataSource: CoinRemoteDataSource,
     private val localDataSource: CoinLocalDataSource,
+    private val coinMapper: CoinMapper,
     private val logger: Logger
 ) : CoinRepository {
 
@@ -29,7 +30,7 @@ class CoinRepositoryImpl(
 
         if (cachedCoins != null && cachedCoins.isNotEmpty()) {
             val coins = cachedCoins
-                .map { it.toDomain() }
+                .map(coinMapper::map)
                 .filterNot { it == Coin.Invalid }
             return Either.Right(coins)
         }
@@ -65,14 +66,6 @@ class CoinRepositoryImpl(
                 Either.Left(FetchPriceError(cacheException.latestAvailablePrice))
             }
         }
-    }
-
-    private fun CoinModel.toDomain(): Coin {
-        return Coin(
-            name = name,
-            symbol = symbol,
-            imageUrl = imageUrl
-        )
     }
 
 }

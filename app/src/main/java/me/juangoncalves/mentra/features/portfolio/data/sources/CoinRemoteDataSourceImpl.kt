@@ -7,6 +7,7 @@ import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.core.network.CryptoCompareResponse.State
 import me.juangoncalves.mentra.core.network.CryptoCompareService
 import me.juangoncalves.mentra.core.network.schemas.CoinSchema
+import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
@@ -14,6 +15,7 @@ import java.time.LocalDateTime
 
 class CoinRemoteDataSourceImpl(
     private val apiService: CryptoCompareService,
+    private val coinMapper: CoinMapper,
     private val logger: Logger
 ) : CoinRemoteDataSource {
 
@@ -30,7 +32,7 @@ class CoinRemoteDataSourceImpl(
             State.Success -> resource.data.values
                 .filterNot { it.sponsored }
                 .map(buildImageUrl(resource.baseImageUrl))
-                .map { it.toDomain() }
+                .map(coinMapper::map)
                 .filterNot { it == Coin.Invalid }
         }
     }
@@ -49,14 +51,6 @@ class CoinRemoteDataSourceImpl(
         return { schema: CoinSchema ->
             schema.copy(imageUrl = baseUrl + schema.imageUrl)
         }
-    }
-
-    // TODO: Move to a mapper class
-    private fun CoinSchema.toDomain(): Coin {
-        if (name.isEmpty() || imageUrl.isEmpty() || symbol.isEmpty()) {
-            return Coin.Invalid
-        }
-        return Coin(name, symbol, imageUrl)
     }
 
 }

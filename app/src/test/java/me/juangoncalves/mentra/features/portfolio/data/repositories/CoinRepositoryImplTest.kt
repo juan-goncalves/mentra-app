@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.core.errors.*
 import me.juangoncalves.mentra.core.log.Logger
+import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinRemoteDataSource
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency.EUR
@@ -29,7 +30,8 @@ class CoinRepositoryImplTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        coinRepository = CoinRepositoryImpl(remoteDataSource, localDataSource, loggerMock)
+        coinRepository =
+            CoinRepositoryImpl(remoteDataSource, localDataSource, CoinMapper(), loggerMock)
     }
 
     @Test

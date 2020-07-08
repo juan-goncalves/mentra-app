@@ -16,6 +16,7 @@ import me.juangoncalves.mentra.core.network.CryptoCompareService
 import me.juangoncalves.mentra.core.network.schemas.CoinListSchema
 import me.juangoncalves.mentra.core.network.schemas.CoinSchema
 import me.juangoncalves.mentra.core.network.schemas.PriceSchema
+import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.assertEquals
@@ -35,7 +36,7 @@ class CoinRemoteDataSourceImplTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = CoinRemoteDataSourceImpl(apiService, logger)
+        sut = CoinRemoteDataSourceImpl(apiService, CoinMapper(), logger)
     }
 
     @Test
