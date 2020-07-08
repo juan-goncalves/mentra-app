@@ -1,20 +1,32 @@
 package me.juangoncalves.mentra.features.portfolio.data.sources
 
+import com.squareup.moshi.Types
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.Bitcoin
+import me.juangoncalves.mentra.Ethereum
+import me.juangoncalves.mentra.core.errors.InternetConnectionException
 import me.juangoncalves.mentra.core.errors.ServerException
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.portfolio.data.schemas.CoinListSchema
+import me.juangoncalves.mentra.features.portfolio.data.schemas.CoinSchema
+import me.juangoncalves.mentra.features.portfolio.data.schemas.CryptoCompareResponse
+import me.juangoncalves.mentra.features.portfolio.data.schemas.CryptoCompareResponse.State
+import me.juangoncalves.mentra.features.portfolio.data.schemas.PriceSchema
+import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.fixture
 import me.juangoncalves.mentra.moshi
+import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
+import java.net.UnknownHostException
 
 class CoinRemoteDataSourceImplTest {
 
@@ -30,7 +42,7 @@ class CoinRemoteDataSourceImplTest {
     }
 
     @Test
-    fun `fetchCoins should return the list of CoinSchema when the response is successful`() =
+    fun `fetchCoins should return the list of coins when the response is successful`() =
         runBlocking {
             // Arrange
             val schemaMock = setupMockListCoinsSuccess()
@@ -69,7 +81,7 @@ class CoinRemoteDataSourceImplTest {
     fun `fetchCoins should throw a ServerException if the response is not successful`() =
         runBlocking {
             // Arrange
-            coEvery { apiService.listCoins() } returns Response.error(404, mockk())
+            setupMockListCoinsApiFailure()
 
             // Act
             SUT.fetchCoins()
@@ -79,22 +91,9 @@ class CoinRemoteDataSourceImplTest {
         }
 
     @Test(expected = ServerException::class)
-    fun `fetchCoins should throw a ServerException if the api service throws an exception`() =
-        runBlocking {
-            // Arrange
-            coEvery { apiService.listCoins() } throws Exception()
-
-            // Act
-            SUT.fetchCoins()
-
-            // Assert
-            verify { logger.error(any(), any()) }
-        }
-
-    @Test(expected = ServerException::class)
     fun `fetchCoins should throw a ServerException if the response body is null`() = runBlocking {
         // Arrange
-        coEvery { apiService.listCoins() } returns Response.success(null)
+        setupMockListCoinsSuccessWithNullBody()
 
         // Act
         SUT.fetchCoins()
@@ -103,10 +102,103 @@ class CoinRemoteDataSourceImplTest {
         Unit
     }
 
+    @Test(expected = InternetConnectionException::class)
+    fun `fetchCoins should throw a InternetConnectionException if the api service call throws an exception`() =
+        runBlocking {
+            // Arrange
+            setupMockListCoinsNetworkError()
+
+            // Act
+            SUT.fetchCoins()
+
+            // Assert
+            Unit
+        }
+
+    @Test
+    fun `fetchCoinPrice should return the coin price in USD from the API service when the response is successful`() =
+        runBlocking {
+            // Arrange
+            val adapter = moshi.adapter(PriceSchema::class.java)
+            val price = adapter.fromJson(fixture("/btc_price.json"))!!
+            val apiResource = CryptoCompareResponse(State.Success, data = price)
+            coEvery { apiService.getCoinPrice(any()) } returns Response.success(apiResource)
+
+            // Act
+            val result = SUT.fetchCoinPrice(Bitcoin)
+
+            // Assert
+            coVerify { apiService.getCoinPrice(Bitcoin.symbol) }
+            assertEquals(result.currency, Currency.USD)
+            assertThat(result.value, closeTo(price.USD, 0.0001))
+        }
+
+    @Test(expected = ServerException::class)
+    fun `fetchCoinPrice should throw a ServerException if the response is not successful`() =
+        runBlocking {
+            // Arrange
+            coEvery { apiService.getCoinPrice(any()) } returns Response.error(500, mockk())
+
+            // Act
+            SUT.fetchCoinPrice(Ethereum)
+
+            // Assert
+            Unit
+        }
+
+    @Test(expected = ServerException::class)
+    fun `fetchCoinPrice should throw a ServerException if the response body is null`() =
+        runBlocking {
+            // Arrange
+            coEvery { apiService.getCoinPrice(any()) } returns Response.success(null)
+
+            // Act
+            SUT.fetchCoinPrice(Bitcoin)
+
+            // Assert
+            Unit
+        }
+
+//    @Test
+//    fun `retrofit playground`() = runBlocking {
+//        /// Retrofit playground
+//        val retro = Retrofit.Builder()
+//            .baseUrl("https://jsonplaceholder.typicode.com/")
+//            .addConverterFactory(MoshiConverterFactory.create())
+//            .build()
+//
+//        val service = retro.create(CryptoCompareService::class.java)
+//        val res = service.getCoinPrice("")
+//        println(res)
+//        Unit
+//    }
+
     private fun setupMockListCoinsSuccess(): CoinListSchema {
-        val adapter = moshi.adapter(CoinListSchema::class.java)
+        val coinListResponseType = Types.newParameterizedType(
+            CryptoCompareResponse::class.java,
+            Types.newParameterizedType(Map::class.java, String::class.java, CoinSchema::class.java)
+        )
+        val adapter = moshi.adapter<CoinListSchema>(coinListResponseType)
         val coinListSchema = adapter.fromJson(fixture("/coin_list.json"))!!
         coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
         return coinListSchema
+    }
+
+    private fun setupMockListCoinsSuccessWithNullBody() {
+        coEvery { apiService.listCoins() } returns Response.success(null)
+    }
+
+    private fun setupMockListCoinsApiFailure() {
+        val coinListResponseType = Types.newParameterizedType(
+            CryptoCompareResponse::class.java,
+            Types.newParameterizedType(Map::class.java, String::class.java, CoinSchema::class.java)
+        )
+        val adapter = moshi.adapter<CoinListSchema>(coinListResponseType)
+        val coinListSchema = adapter.fromJson(fixture("/coin_list_error.json"))!!
+        coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
+    }
+
+    private fun setupMockListCoinsNetworkError() {
+        coEvery { apiService.listCoins() } throws UnknownHostException()
     }
 }
