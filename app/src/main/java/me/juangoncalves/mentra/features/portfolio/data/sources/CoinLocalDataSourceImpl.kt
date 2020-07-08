@@ -2,6 +2,8 @@ package me.juangoncalves.mentra.features.portfolio.data.sources
 
 import me.juangoncalves.mentra.core.db.daos.CoinDao
 import me.juangoncalves.mentra.core.db.models.CoinModel
+import me.juangoncalves.mentra.core.db.models.CoinPriceModel
+import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
@@ -26,7 +28,15 @@ class CoinLocalDataSourceImpl(
     }
 
     override suspend fun storeCoinPrice(coin: Coin, price: Price) {
-        TODO("not implemented")
+        if (price.currency != Currency.USD) {
+            throw IllegalArgumentException("Prices in the database are stored in USD")
+        }
+        val model = CoinPriceModel(coin.symbol, price.value, price.date)
+        try {
+            coinDao.insertCoinPrice(model)
+        } catch (e: Exception) {
+            throw StorageException("Exception when saving coin price:\n$e")
+        }
     }
 
 }

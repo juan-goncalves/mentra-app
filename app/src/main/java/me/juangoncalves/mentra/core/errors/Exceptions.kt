@@ -7,6 +7,6 @@ class ServerException(message: String = "") : RuntimeException(message)
 
 class InternetConnectionException : RuntimeException()
 
-class StorageException : RuntimeException()
+class StorageException(message: String = "") : RuntimeException(message)
 
 class PriceCacheMissException(val latestAvailablePrice: Price? = null) : RuntimeException()
