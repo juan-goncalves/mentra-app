@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra
 
 import either.Either
-import me.juangoncalves.mentra.features.portfolio.data.models.CoinModel
+import me.juangoncalves.mentra.core.db.models.CoinModel
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
@@ -20,6 +20,18 @@ val USDPrices = mapOf(
     Ripple to Price(Currency.USD, 0.2987, LocalDateTime.now())
 )
 
-val BitcoinModel = CoinModel("BTC", "http://url.com/btc.png", "Bitcoin")
-val EthereumModel = CoinModel("ETH", "http://url.com/eth.png", "Ethereum")
-val RippleModel = CoinModel("XRP", "http://url.com/xrp.png", "Ripple")
+val BitcoinModel = CoinModel(
+    "BTC",
+    "http://url.com/btc.png",
+    "Bitcoin"
+)
+val EthereumModel = CoinModel(
+    "ETH",
+    "http://url.com/eth.png",
+    "Ethereum"
+)
+val RippleModel = CoinModel(
+    "XRP",
+    "http://url.com/xrp.png",
+    "Ripple"
+)
