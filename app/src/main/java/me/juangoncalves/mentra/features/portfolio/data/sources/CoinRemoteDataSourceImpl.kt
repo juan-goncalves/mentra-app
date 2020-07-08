@@ -36,11 +36,8 @@ class CoinRemoteDataSourceImpl(
         } catch (e: Exception) {
             throw InternetConnectionException()
         }
-        val resource = response.body() ?: throw ServerException("Response body was null")
-        return when (resource.status) {
-            State.Error -> throw ServerException("Server error: ${resource.message}")
-            State.Success -> Price(Currency.USD, resource.data.USD, LocalDateTime.now())
-        }
+        val priceSchema = response.body() ?: throw ServerException("Response body was null")
+        return Price(Currency.USD, priceSchema.USD, LocalDateTime.now())
     }
 
     private fun withCompleteImageUrl(baseUrl: String): (CoinSchema) -> CoinSchema {

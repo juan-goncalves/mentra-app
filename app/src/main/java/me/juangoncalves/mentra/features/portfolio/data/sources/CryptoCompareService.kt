@@ -1,7 +1,6 @@
 package me.juangoncalves.mentra.features.portfolio.data.sources
 
 import me.juangoncalves.mentra.features.portfolio.data.schemas.CoinListSchema
-import me.juangoncalves.mentra.features.portfolio.data.schemas.CryptoCompareResponse
 import me.juangoncalves.mentra.features.portfolio.data.schemas.PriceSchema
 import retrofit2.Response
 import retrofit2.http.GET
@@ -17,6 +16,6 @@ interface CryptoCompareService {
     suspend fun getCoinPrice(
         @Query("fsym") symbol: String,
         @Query("tsyms") conversionSymbols: String = "USD"
-    ): Response<CryptoCompareResponse<PriceSchema>>
+    ): Response<PriceSchema>
 
 }
