@@ -5,7 +5,6 @@ import me.juangoncalves.mentra.core.errors.*
 import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.extensions.elapsedMinutes
 import me.juangoncalves.mentra.core.log.Logger
-import me.juangoncalves.mentra.core.network.schemas.CoinSchema
 import me.juangoncalves.mentra.features.portfolio.data.models.CoinModel
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinRemoteDataSource
@@ -36,10 +35,7 @@ class CoinRepositoryImpl(
         }
 
         return try {
-            val coinSchemas = remoteDataSource.fetchCoins()
-            val coins = coinSchemas
-                .map { it.toDomain() }
-                .filterNot { it == Coin.Invalid }
+            val coins = remoteDataSource.fetchCoins()
             try {
                 localDataSource.storeCoins(coins)
             } catch (e: StorageException) {
@@ -76,14 +72,6 @@ class CoinRepositoryImpl(
             name = name,
             symbol = symbol,
             imageUrl = imageUrl
-        )
-    }
-
-    private fun CoinSchema.toDomain(): Coin {
-        return Coin(
-            name = name ?: return Coin.Invalid,
-            symbol = symbol ?: return Coin.Invalid,
-            imageUrl = imageUrl ?: return Coin.Invalid
         )
     }
 

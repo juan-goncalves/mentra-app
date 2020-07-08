@@ -7,8 +7,7 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.Bitcoin
-import me.juangoncalves.mentra.Ethereum
+import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.core.errors.InternetConnectionException
 import me.juangoncalves.mentra.core.errors.ServerException
 import me.juangoncalves.mentra.core.log.Logger
@@ -18,8 +17,6 @@ import me.juangoncalves.mentra.core.network.schemas.CoinListSchema
 import me.juangoncalves.mentra.core.network.schemas.CoinSchema
 import me.juangoncalves.mentra.core.network.schemas.PriceSchema
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
-import me.juangoncalves.mentra.fixture
-import me.juangoncalves.mentra.moshi
 import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
@@ -42,39 +39,18 @@ class CoinRemoteDataSourceImplTest {
     }
 
     @Test
-    fun `fetchCoins should return the list of coins when the response is successful`() =
+    fun `fetchCoins should return the list of coins that are not invalid or sponsored if the response is successful`() =
         runBlocking {
             // Arrange
-            val schemaMock = setupMockListCoinsSuccess()
+            val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
+            val coinListSchema = adapter.fromJson(fixture("/coin_list.json"))!!
+            coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
 
             // Act
             val result = sut.fetchCoins()
 
             // Assert
-            // Remove the image urls as they are converted (covered in another test case)
-            assertEquals(
-                result.map { it.copy(imageUrl = "") },
-                schemaMock.data.values.map { it.copy(imageUrl = "") }
-            )
-        }
-
-    @Test
-    fun `fetchCoins should build the image url of every coin`() =
-        runBlocking {
-            // Arrange
-            setupMockListCoinsSuccess()
-
-            // Act
-            val result = sut.fetchCoins()
-
-            // Assert
-            val expectedImageUrls = mapOf(
-                "BTC" to "https://www.cryptocompare.com/media/19633/btc.png",
-                "ETH" to "https://www.cryptocompare.com/media/20646/eth_logo.png",
-                "NANO" to "https://www.cryptocompare.com/media/30001997/untitled-1.png",
-                "FAKE" to "https://www.cryptocompare.com/media/9999/fake999.png"
-            )
-            result.forEach { assertEquals(expectedImageUrls[it.symbol], it.imageUrl) }
+            assertEquals(result, listOf(Bitcoin, Ethereum, Ripple))
         }
 
     @Test(expected = ServerException::class)
@@ -175,13 +151,6 @@ class CoinRemoteDataSourceImplTest {
 
 
     // Helpers
-
-    private fun setupMockListCoinsSuccess(): CoinListSchema {
-        val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
-        val coinListSchema = adapter.fromJson(fixture("/coin_list.json"))!!
-        coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
-        return coinListSchema
-    }
 
     private val coinListSchemaMoshiType = Types.newParameterizedType(
         CryptoCompareResponse::class.java,

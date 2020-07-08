@@ -36,17 +36,12 @@ class CoinRepositoryImplTest {
     fun `getCoins fetches and caches the coins from the network when the local storage is empty`() =
         runBlocking {
             // Arrange
-            val schemas = listOf(
-                BitcoinSchema,
-                EthereumSchema,
-                RippleSchema
-            )
             val coins = listOf(
                 Bitcoin,
                 Ethereum,
                 Ripple
             )
-            coEvery { remoteDataSource.fetchCoins() } returns schemas
+            coEvery { remoteDataSource.fetchCoins() } returns coins
             coEvery { localDataSource.getStoredCoins() } returns emptyList()
 
             // Act
@@ -104,10 +99,7 @@ class CoinRepositoryImplTest {
     fun `getCoins tries to fetch coins from the network when a StorageException is thrown and logs the situation`() =
         runBlocking {
             // Arrange
-            coEvery { remoteDataSource.fetchCoins() } returns listOf(
-                BitcoinSchema,
-                EthereumSchema
-            )
+            coEvery { remoteDataSource.fetchCoins() } returns listOf(Bitcoin, Ethereum)
             coEvery { localDataSource.getStoredCoins() } throws StorageException()
 
             // Act
@@ -116,19 +108,14 @@ class CoinRepositoryImplTest {
             // Assert
             val value = (result as Right).value
             coVerify { loggerMock.warning(any(), any()) }
-            assertEquals(
-                listOf(
-                    Bitcoin,
-                    Ethereum
-                ), value
-            )
+            assertEquals(listOf(Bitcoin, Ethereum), value)
         }
 
     @Test
     fun `getCoins returns the network fetched coins when a StorageException is thrown while caching them`() =
         runBlocking {
             // Arrange
-            coEvery { remoteDataSource.fetchCoins() } returns listOf(BitcoinSchema)
+            coEvery { remoteDataSource.fetchCoins() } returns listOf(Bitcoin)
             coEvery { localDataSource.getStoredCoins() } returns emptyList()
             coEvery { localDataSource.storeCoins(any()) } throws StorageException()
 

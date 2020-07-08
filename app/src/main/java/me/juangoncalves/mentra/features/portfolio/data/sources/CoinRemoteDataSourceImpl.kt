@@ -17,7 +17,7 @@ class CoinRemoteDataSourceImpl(
     private val logger: Logger
 ) : CoinRemoteDataSource {
 
-    override suspend fun fetchCoins(): List<CoinSchema> {
+    override suspend fun fetchCoins(): List<Coin> {
         val response = try {
             apiService.listCoins()
         } catch (e: Exception) {
@@ -27,7 +27,11 @@ class CoinRemoteDataSourceImpl(
         val resource = response.body() ?: throw ServerException("Response body was null")
         return when (resource.status) {
             State.Error -> throw ServerException("Server error: ${resource.message}")
-            State.Success -> resource.data.values.map(withCompleteImageUrl(resource.baseImageUrl))
+            State.Success -> resource.data.values
+                .filterNot { it.sponsored }
+                .map(buildImageUrl(resource.baseImageUrl))
+                .map { it.toDomain() }
+                .filterNot { it == Coin.Invalid }
         }
     }
 
@@ -41,10 +45,18 @@ class CoinRemoteDataSourceImpl(
         return Price(Currency.USD, priceSchema.USD, LocalDateTime.now())
     }
 
-    private fun withCompleteImageUrl(baseUrl: String): (CoinSchema) -> CoinSchema {
+    private fun buildImageUrl(baseUrl: String): (CoinSchema) -> CoinSchema {
         return { schema: CoinSchema ->
             schema.copy(imageUrl = baseUrl + schema.imageUrl)
         }
+    }
+
+    // TODO: Move to a mapper class
+    private fun CoinSchema.toDomain(): Coin {
+        if (name.isEmpty() || imageUrl.isEmpty() || symbol.isEmpty()) {
+            return Coin.Invalid
+        }
+        return Coin(name, symbol, imageUrl)
     }
 
 }

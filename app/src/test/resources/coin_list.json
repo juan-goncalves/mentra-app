@@ -1,13 +1,13 @@
 {
   "Response": "Success",
   "Message": "Coin list successfully returned!",
-  "BaseImageUrl": "https://www.cryptocompare.com",
+  "BaseImageUrl": "http://url.com",
   "BaseLinkUrl": "https://www.cryptocompare.com",
   "Data": {
     "BTC": {
       "Id": "1182",
       "Url": "/coins/btc/overview",
-      "ImageUrl": "/media/19633/btc.png",
+      "ImageUrl": "/btc.png",
       "Name": "BTC",
       "Symbol": "BTC",
       "CoinName": "Bitcoin",
@@ -18,7 +18,7 @@
     "ETH": {
       "Id": "7605",
       "Url": "/coins/eth/overview",
-      "ImageUrl": "/media/20646/eth_logo.png",
+      "ImageUrl": "/eth.png",
       "Name": "ETH",
       "Symbol": "ETH",
       "CoinName": "Ethereum",
@@ -26,27 +26,36 @@
       "SortOrder": "2",
       "Sponsored": false
     },
-    "NANO": {
+    "XRP": {
       "Id": "172091",
       "Url": "/coins/nano/overview",
-      "ImageUrl": "/media/30001997/untitled-1.png",
-      "Name": "NANO",
-      "Symbol": "NANO",
-      "CoinName": "Nano",
-      "FullName": "Nano (NANO)",
+      "ImageUrl": "/xrp.png",
+      "Name": "RIPPLE",
+      "Symbol": "XRP",
+      "CoinName": "Ripple",
+      "FullName": "Ripple (XRP)",
       "SortOrder": "1282",
       "Sponsored": false
     },
     "FAKE": {
       "Id": "9999",
       "Url": "/coins/fake/overview",
-      "ImageUrl": "/media/9999/fake999.png",
+      "ImageUrl": "/fake.png",
       "Name": "FAKE",
       "Symbol": "FAKE",
       "CoinName": "Fake",
       "FullName": "Fake (FAKE)",
       "SortOrder": "9999",
       "Sponsored": true
+    },
+    "BAD": {
+      "Id": "231111",
+      "Url": "/coins/bad/overview",
+      "ImageUrl": "/bad.png",
+      "Name": "BAD",
+      "FullName": "Bad (BAD)",
+      "SortOrder": "9999",
+      "Sponsored": false
     }
   }
 }
