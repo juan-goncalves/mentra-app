@@ -32,12 +32,12 @@ class CoinRemoteDataSourceImplTest {
     @MockK lateinit var apiService: CryptoCompareService
     @MockK lateinit var logger: Logger
 
-    private lateinit var SUT: CoinRemoteDataSourceImpl
+    private lateinit var sut: CoinRemoteDataSourceImpl
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        SUT = CoinRemoteDataSourceImpl(apiService, logger)
+        sut = CoinRemoteDataSourceImpl(apiService, logger)
     }
 
     @Test
@@ -47,7 +47,7 @@ class CoinRemoteDataSourceImplTest {
             val schemaMock = setupMockListCoinsSuccess()
 
             // Act
-            val result = SUT.fetchCoins()
+            val result = sut.fetchCoins()
 
             // Assert
             // Remove the image urls as they are converted (covered in another test case)
@@ -64,7 +64,7 @@ class CoinRemoteDataSourceImplTest {
             setupMockListCoinsSuccess()
 
             // Act
-            val result = SUT.fetchCoins()
+            val result = sut.fetchCoins()
 
             // Assert
             val expectedImageUrls = mapOf(
@@ -85,7 +85,7 @@ class CoinRemoteDataSourceImplTest {
             coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
 
             // Act
-            SUT.fetchCoins()
+            sut.fetchCoins()
 
             // Assert
             Unit
@@ -97,7 +97,7 @@ class CoinRemoteDataSourceImplTest {
         coEvery { apiService.listCoins() } returns Response.success(null)
 
         // Act
-        SUT.fetchCoins()
+        sut.fetchCoins()
 
         // Assert
         Unit
@@ -110,7 +110,7 @@ class CoinRemoteDataSourceImplTest {
             coEvery { apiService.listCoins() } throws UnknownHostException()
 
             // Act
-            SUT.fetchCoins()
+            sut.fetchCoins()
 
             // Assert
             Unit
@@ -125,7 +125,7 @@ class CoinRemoteDataSourceImplTest {
             coEvery { apiService.getCoinPrice(any()) } returns Response.success(price)
 
             // Act
-            val result = SUT.fetchCoinPrice(Bitcoin)
+            val result = sut.fetchCoinPrice(Bitcoin)
 
             // Assert
             coVerify { apiService.getCoinPrice(Bitcoin.symbol) }
@@ -140,7 +140,7 @@ class CoinRemoteDataSourceImplTest {
             coEvery { apiService.getCoinPrice(any()) } throws UnknownHostException()
 
             // Act
-            SUT.fetchCoinPrice(Ethereum)
+            sut.fetchCoinPrice(Ethereum)
 
             // Assert
             Unit
@@ -153,7 +153,7 @@ class CoinRemoteDataSourceImplTest {
             coEvery { apiService.getCoinPrice(any()) } returns Response.success(null)
 
             // Act
-            SUT.fetchCoinPrice(Bitcoin)
+            sut.fetchCoinPrice(Bitcoin)
 
             // Assert
             Unit
@@ -166,7 +166,7 @@ class CoinRemoteDataSourceImplTest {
             coEvery { apiService.getCoinPrice(any()) } returns Response.error(500, mockk())
 
             // Act
-            SUT.fetchCoinPrice(Bitcoin)
+            sut.fetchCoinPrice(Bitcoin)
 
             // Assert
             Unit
