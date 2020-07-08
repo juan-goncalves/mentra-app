@@ -5,6 +5,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.Ethereum
@@ -79,7 +80,9 @@ class CoinRemoteDataSourceImplTest {
     fun `fetchCoins should throw a ServerException if the response is not successful`() =
         runBlocking {
             // Arrange
-            setupMockListCoinsApiFailure()
+            val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
+            val coinListSchema = adapter.fromJson(fixture("/coin_list_error.json"))!!
+            coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
 
             // Act
             SUT.fetchCoins()
@@ -91,7 +94,7 @@ class CoinRemoteDataSourceImplTest {
     @Test(expected = ServerException::class)
     fun `fetchCoins should throw a ServerException if the response body is null`() = runBlocking {
         // Arrange
-        setupMockListCoinsSuccessWithNullBody()
+        coEvery { apiService.listCoins() } returns Response.success(null)
 
         // Act
         SUT.fetchCoins()
@@ -104,7 +107,7 @@ class CoinRemoteDataSourceImplTest {
     fun `fetchCoins should throw a InternetConnectionException if the communication with the remote source fails`() =
         runBlocking {
             // Arrange
-            setupMockListCoinsNetworkError()
+            coEvery { apiService.listCoins() } throws UnknownHostException()
 
             // Act
             SUT.fetchCoins()
@@ -156,32 +159,31 @@ class CoinRemoteDataSourceImplTest {
             Unit
         }
 
+    @Test(expected = ServerException::class)
+    fun `fetchCoinPrice should throw a ServerException if the response is not successful`() =
+        runBlocking {
+            // Arrange
+            coEvery { apiService.getCoinPrice(any()) } returns Response.error(500, mockk())
+
+            // Act
+            SUT.fetchCoinPrice(Bitcoin)
+
+            // Assert
+            Unit
+        }
+
+
+    // Helpers
+
     private fun setupMockListCoinsSuccess(): CoinListSchema {
-        val coinListResponseType = Types.newParameterizedType(
-            CryptoCompareResponse::class.java,
-            Types.newParameterizedType(Map::class.java, String::class.java, CoinSchema::class.java)
-        )
-        val adapter = moshi.adapter<CoinListSchema>(coinListResponseType)
+        val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
         val coinListSchema = adapter.fromJson(fixture("/coin_list.json"))!!
         coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
         return coinListSchema
     }
 
-    private fun setupMockListCoinsSuccessWithNullBody() {
-        coEvery { apiService.listCoins() } returns Response.success(null)
-    }
-
-    private fun setupMockListCoinsApiFailure() {
-        val coinListResponseType = Types.newParameterizedType(
-            CryptoCompareResponse::class.java,
-            Types.newParameterizedType(Map::class.java, String::class.java, CoinSchema::class.java)
-        )
-        val adapter = moshi.adapter<CoinListSchema>(coinListResponseType)
-        val coinListSchema = adapter.fromJson(fixture("/coin_list_error.json"))!!
-        coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
-    }
-
-    private fun setupMockListCoinsNetworkError() {
-        coEvery { apiService.listCoins() } throws UnknownHostException()
-    }
+    private val coinListSchemaMoshiType = Types.newParameterizedType(
+        CryptoCompareResponse::class.java,
+        Types.newParameterizedType(Map::class.java, String::class.java, CoinSchema::class.java)
+    )
 }
