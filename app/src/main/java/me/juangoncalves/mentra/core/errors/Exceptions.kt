@@ -5,8 +5,8 @@ import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
 
 class ServerException(message: String = "") : RuntimeException(message)
 
-class NotFoundException : RuntimeException()
+class InternetConnectionException : RuntimeException()
 
 class StorageException : RuntimeException()
 
-class PriceCacheMissException(val lastestAvailablePrice: Price? = null) : RuntimeException()
+class PriceCacheMissException(val latestAvailablePrice: Price? = null) : RuntimeException()
