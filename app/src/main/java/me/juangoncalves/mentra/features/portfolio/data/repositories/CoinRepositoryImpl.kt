@@ -61,11 +61,12 @@ class CoinRepositoryImpl(
             }
         } catch (cacheException: PriceCacheMissException) {
             try {
-                val price = remoteDataSource.fetchCoinPrice(coin, currency)
+                // TODO: Handle currencies
+                val price = remoteDataSource.fetchCoinPrice(coin)
                 localDataSource.storeCoinPrice(coin, price)
                 Either.Right(price)
             } catch (serverException: ServerException) {
-                Either.Left(FetchPriceError(cacheException.lastestAvailablePrice))
+                Either.Left(FetchPriceError(cacheException.latestAvailablePrice))
             }
         }
     }
