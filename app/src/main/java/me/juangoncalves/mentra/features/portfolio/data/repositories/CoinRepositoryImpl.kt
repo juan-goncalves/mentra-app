@@ -1,11 +1,11 @@
 package me.juangoncalves.mentra.features.portfolio.data.repositories
 
 import either.Either
+import me.juangoncalves.mentra.core.db.models.CoinModel
 import me.juangoncalves.mentra.core.errors.*
 import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.extensions.elapsedMinutes
 import me.juangoncalves.mentra.core.log.Logger
-import me.juangoncalves.mentra.features.portfolio.data.models.CoinModel
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinLocalDataSource
 import me.juangoncalves.mentra.features.portfolio.data.sources.CoinRemoteDataSource
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
