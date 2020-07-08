@@ -4,8 +4,9 @@ import me.juangoncalves.mentra.core.errors.InternetConnectionException
 import me.juangoncalves.mentra.core.errors.ServerException
 import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.log.Logger
-import me.juangoncalves.mentra.features.portfolio.data.schemas.CoinSchema
-import me.juangoncalves.mentra.features.portfolio.data.schemas.CryptoCompareResponse.State
+import me.juangoncalves.mentra.core.network.CryptoCompareResponse.State
+import me.juangoncalves.mentra.core.network.CryptoCompareService
+import me.juangoncalves.mentra.core.network.schemas.CoinSchema
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price

@@ -1,7 +1,7 @@
-package me.juangoncalves.mentra.features.portfolio.data.sources
+package me.juangoncalves.mentra.core.network
 
-import me.juangoncalves.mentra.features.portfolio.data.schemas.CoinListSchema
-import me.juangoncalves.mentra.features.portfolio.data.schemas.PriceSchema
+import me.juangoncalves.mentra.core.network.schemas.CoinListSchema
+import me.juangoncalves.mentra.core.network.schemas.PriceSchema
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

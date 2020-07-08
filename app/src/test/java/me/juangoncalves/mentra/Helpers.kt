@@ -1,8 +1,8 @@
 package me.juangoncalves.mentra
 
 import either.Either
+import me.juangoncalves.mentra.core.network.schemas.CoinSchema
 import me.juangoncalves.mentra.features.portfolio.data.models.CoinModel
-import me.juangoncalves.mentra.features.portfolio.data.schemas.CoinSchema
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price

@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.portfolio.data.schemas
+package me.juangoncalves.mentra.core.network.schemas
 
 import com.squareup.moshi.Json
 
