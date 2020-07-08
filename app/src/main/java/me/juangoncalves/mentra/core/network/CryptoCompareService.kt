@@ -6,7 +6,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-// TODO: Move to a package inside `core`
 interface CryptoCompareService {
 
     @GET("/data/all/coinlist")
