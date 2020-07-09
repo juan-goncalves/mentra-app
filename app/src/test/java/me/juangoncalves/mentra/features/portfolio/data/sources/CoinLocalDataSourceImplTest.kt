@@ -48,7 +48,7 @@ class CoinLocalDataSourceImplTest {
     }
 
     @Test
-    fun getStoredCoins_returnsEveryStoredCoin() = runBlocking {
+    fun `getStoredCoins should return every coin stored on the database`() = runBlocking {
         // Arrange
         coinDao.insertAll(BitcoinModel, EthereumModel, RippleModel)
 
@@ -60,7 +60,7 @@ class CoinLocalDataSourceImplTest {
     }
 
     @Test
-    fun clearCoins_deletesEveryStoredCoin() = runBlocking {
+    fun `clearCoins should delete every coin in the database`() = runBlocking {
         // Arrange
         coinDao.insertAll(BitcoinModel, EthereumModel, RippleModel)
 
@@ -73,24 +73,25 @@ class CoinLocalDataSourceImplTest {
     }
 
     @Test
-    fun storeCoins_mapsAndInsertsAllReceivedCoins() = runBlocking {
-        // Arrange
-        val coins = listOf(Bitcoin, Ethereum, Ripple)
+    fun `storeCoins should map and insert all the received coins into the database`() =
+        runBlocking {
+            // Arrange
+            val coins = listOf(Bitcoin, Ethereum, Ripple)
 
-        // Act
-        sut.storeCoins(coins)
+            // Act
+            sut.storeCoins(coins)
 
-        // Assert
-        val stored = coinDao.getAll()
-        val symbols = coins.map { it.symbol }.toHashSet()
-        assertEquals(3, stored.size)
-        stored.forEach {
-            assertTrue(symbols.contains(it.symbol))
+            // Assert
+            val stored = coinDao.getAll()
+            val symbols = coins.map { it.symbol }.toHashSet()
+            assertEquals(3, stored.size)
+            stored.forEach {
+                assertTrue(symbols.contains(it.symbol))
+            }
         }
-    }
 
     @Test
-    fun storeCoinPrice_storesThePriceInTheDatabase() = runBlocking {
+    fun `storeCoinPrice should store the coin price in the database`() = runBlocking {
         // Arrange
         coinDao.insertAll(BitcoinModel)
         val price = Price(Currency.USD, 8765.321, LocalDateTime.now())
@@ -104,45 +105,48 @@ class CoinLocalDataSourceImplTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun storeCoinPrice_throwsExceptionIfCurrencyIsNotUSD() = runBlocking {
-        // Arrange
-        coinDao.insertAll(BitcoinModel)
-        val price = Price(Currency.EUR, 8765.321, LocalDateTime.now())
+    fun `storeCoinPrice should throw an IllegalArgumentException if the currency is not USD`() =
+        runBlocking {
+            // Arrange
+            coinDao.insertAll(BitcoinModel)
+            val price = Price(Currency.EUR, 8765.321, LocalDateTime.now())
 
-        // Act
-        sut.storeCoinPrice(Bitcoin, price)
-    }
+            // Act
+            sut.storeCoinPrice(Bitcoin, price)
+        }
 
     @Test(expected = StorageException::class)
-    fun storeCoinPrice_throwsStorageExceptionIfCoinDoesNotExistInDB() = runBlocking {
-        // Arrange
-        val price = Price(Currency.USD, 8765.321, LocalDateTime.now())
+    fun `storeCoinPrice should throw a StorageException if the coin is not in the database`() =
+        runBlocking {
+            // Arrange
+            val price = Price(Currency.USD, 8765.321, LocalDateTime.now())
 
-        // Act
-        sut.storeCoinPrice(Bitcoin, price)
-    }
+            // Act
+            sut.storeCoinPrice(Bitcoin, price)
+        }
 
     @Test
-    fun getLastCoinPrice_returnsTheMostRecentCoinPriceInDB() = runBlocking {
-        // Arrange
-        coinDao.insertAll(BitcoinModel)
-        val prices = arrayOf(
-            CoinPriceModel("BTC", 20.5, LocalDateTime.of(2020, 6, 23, 5, 30)),
-            CoinPriceModel("BTC", 738.5, LocalDateTime.of(2020, 8, 13, 9, 30)),
-            CoinPriceModel("BTC", 245.5, LocalDateTime.of(2019, 1, 23, 5, 30))
-        )
-        prices.forEach { coinDao.insertCoinPrice(it) }
+    fun `getLastCoinPrice should return the most recent coin price stored in the database`() =
+        runBlocking {
+            // Arrange
+            coinDao.insertAll(BitcoinModel)
+            val prices = arrayOf(
+                CoinPriceModel("BTC", 20.5, LocalDateTime.of(2020, 6, 23, 5, 30)),
+                CoinPriceModel("BTC", 738.5, LocalDateTime.of(2020, 8, 13, 9, 30)),
+                CoinPriceModel("BTC", 245.5, LocalDateTime.of(2019, 1, 23, 5, 30))
+            )
+            prices.forEach { coinDao.insertCoinPrice(it) }
 
-        // Act
-        val result = sut.getLastCoinPrice(Bitcoin)
+            // Act
+            val result = sut.getLastCoinPrice(Bitcoin)
 
-        // Assert
-        assertThat(result.value, closeTo(738.5, 0.0001))
-        assertEquals(result.currency, Currency.USD)
-    }
+            // Assert
+            assertThat(result.value, closeTo(738.5, 0.0001))
+            assertEquals(result.currency, Currency.USD)
+        }
 
     @Test(expected = PriceCacheMissException::class)
-    fun getLastCoinPrice_throwsPriceCacheMissExceptionIfThereIsNoStoredPriceInTheDB() =
+    fun `getLastCoinPrice should throw a PriceCacheMissException if there's no stored price for the coin in the database`() =
         runBlocking {
             // Act
             sut.getLastCoinPrice(Bitcoin)
