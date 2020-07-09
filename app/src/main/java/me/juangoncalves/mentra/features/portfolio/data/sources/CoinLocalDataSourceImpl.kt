@@ -15,18 +15,19 @@ class CoinLocalDataSourceImpl(
     private val coinMapper: CoinMapper
 ) : CoinLocalDataSource {
 
-    override suspend fun getStoredCoins(): List<CoinModel> = coinDao.getAll()
+    override suspend fun getStoredCoins(): List<CoinModel> = orStorageException { coinDao.getAll() }
 
-    override suspend fun storeCoins(coins: List<Coin>) {
+    override suspend fun storeCoins(coins: List<Coin>) = orStorageException {
         val models = coins.map(coinMapper::map)
         coinDao.insertAll(*models.toTypedArray())
     }
 
-    override suspend fun clearCoins() = coinDao.clearAll()
+    override suspend fun clearCoins() = orStorageException { coinDao.clearAll() }
 
     override suspend fun getLastCoinPrice(coin: Coin): Price {
-        val priceModel =
-            coinDao.getMostRecentCoinPrice(coin.symbol) ?: throw PriceCacheMissException()
+        val priceModel = orStorageException {
+            coinDao.getMostRecentCoinPrice(coin.symbol)
+        } ?: throw PriceCacheMissException()
         return Price(Currency.USD, priceModel.valueInUSD, priceModel.timestamp)
     }
 
@@ -35,10 +36,20 @@ class CoinLocalDataSourceImpl(
             throw IllegalArgumentException("Prices in the database are stored in USD")
         }
         val model = CoinPriceModel(coin.symbol, price.value, price.date)
-        try {
+        return orStorageException("Exception when saving coin price.") {
             coinDao.insertCoinPrice(model)
+        }
+    }
+
+    @Throws(StorageException::class)
+    private suspend fun <T> orStorageException(
+        message: String = "",
+        execute: suspend () -> T
+    ): T {
+        return try {
+            execute()
         } catch (e: Exception) {
-            throw StorageException("Exception when saving coin price:\n$e")
+            throw StorageException("$message\n$e")
         }
     }
 

@@ -3,6 +3,7 @@ package me.juangoncalves.mentra.features.portfolio.data.sources
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.core.db.AppDatabase
@@ -59,6 +60,20 @@ class CoinLocalDataSourceImplTest {
         assertEquals(3, result.size)
     }
 
+    @Test(expected = StorageException::class)
+    fun `getStoredCoins should throw a StorageException if the database throws an exception`() =
+        runBlocking {
+            // Arrange
+            coinDao = mockk() // Will throw an exception when any of its methods is called
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+
+            // Act
+            sut.getStoredCoins()
+
+            // Assert
+            Unit
+        }
+
     @Test
     fun `clearCoins should delete every coin in the database`() = runBlocking {
         // Arrange
@@ -71,6 +86,20 @@ class CoinLocalDataSourceImplTest {
         val stored = coinDao.getAll()
         assertEquals(0, stored.size)
     }
+
+    @Test(expected = StorageException::class)
+    fun `clearCoins should throw a StorageException if the database throws an exception`() =
+        runBlocking {
+            // Arrange
+            coinDao = mockk() // Will throw an exception when any of its methods is called
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+
+            // Act
+            sut.clearCoins()
+
+            // Assert
+            Unit
+        }
 
     @Test
     fun `storeCoins should map and insert all the received coins into the database`() =
@@ -88,6 +117,20 @@ class CoinLocalDataSourceImplTest {
             stored.forEach {
                 assertTrue(symbols.contains(it.symbol))
             }
+        }
+
+    @Test(expected = StorageException::class)
+    fun `storeCoins should throw a StorageException if the database throws an exception`() =
+        runBlocking {
+            // Arrange
+            coinDao = mockk() // Will throw an exception when any of its methods is called
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+
+            // Act
+            sut.storeCoins(listOf(Bitcoin, Ethereum))
+
+            // Assert
+            Unit
         }
 
     @Test
@@ -150,6 +193,20 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Act
             sut.getLastCoinPrice(Bitcoin)
+            // Assert
+            Unit
+        }
+
+    @Test(expected = StorageException::class)
+    fun `getLastCoinPrice should throw a StorageException if the database throws an exception`() =
+        runBlocking {
+            // Arrange
+            coinDao = mockk() // Will throw an exception when any of its methods is called
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+
+            // Act
+            sut.getLastCoinPrice(Bitcoin)
+
             // Assert
             Unit
         }
