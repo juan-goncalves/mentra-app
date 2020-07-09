@@ -3,14 +3,8 @@ package me.juangoncalves.mentra.features.portfolio.data.sources
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.InstrumentationHelpers.Bitcoin
-import me.juangoncalves.mentra.InstrumentationHelpers.BitcoinModel
-import me.juangoncalves.mentra.InstrumentationHelpers.Ethereum
-import me.juangoncalves.mentra.InstrumentationHelpers.EthereumModel
-import me.juangoncalves.mentra.InstrumentationHelpers.Ripple
-import me.juangoncalves.mentra.InstrumentationHelpers.RippleModel
+import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.core.db.AppDatabase
 import me.juangoncalves.mentra.core.db.daos.CoinDao
 import me.juangoncalves.mentra.core.db.models.CoinPriceModel
@@ -25,10 +19,13 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.IOException
 import java.time.LocalDateTime
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class CoinLocalDataSourceImplTest {
 
     private lateinit var coinDao: CoinDao

@@ -9,6 +9,7 @@ plugins {
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+    testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
         applicationId "me.juangoncalves.mentra"
@@ -77,6 +78,7 @@ dependencies {
     testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     kaptTest "com.google.dagger:hilt-android-compiler:$hilt_version"
     testImplementation "androidx.room:room-testing:$room_version"
+    testImplementation 'org.robolectric:robolectric:4.3'
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
 }
