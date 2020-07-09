@@ -3,6 +3,7 @@ package me.juangoncalves.mentra.features.portfolio.data.sources
 import me.juangoncalves.mentra.core.db.daos.CoinDao
 import me.juangoncalves.mentra.core.db.models.CoinModel
 import me.juangoncalves.mentra.core.db.models.CoinPriceModel
+import me.juangoncalves.mentra.core.errors.PriceCacheMissException
 import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
@@ -23,8 +24,10 @@ class CoinLocalDataSourceImpl(
 
     override suspend fun clearCoins() = coinDao.clearAll()
 
-    override suspend fun getLastCoinPrice(coin: Coin, currency: Currency): Price {
-        TODO("not implemented")
+    override suspend fun getLastCoinPrice(coin: Coin): Price {
+        val priceModel =
+            coinDao.getMostRecentCoinPrice(coin.symbol) ?: throw PriceCacheMissException()
+        return Price(Currency.USD, priceModel.valueInUSD, priceModel.timestamp)
     }
 
     override suspend fun storeCoinPrice(coin: Coin, price: Price) {

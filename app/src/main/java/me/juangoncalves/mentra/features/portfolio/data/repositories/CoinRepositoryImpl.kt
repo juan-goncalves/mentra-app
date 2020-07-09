@@ -50,7 +50,8 @@ class CoinRepositoryImpl(
 
     override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Price> {
         return try {
-            val cachedPrice = localDataSource.getLastCoinPrice(coin, currency)
+            // TODO: Handle currencies
+            val cachedPrice = localDataSource.getLastCoinPrice(coin)
             if (cachedPrice.date.elapsedMinutes() <= 5) {
                 Either.Right(cachedPrice)
             } else {

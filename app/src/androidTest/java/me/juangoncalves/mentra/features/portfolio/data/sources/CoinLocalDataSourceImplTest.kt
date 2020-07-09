@@ -5,11 +5,16 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.InstrumentationHelpers
 import me.juangoncalves.mentra.InstrumentationHelpers.Bitcoin
 import me.juangoncalves.mentra.InstrumentationHelpers.BitcoinModel
+import me.juangoncalves.mentra.InstrumentationHelpers.Ethereum
+import me.juangoncalves.mentra.InstrumentationHelpers.EthereumModel
+import me.juangoncalves.mentra.InstrumentationHelpers.Ripple
+import me.juangoncalves.mentra.InstrumentationHelpers.RippleModel
 import me.juangoncalves.mentra.core.db.AppDatabase
 import me.juangoncalves.mentra.core.db.daos.CoinDao
+import me.juangoncalves.mentra.core.db.models.CoinPriceModel
+import me.juangoncalves.mentra.core.errors.PriceCacheMissException
 import me.juangoncalves.mentra.core.errors.StorageException
 import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
@@ -23,7 +28,6 @@ import org.junit.runner.RunWith
 import java.io.IOException
 import java.time.LocalDateTime
 
-// TODO: Move to unit test implementing a fake for the CoinDao interface
 @RunWith(AndroidJUnit4::class)
 class CoinLocalDataSourceImplTest {
 
@@ -49,11 +53,7 @@ class CoinLocalDataSourceImplTest {
     @Test
     fun getStoredCoins_returnsEveryStoredCoin() = runBlocking {
         // Arrange
-        coinDao.insertAll(
-            InstrumentationHelpers.BitcoinModel,
-            InstrumentationHelpers.EthereumModel,
-            InstrumentationHelpers.RippleModel
-        )
+        coinDao.insertAll(BitcoinModel, EthereumModel, RippleModel)
 
         // Act
         val result = sut.getStoredCoins()
@@ -65,11 +65,7 @@ class CoinLocalDataSourceImplTest {
     @Test
     fun clearCoins_deletesEveryStoredCoin() = runBlocking {
         // Arrange
-        coinDao.insertAll(
-            InstrumentationHelpers.BitcoinModel,
-            InstrumentationHelpers.EthereumModel,
-            InstrumentationHelpers.RippleModel
-        )
+        coinDao.insertAll(BitcoinModel, EthereumModel, RippleModel)
 
         // Act
         sut.clearCoins()
@@ -82,11 +78,7 @@ class CoinLocalDataSourceImplTest {
     @Test
     fun storeCoins_mapsAndInsertsAllReceivedCoins() = runBlocking {
         // Arrange
-        val coins = listOf(
-            InstrumentationHelpers.Bitcoin,
-            InstrumentationHelpers.Ethereum,
-            InstrumentationHelpers.Ripple
-        )
+        val coins = listOf(Bitcoin, Ethereum, Ripple)
 
         // Act
         sut.storeCoins(coins)
@@ -132,5 +124,33 @@ class CoinLocalDataSourceImplTest {
         // Act
         sut.storeCoinPrice(Bitcoin, price)
     }
+
+    @Test
+    fun getLastCoinPrice_returnsTheMostRecentCoinPriceInDB() = runBlocking {
+        // Arrange
+        coinDao.insertAll(BitcoinModel)
+        val prices = arrayOf(
+            CoinPriceModel("BTC", 20.5, LocalDateTime.of(2020, 6, 23, 5, 30)),
+            CoinPriceModel("BTC", 738.5, LocalDateTime.of(2020, 8, 13, 9, 30)),
+            CoinPriceModel("BTC", 245.5, LocalDateTime.of(2019, 1, 23, 5, 30))
+        )
+        prices.forEach { coinDao.insertCoinPrice(it) }
+
+        // Act
+        val result = sut.getLastCoinPrice(Bitcoin)
+
+        // Assert
+        assertThat(result.value, closeTo(738.5, 0.0001))
+        assertEquals(result.currency, Currency.USD)
+    }
+
+    @Test(expected = PriceCacheMissException::class)
+    fun getLastCoinPrice_throwsPriceCacheMissExceptionIfThereIsNoStoredPriceInTheDB() =
+        runBlocking {
+            // Act
+            sut.getLastCoinPrice(Bitcoin)
+            // Assert
+            Unit
+        }
 
 }

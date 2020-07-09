@@ -136,10 +136,7 @@ class CoinRepositoryImplTest {
             // Arrange
             val price = Price(USD, 9532.472, LocalDateTime.now())
             coEvery {
-                localDataSource.getLastCoinPrice(
-                    Bitcoin,
-                    USD
-                )
+                localDataSource.getLastCoinPrice(Bitcoin)
             } throws PriceCacheMissException()
             coEvery { remoteDataSource.fetchCoinPrice(Bitcoin) } returns price
 
@@ -148,7 +145,7 @@ class CoinRepositoryImplTest {
 
             // Assert
             val data = (result as Either.Right).value
-            coVerify { localDataSource.getLastCoinPrice(Bitcoin, USD) }
+            coVerify { localDataSource.getLastCoinPrice(Bitcoin) }
             coVerify { remoteDataSource.fetchCoinPrice(Bitcoin) }
             coVerify { localDataSource.storeCoinPrice(Bitcoin, price) }
             assertEquals(price, data)
@@ -159,7 +156,7 @@ class CoinRepositoryImplTest {
         runBlocking {
             // Arrange
             val price = Price(USD, 321.98, LocalDateTime.now().minusMinutes(2))
-            coEvery { localDataSource.getLastCoinPrice(Bitcoin, USD) } returns price
+            coEvery { localDataSource.getLastCoinPrice(Bitcoin) } returns price
 
             // Act
             val result = coinRepository.getCoinPrice(Bitcoin, USD)
@@ -167,7 +164,7 @@ class CoinRepositoryImplTest {
             // Assert
             val data = (result as Either.Right).value
             verify { remoteDataSource wasNot Called }
-            coVerify { localDataSource.getLastCoinPrice(Bitcoin, USD) }
+            coVerify { localDataSource.getLastCoinPrice(Bitcoin) }
             assertEquals(price, data)
         }
 
@@ -177,7 +174,7 @@ class CoinRepositoryImplTest {
             // Arrange
             val localPrice = Price(USD, 321.98, LocalDateTime.now().minusHours(1))
             val remotePrice = Price(USD, 500.32, LocalDateTime.now())
-            coEvery { localDataSource.getLastCoinPrice(Bitcoin, USD) } returns localPrice
+            coEvery { localDataSource.getLastCoinPrice(Bitcoin) } returns localPrice
             coEvery { remoteDataSource.fetchCoinPrice(Bitcoin) } returns remotePrice
 
             // Act
@@ -185,7 +182,7 @@ class CoinRepositoryImplTest {
 
             // Assert
             val data = (result as Either.Right).value
-            coVerify { localDataSource.getLastCoinPrice(Bitcoin, USD) }
+            coVerify { localDataSource.getLastCoinPrice(Bitcoin) }
             coVerify { remoteDataSource.fetchCoinPrice(Bitcoin) }
             coVerify { localDataSource.storeCoinPrice(Bitcoin, remotePrice) }
             assertEquals(remotePrice, data)
@@ -197,7 +194,7 @@ class CoinRepositoryImplTest {
             // Arrange
             val localPrice = Price(EUR, 0.123, LocalDateTime.now().minusHours(2))
             coEvery { remoteDataSource.fetchCoinPrice(Ripple) } throws ServerException()
-            coEvery { localDataSource.getLastCoinPrice(Ripple, EUR) } returns localPrice
+            coEvery { localDataSource.getLastCoinPrice(Ripple) } returns localPrice
 
             // Act
             val result = coinRepository.getCoinPrice(Ripple, EUR)
@@ -214,7 +211,7 @@ class CoinRepositoryImplTest {
             // Arrange
             coEvery { remoteDataSource.fetchCoinPrice(Ripple) } throws ServerException()
             coEvery {
-                localDataSource.getLastCoinPrice(Ripple, EUR)
+                localDataSource.getLastCoinPrice(Ripple)
             } throws PriceCacheMissException()
 
             // Act

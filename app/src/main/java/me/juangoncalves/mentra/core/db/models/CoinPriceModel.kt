@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 
 @Entity(
+    tableName = "CoinPrice",
     foreignKeys = [
         ForeignKey(
             entity = CoinModel::class,
