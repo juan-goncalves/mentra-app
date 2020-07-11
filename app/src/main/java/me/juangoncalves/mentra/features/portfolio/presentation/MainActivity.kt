@@ -1,9 +1,11 @@
 package me.juangoncalves.mentra.features.portfolio.presentation
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
 import androidx.compose.state
+import androidx.lifecycle.Observer
 import androidx.ui.core.*
 import androidx.ui.foundation.Box
 import androidx.ui.foundation.Text
@@ -21,9 +23,18 @@ import androidx.ui.text.font.FontWeight
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.TextUnit
 import androidx.ui.unit.dp
+import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.core.extensions.TAG
+import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.core.presentation.MentraTheme
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject lateinit var logger: Logger
+
+    private val splashViewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +43,14 @@ class MainActivity : AppCompatActivity() {
                 PortfolioScreen()
             }
         }
+
+        splashViewModel.stateLiveData.observe(this, Observer {
+            when (it) {
+                is SplashViewModel.State.Loading -> logger.info(TAG, "Loading...")
+                is SplashViewModel.State.Error -> logger.error(TAG, "Error loading coins")
+                is SplashViewModel.State.Loaded -> logger.info(TAG, "Finished loading coins")
+            }
+        })
     }
 }
 
