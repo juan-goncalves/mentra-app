@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
-import androidx.compose.state
-import androidx.lifecycle.Observer
 import androidx.ui.core.*
 import androidx.ui.foundation.Box
 import androidx.ui.foundation.Text
@@ -15,7 +13,7 @@ import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.HorizontalGradient
 import androidx.ui.layout.*
-import androidx.ui.material.Button
+import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
 import androidx.ui.text.TextStyle
@@ -24,7 +22,6 @@ import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.TextUnit
 import androidx.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
-import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.core.presentation.MentraTheme
 import javax.inject.Inject
@@ -34,23 +31,15 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var logger: Logger
 
-    private val splashViewModel: SplashViewModel by viewModels()
+    private val viewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MentraApp {
-                PortfolioScreen()
+                PortfolioScreen(viewModel)
             }
         }
-
-        splashViewModel.stateLiveData.observe(this, Observer {
-            when (it) {
-                is SplashViewModel.State.Loading -> logger.info(TAG, "Loading...")
-                is SplashViewModel.State.Error -> logger.error(TAG, "Error loading coins")
-                is SplashViewModel.State.Loaded -> logger.info(TAG, "Finished loading coins")
-            }
-        })
     }
 }
 
@@ -67,32 +56,49 @@ fun MentraApp(
 }
 
 @Composable
-fun PortfolioScreen() {
-    val counterState = state { 0 }
+fun PortfolioScreen(viewModel: SplashViewModel) {
     Column(modifier = Modifier.fillMaxHeight()) {
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f, false)) {
             GradientHeader {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalGravity = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    OnGradientTitle("Clicked the button: ${counterState.value} times")
+                    OnGradientTitle("$----.--")
                 }
             }
         }
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalGravity = Alignment.CenterHorizontally
+            modifier = Modifier.weight(1f).fillMaxWidth().padding(top = 8.dp)
         ) {
-            Counter(
-                modifier = Modifier.padding(10.dp),
-                count = counterState.value
-            ) { newCount ->
-                counterState.value = newCount
-            }
+            Factory(state = viewModel.viewState)
         }
     }
+}
+
+@Composable
+fun Factory(state: SplashViewModel.State) {
+    when (state) {
+        is SplashViewModel.State.Loading -> Loading()
+        is SplashViewModel.State.Error -> Error(state.message)
+        is SplashViewModel.State.Loaded -> Text("Exito")
+    }
+}
+
+@Composable
+private fun Loading() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun Error(message: String) {
+    Text(message)
 }
 
 @Composable
@@ -113,7 +119,7 @@ fun GradientHeader(content: @Composable() () -> Unit) {
                         0.0f to MaterialTheme.colors.primary,
                         1.0f to MaterialTheme.colors.primaryVariant,
                         startX = 0f,
-                        endX = constraints.maxWidth.value.toFloat()
+                        endX = constraints.maxWidth.toFloat()
                     )
                 ),
             children = content
@@ -133,32 +139,18 @@ fun OnGradientTitle(text: String) {
     )
 }
 
+@Preview(name = "PortfolioScreen loading state preview")
 @Composable
-fun Counter(
-    modifier: Modifier = Modifier,
-    count: Int,
-    updateCount: (Int) -> Unit
-) {
-    Button(
-        modifier = modifier,
-        onClick = { updateCount(count + 1) }
-    ) {
-        Text("Increase counter")
-    }
-}
-
-@Preview(name = "PortfolioScreen preview")
-@Composable
-fun PortfolioScreenPreview() {
+fun PortfolioScreenLoadingPreview() {
     MentraApp(darkTheme = false) {
-        PortfolioScreen()
+        Factory(SplashViewModel.State.Loading)
     }
 }
 
-@Preview(name = "PortfolioScreen Dark preview")
+@Preview(name = "PortfolioScreen error state preview")
 @Composable
-fun PortfolioScreenDarkPreview() {
-    MentraApp(darkTheme = true) {
-        PortfolioScreen()
+fun PortfolioScreenErrorPreview() {
+    MentraApp(darkTheme = false) {
+        Factory(SplashViewModel.State.Error("Some random error"))
     }
 }
