@@ -24,6 +24,7 @@ import androidx.ui.unit.dp
 import me.juangoncalves.mentra.core.presentation.MentraTheme
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

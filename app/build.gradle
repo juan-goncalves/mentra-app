@@ -66,6 +66,7 @@ dependencies {
     implementation "com.github.adelnizamutdinov:kotlin-either:3.0.0"
     implementation "com.squareup.retrofit2:retrofit:2.6.0"
     implementation "com.squareup.retrofit2:converter-moshi:2.6.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.2.1"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     implementation "androidx.room:room-runtime:$room_version"

@@ -12,8 +12,9 @@ import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class CoinRemoteDataSourceImpl(
+class CoinRemoteDataSourceImpl @Inject constructor(
     private val apiService: CryptoCompareService,
     private val coinMapper: CoinMapper,
     private val logger: Logger

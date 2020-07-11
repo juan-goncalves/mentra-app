@@ -12,8 +12,9 @@ import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
 import me.juangoncalves.mentra.features.portfolio.domain.repositories.CoinRepository
+import javax.inject.Inject
 
-class CoinRepositoryImpl(
+class CoinRepositoryImpl @Inject constructor(
     private val remoteDataSource: CoinRemoteDataSource,
     private val localDataSource: CoinLocalDataSource,
     private val coinMapper: CoinMapper,

@@ -9,8 +9,9 @@ import me.juangoncalves.mentra.features.portfolio.data.mapper.CoinMapper
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
+import javax.inject.Inject
 
-class CoinLocalDataSourceImpl(
+class CoinLocalDataSourceImpl @Inject constructor(
     private val coinDao: CoinDao,
     private val coinMapper: CoinMapper
 ) : CoinLocalDataSource {

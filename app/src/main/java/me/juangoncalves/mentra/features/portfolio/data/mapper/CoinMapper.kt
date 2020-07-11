@@ -3,8 +3,9 @@ package me.juangoncalves.mentra.features.portfolio.data.mapper
 import me.juangoncalves.mentra.core.db.models.CoinModel
 import me.juangoncalves.mentra.core.network.schemas.CoinSchema
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
+import javax.inject.Inject
 
-class CoinMapper {
+class CoinMapper @Inject constructor() {
 
     fun map(coin: Coin): CoinModel = CoinModel(coin.symbol, coin.imageUrl, coin.name)
 
