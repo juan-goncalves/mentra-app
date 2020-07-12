@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mentra</string>
+    <string name="retry">Retry</string>
 </resources>
