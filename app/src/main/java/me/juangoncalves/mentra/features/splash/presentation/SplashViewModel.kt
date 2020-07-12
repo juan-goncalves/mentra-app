@@ -43,7 +43,7 @@ class SplashViewModel @ViewModelInject constructor(
         _viewState.postValue(Loading)
         val deferredCoins = async { getCoins.execute() }
         // Force the splash screen to be shown for at least one second
-        val delay = async { delay(1000L) }
+        val delay = async { delay(1300L) }
         delay.await()
         when (val result = deferredCoins.await()) {
             is Either.Left -> _viewState.postValue(failureToErrorState(result.value))
