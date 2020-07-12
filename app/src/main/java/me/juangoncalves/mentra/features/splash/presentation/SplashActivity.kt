@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.portfolio.presentation
+package me.juangoncalves.mentra.features.splash.presentation
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -7,16 +7,14 @@ import androidx.compose.Composable
 import androidx.compose.getValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.ui.core.*
+import androidx.ui.core.Alignment
+import androidx.ui.core.Modifier
+import androidx.ui.core.setContent
 import androidx.ui.foundation.*
-import androidx.ui.foundation.shape.corner.RoundedCornerShape
-import androidx.ui.graphics.Color
-import androidx.ui.graphics.HorizontalGradient
 import androidx.ui.layout.*
 import androidx.ui.livedata.observeAsState
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Snackbar
-import androidx.ui.material.Surface
 import androidx.ui.material.snackbarPrimaryColorFor
 import androidx.ui.res.imageResource
 import androidx.ui.res.stringResource
@@ -24,12 +22,11 @@ import androidx.ui.text.AnnotatedString
 import androidx.ui.text.TextStyle
 import androidx.ui.text.font.FontWeight
 import androidx.ui.tooling.preview.Preview
-import androidx.ui.unit.TextUnit
 import androidx.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.core.presentation.MentraTheme
-import me.juangoncalves.mentra.features.portfolio.presentation.SplashViewModel.State
+import me.juangoncalves.mentra.core.presentation.MentraApp
+import me.juangoncalves.mentra.features.splash.presentation.SplashViewModel.State
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
@@ -51,18 +48,6 @@ class SplashActivity : AppCompatActivity() {
 }
 
 @Composable
-fun MentraApp(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
-) {
-    MentraTheme(darkTheme = darkTheme) {
-        Surface {
-            content()
-        }
-    }
-}
-
-@Composable
 fun SplashScreen(viewStateLiveData: LiveData<State>, onRetryInitialization: () -> Unit) {
     val viewState by viewStateLiveData.observeAsState()
     Stack(
@@ -78,7 +63,10 @@ fun SplashScreen(viewStateLiveData: LiveData<State>, onRetryInitialization: () -
         ) {
             when (val safeState = viewState) {
                 is State.Loading -> Box()
-                is State.Error -> Error(stringResource(safeState.messageId), onRetryInitialization)
+                is State.Error -> Error(
+                    stringResource(safeState.messageId),
+                    onRetryInitialization
+                )
                 is State.Loaded -> Spacer(Modifier.size(0.dp)) // TODO: Navigate to portfolio screen
             }
         }
@@ -103,45 +91,6 @@ private fun Error(message: String, onRetry: () -> Unit) {
         }
     )
 }
-
-@Composable
-fun GradientHeader(content: @Composable() () -> Unit) {
-    WithConstraints {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .preferredHeight(250.dp)
-                .clip(
-                    RoundedCornerShape(
-                        bottomRight = 20.dp,
-                        bottomLeft = 20.dp
-                    )
-                )
-                .drawBackground(
-                    HorizontalGradient(
-                        0.0f to MaterialTheme.colors.primary,
-                        1.0f to MaterialTheme.colors.primaryVariant,
-                        startX = 0f,
-                        endX = constraints.maxWidth.toFloat()
-                    )
-                ),
-            children = content
-        )
-    }
-}
-
-@Composable
-fun OnGradientTitle(text: String) {
-    Text(
-        text,
-        style = TextStyle(
-            color = Color.White,
-            fontSize = TextUnit.Sp(20),
-            fontWeight = FontWeight.Bold
-        )
-    )
-}
-
 
 @Composable
 @Preview(name = "Splash Screen Loading State")

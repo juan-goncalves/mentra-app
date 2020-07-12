@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.portfolio.presentation
+package me.juangoncalves.mentra.features.splash.presentation
 
 import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.ViewModelInject
@@ -14,7 +14,7 @@ import me.juangoncalves.mentra.core.errors.InternetConnectionFailure
 import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.portfolio.domain.usecases.GetCoinsUseCase
-import me.juangoncalves.mentra.features.portfolio.presentation.SplashViewModel.State.Loading
+import me.juangoncalves.mentra.features.splash.presentation.SplashViewModel.State.Loading
 
 class SplashViewModel @ViewModelInject constructor(
     private val getCoins: GetCoinsUseCase,
