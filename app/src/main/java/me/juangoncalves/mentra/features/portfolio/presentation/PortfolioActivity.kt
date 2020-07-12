@@ -27,7 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.core.presentation.MentraApp
 
 @AndroidEntryPoint
-class SplashActivity : AppCompatActivity() {
+class PortfolioActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
