@@ -42,7 +42,7 @@ class SplashActivity : AppCompatActivity() {
             MentraApp {
                 SplashScreen(
                     viewStateLiveData = viewModel.viewState,
-                    onRetry = viewModel::retryInitialization
+                    onRetryInitialization = viewModel::retryInitialization
                 )
             }
         }
@@ -63,7 +63,7 @@ fun MentraApp(
 }
 
 @Composable
-fun SplashScreen(viewStateLiveData: LiveData<State>, onRetry: () -> Unit) {
+fun SplashScreen(viewStateLiveData: LiveData<State>, onRetryInitialization: () -> Unit) {
     val viewState by viewStateLiveData.observeAsState()
     Stack(
         modifier = Modifier.fillMaxSize()
@@ -78,7 +78,7 @@ fun SplashScreen(viewStateLiveData: LiveData<State>, onRetry: () -> Unit) {
         ) {
             when (val safeState = viewState) {
                 is State.Loading -> Box()
-                is State.Error -> Error(safeState.message, onRetry)
+                is State.Error -> Error(safeState.message, onRetryInitialization)
                 is State.Loaded -> Spacer(Modifier.size(0.dp)) // TODO: Navigate to portfolio screen
             }
         }
@@ -149,7 +149,7 @@ fun PreviewSplashScreenLoading() {
     MentraApp(darkTheme = false) {
         SplashScreen(
             viewStateLiveData = MutableLiveData(State.Loading),
-            onRetry = {}
+            onRetryInitialization = {}
         )
     }
 }
@@ -160,7 +160,7 @@ fun PreviewSplashScreenError() {
     MentraApp(darkTheme = false) {
         SplashScreen(
             viewStateLiveData = MutableLiveData(State.Error("Some error message")),
-            onRetry = {}
+            onRetryInitialization = {}
         )
     }
 }
