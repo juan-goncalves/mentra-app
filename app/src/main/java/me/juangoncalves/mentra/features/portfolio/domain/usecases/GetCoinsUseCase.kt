@@ -8,6 +8,6 @@ import javax.inject.Inject
 
 class GetCoinsUseCase @Inject constructor(private val coinRepository: CoinRepository) {
 
-    suspend fun execute(): Either<Failure, List<Coin>> = coinRepository.getCoins()
+    suspend operator fun invoke(): Either<Failure, List<Coin>> = coinRepository.getCoins()
 
 }

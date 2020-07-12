@@ -9,7 +9,9 @@ import me.juangoncalves.mentra.features.portfolio.domain.repositories.CoinReposi
 
 class GetCoinPriceUseCase(private val coinRepository: CoinRepository) {
 
-    suspend fun execute(coin: Coin, currency: Currency = Currency.USD): Either<Failure, Price> =
-        coinRepository.getCoinPrice(coin, currency)
+    suspend operator fun invoke(
+        coin: Coin,
+        currency: Currency = Currency.USD
+    ): Either<Failure, Price> = coinRepository.getCoinPrice(coin, currency)
 
 }

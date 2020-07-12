@@ -7,6 +7,6 @@ import me.juangoncalves.mentra.features.portfolio.domain.repositories.WalletRepo
 
 class GetWalletsUseCase(private val walletRepository: WalletRepository) {
 
-    suspend fun execute(): Either<Failure, List<Wallet>> = walletRepository.getWallets()
+    suspend operator fun invoke(): Either<Failure, List<Wallet>> = walletRepository.getWallets()
 
 }

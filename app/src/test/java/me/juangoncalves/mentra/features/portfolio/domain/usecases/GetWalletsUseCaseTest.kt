@@ -18,12 +18,12 @@ class GetWalletsUseCaseTest {
 
     @MockK lateinit var walletRepositoryMock: WalletRepository
 
-    private lateinit var useCase: GetWalletsUseCase
+    private lateinit var getWallets: GetWalletsUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        useCase = GetWalletsUseCase(walletRepositoryMock)
+        getWallets = GetWalletsUseCase(walletRepositoryMock)
     }
 
     @Test
@@ -31,21 +31,13 @@ class GetWalletsUseCaseTest {
         // Arrange
         val walletStubs = listOf(
             Wallet(9231, "BTC #1", Bitcoin, 1.32),
-            Wallet(
-                1431, "BTC #2",
-                Bitcoin, 0.5543
-            ),
-            Wallet(
-                56, "Fav. Ethereum",
-                Ethereum, 0.32
-            )
+            Wallet(1431, "BTC #2", Bitcoin, 0.5543),
+            Wallet(56, "Fav. Ethereum", Ethereum, 0.32)
         )
-        coEvery { walletRepositoryMock.getWallets() } returns Right(
-            walletStubs
-        )
+        coEvery { walletRepositoryMock.getWallets() } returns Right(walletStubs)
 
         // Act
-        val result = useCase.execute()
+        val result = getWallets()
 
         // Assert
         assertEquals(result, Right(walletStubs))

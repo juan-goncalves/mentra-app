@@ -18,12 +18,12 @@ class GetCoinsUseCaseTest {
 
     @MockK lateinit var coinRepositoryMock: CoinRepository
 
-    private lateinit var useCase: GetCoinsUseCase
+    private lateinit var getCoins: GetCoinsUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        useCase = GetCoinsUseCase(coinRepositoryMock)
+        getCoins = GetCoinsUseCase(coinRepositoryMock)
     }
 
     @Test
@@ -37,7 +37,7 @@ class GetCoinsUseCaseTest {
         coEvery { coinRepositoryMock.getCoins() } returns Either.Right(coins)
 
         // Act
-        val result = useCase.execute()
+        val result = getCoins()
 
         // Assert
         coVerify { coinRepositoryMock.getCoins() }

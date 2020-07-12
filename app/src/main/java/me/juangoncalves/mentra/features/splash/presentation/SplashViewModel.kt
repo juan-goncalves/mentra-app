@@ -41,7 +41,7 @@ class SplashViewModel @ViewModelInject constructor(
 
     private fun fetchCoins() = viewModelScope.launch(Dispatchers.IO) {
         _viewState.postValue(Loading)
-        val deferredCoins = async { getCoins.execute() }
+        val deferredCoins = async { getCoins() }
         // Force the splash screen to be shown for at least one second
         val delay = async { delay(1300L) }
         delay.await()

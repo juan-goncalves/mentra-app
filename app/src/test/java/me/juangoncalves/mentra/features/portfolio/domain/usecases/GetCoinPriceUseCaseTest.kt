@@ -23,12 +23,12 @@ class GetCoinPriceUseCaseTest {
 
     @MockK lateinit var coinRepositoryMock: CoinRepository
 
-    private lateinit var useCase: GetCoinPriceUseCase
+    private lateinit var getCoinPrice: GetCoinPriceUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        useCase = GetCoinPriceUseCase(coinRepositoryMock)
+        getCoinPrice = GetCoinPriceUseCase(coinRepositoryMock)
     }
 
     @Test
@@ -44,7 +44,7 @@ class GetCoinPriceUseCaseTest {
         coEvery { coinRepositoryMock.getCoinPrice(Bitcoin, Currency.USD) } returns dataStub
 
         // Act
-        val result = useCase.execute(Bitcoin)
+        val result = getCoinPrice(Bitcoin)
 
         // Assert
         val resultData = (result as Right).value
@@ -61,7 +61,7 @@ class GetCoinPriceUseCaseTest {
         )
 
         // Act
-        val result = useCase.execute(Ethereum) as Either.Left
+        val result = getCoinPrice(Ethereum) as Either.Left
 
         // Assert
         assertTrue(result.value is PriceNotFound)

@@ -18,15 +18,15 @@ import org.junit.Test
 
 class GetPortfolioValueUseCaseTest {
 
-    @MockK lateinit var getWalletsUseCaseMock: GetWalletsUseCase
-    @MockK lateinit var getCoinPriceUseCaseMock: GetCoinPriceUseCase
+    @MockK lateinit var getWalletsMock: GetWalletsUseCase
+    @MockK lateinit var getCoinPriceMock: GetCoinPriceUseCase
 
-    private lateinit var useCase: GetPortfolioValueUseCase
+    private lateinit var getPortfolioValue: GetPortfolioValueUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        useCase = GetPortfolioValueUseCase(getWalletsUseCaseMock, getCoinPriceUseCaseMock)
+        getPortfolioValue = GetPortfolioValueUseCase(getWalletsMock, getCoinPriceMock)
     }
 
     @Test
@@ -35,27 +35,16 @@ class GetPortfolioValueUseCaseTest {
         val wallets = listOf(
             Wallet(1, "BTC #1", Bitcoin, 0.5678),
             Wallet(2, "ETH fav", Ethereum, 1.321),
-            Wallet(
-                3, "BTC second",
-                Bitcoin, 0.01345
-            ),
+            Wallet(3, "BTC second", Bitcoin, 0.01345),
             Wallet(4, "Ripple!", Ripple, 20.53)
         )
-        coEvery { getWalletsUseCaseMock.execute() } returns Right(
-            wallets
-        )
-        coEvery { getCoinPriceUseCaseMock.execute(Bitcoin) } returns Right(
-            USDPrices[Bitcoin]!!
-        )
-        coEvery { getCoinPriceUseCaseMock.execute(Ethereum) } returns Right(
-            USDPrices[Ethereum]!!
-        )
-        coEvery { getCoinPriceUseCaseMock.execute(Ripple) } returns Right(
-            USDPrices[Ripple]!!
-        )
+        coEvery { getWalletsMock() } returns Right(wallets)
+        coEvery { getCoinPriceMock(Bitcoin) } returns Right(USDPrices[Bitcoin]!!)
+        coEvery { getCoinPriceMock(Ethereum) } returns Right(USDPrices[Ethereum]!!)
+        coEvery { getCoinPriceMock(Ripple) } returns Right(USDPrices[Ripple]!!)
 
         // Act
-        val result = useCase.execute(currency = Currency.USD)
+        val result = getPortfolioValue(currency = Currency.USD)
 
         // Assert
         val resultData = (result as Right).value
@@ -66,12 +55,10 @@ class GetPortfolioValueUseCaseTest {
     @Test
     fun `should return a failure if there's and error obtaining the wallets`() = runBlocking {
         // Arrange
-        coEvery { getWalletsUseCaseMock.execute() } returns Left(
-            mockk()
-        )
+        coEvery { getWalletsMock() } returns Left(mockk())
 
         // Act
-        val result = useCase.execute()
+        val result = getPortfolioValue()
 
         // Assert
         assertTrue(result is Left<Failure>)
@@ -83,27 +70,16 @@ class GetPortfolioValueUseCaseTest {
         val wallets = listOf(
             Wallet(1, "BTC #1", Bitcoin, 0.5678),
             Wallet(2, "ETH fav", Ethereum, 1.321),
-            Wallet(
-                3, "BTC second",
-                Bitcoin, 0.01345
-            ),
+            Wallet(3, "BTC second", Bitcoin, 0.01345),
             Wallet(4, "Ripple!", Ripple, 20.53)
         )
-        coEvery { getWalletsUseCaseMock.execute() } returns Right(
-            wallets
-        )
-        coEvery { getCoinPriceUseCaseMock.execute(Bitcoin) } returns Left(
-            PriceNotFound(Bitcoin)
-        )
-        coEvery { getCoinPriceUseCaseMock.execute(Ethereum) } returns Right(
-            USDPrices[Ethereum]!!
-        )
-        coEvery { getCoinPriceUseCaseMock.execute(Ripple) } returns Right(
-            USDPrices[Ripple]!!
-        )
+        coEvery { getWalletsMock() } returns Right(wallets)
+        coEvery { getCoinPriceMock(Bitcoin) } returns Left(PriceNotFound(Bitcoin))
+        coEvery { getCoinPriceMock(Ethereum) } returns Right(USDPrices[Ethereum]!!)
+        coEvery { getCoinPriceMock(Ripple) } returns Right(USDPrices[Ripple]!!)
 
         // Act
-        val result = useCase.execute(currency = Currency.USD)
+        val result = getPortfolioValue(currency = Currency.USD)
 
         // Assert
         val resultData = (result as Right).value
