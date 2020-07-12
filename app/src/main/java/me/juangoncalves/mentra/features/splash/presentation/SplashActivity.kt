@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.features.splash.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,7 @@ import androidx.compose.Composable
 import androidx.compose.getValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.core.setContent
@@ -24,8 +26,13 @@ import androidx.ui.text.font.FontWeight
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.core.presentation.MentraApp
+import me.juangoncalves.mentra.features.portfolio.presentation.PortfolioActivity
+import me.juangoncalves.mentra.features.splash.presentation.SplashViewModel.Event
 import me.juangoncalves.mentra.features.splash.presentation.SplashViewModel.State
 
 @AndroidEntryPoint
@@ -41,6 +48,20 @@ class SplashActivity : AppCompatActivity() {
                     viewStateLiveData = viewModel.viewState,
                     onRetryInitialization = viewModel::retryInitialization
                 )
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.eventChannel.receiveAsFlow().collect { processEvent(it) }
+        }
+    }
+
+    private fun processEvent(event: Event) {
+        when (event) {
+            is Event.NavigateToPortfolio -> {
+                val intent = Intent(this, PortfolioActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                this.finish()
             }
         }
     }
@@ -63,11 +84,7 @@ fun SplashScreen(viewStateLiveData: LiveData<State>, onRetryInitialization: () -
         ) {
             when (val safeState = viewState) {
                 is State.Loading -> Box()
-                is State.Error -> Error(
-                    stringResource(safeState.messageId),
-                    onRetryInitialization
-                )
-                is State.Loaded -> Spacer(Modifier.size(0.dp)) // TODO: Navigate to portfolio screen
+                is State.Error -> Error(stringResource(safeState.messageId), onRetryInitialization)
             }
         }
     }
