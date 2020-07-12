@@ -13,7 +13,6 @@ import me.juangoncalves.mentra.features.portfolio.data.sources.CoinRemoteDataSou
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency.EUR
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency.USD
 import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
-import me.juangoncalves.mentra.features.portfolio.domain.repositories.CoinRepository
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -25,7 +24,7 @@ class CoinRepositoryImplTest {
     @MockK lateinit var localDataSource: CoinLocalDataSource
     @MockK lateinit var remoteDataSource: CoinRemoteDataSource
 
-    private lateinit var coinRepository: CoinRepository
+    private lateinit var coinRepository: CoinRepositoryImpl
 
     @Before
     fun setUp() {
@@ -95,6 +94,21 @@ class CoinRepositoryImplTest {
             // Assert
             val failure = (result as Left).value
             assertTrue(failure is ServerFailure)
+        }
+
+    @Test
+    fun `getCoins should return a InternetConnectionFailure if there's no internet connection while trying to fetch coins`() =
+        runBlocking {
+            // Arrange
+            coEvery { remoteDataSource.fetchCoins() } throws InternetConnectionException()
+            coEvery { localDataSource.getStoredCoins() } returns emptyList()
+
+            // Act
+            val result = coinRepository.getCoins()
+
+            // Assert
+            val failure = (result as Left).value
+            assertTrue(failure is InternetConnectionFailure)
         }
 
     @Test

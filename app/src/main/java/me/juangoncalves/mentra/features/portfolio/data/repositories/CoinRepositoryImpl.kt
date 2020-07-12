@@ -44,8 +44,19 @@ class CoinRepositoryImpl @Inject constructor(
                 logger.warning(TAG, "Exception while trying to cache coins.\n$e")
             }
             Either.Right(coins)
-        } catch (e: ServerException) {
-            Either.Left(ServerFailure())
+        } catch (e: Exception) {
+            val failure = when (e) {
+                is ServerException -> ServerFailure()
+                is InternetConnectionException -> InternetConnectionFailure()
+                else -> {
+                    logger.error(
+                        TAG,
+                        "Unexpected error when fetching coins from the remote source:\n$e"
+                    )
+                    Failure()
+                }
+            }
+            Either.Left(failure)
         }
     }
 
