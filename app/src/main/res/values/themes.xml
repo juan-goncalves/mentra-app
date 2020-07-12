@@ -24,6 +24,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <!-- Theme to force activities to have the dark theme status bar (white icons) -->
+    <style name="Theme.Mentra.LightStatusBarIcons" parent="Theme.Mentra">
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
     <style name="Theme.Mentra.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Mentra.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
