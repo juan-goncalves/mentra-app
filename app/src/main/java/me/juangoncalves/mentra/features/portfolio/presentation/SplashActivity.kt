@@ -78,7 +78,7 @@ fun SplashScreen(viewStateLiveData: LiveData<State>, onRetryInitialization: () -
         ) {
             when (val safeState = viewState) {
                 is State.Loading -> Box()
-                is State.Error -> Error(safeState.message, onRetryInitialization)
+                is State.Error -> Error(stringResource(safeState.messageId), onRetryInitialization)
                 is State.Loaded -> Spacer(Modifier.size(0.dp)) // TODO: Navigate to portfolio screen
             }
         }
@@ -159,7 +159,7 @@ fun PreviewSplashScreenLoading() {
 fun PreviewSplashScreenError() {
     MentraApp(darkTheme = false) {
         SplashScreen(
-            viewStateLiveData = MutableLiveData(State.Error("Some error message")),
+            viewStateLiveData = MutableLiveData(State.Error(R.string.default_error)),
             onRetryInitialization = {}
         )
     }

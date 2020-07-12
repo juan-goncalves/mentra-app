@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.features.portfolio.presentation
 
+import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.core.errors.InternetConnectionFailure
 import me.juangoncalves.mentra.core.extensions.TAG
 import me.juangoncalves.mentra.core.log.Logger
 import me.juangoncalves.mentra.features.portfolio.domain.usecases.GetCoinsUseCase
@@ -23,7 +26,7 @@ class SplashViewModel @ViewModelInject constructor(
 
         object Loaded : State()
 
-        class Error(val message: String) : State()
+        class Error(@StringRes val messageId: Int) : State()
     }
 
     val viewState: LiveData<State> get() = _viewState
@@ -40,7 +43,12 @@ class SplashViewModel @ViewModelInject constructor(
             _viewState.postValue(Loading)
             val result = getCoins.execute()
             val state = result.fold(
-                left = { failure -> State.Error("Some error message") },
+                left = { failure ->
+                    when (failure) {
+                        is InternetConnectionFailure -> State.Error(R.string.connection_error)
+                        else -> State.Error(R.string.default_error)
+                    }
+                },
                 right = { State.Loaded }
             )
             _viewState.postValue(state)
