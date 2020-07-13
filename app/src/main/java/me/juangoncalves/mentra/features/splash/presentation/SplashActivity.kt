@@ -77,7 +77,7 @@ fun SplashScreen(viewStateLiveData: LiveData<State>, onRetryInitialization: () -
     ) {
         Image(
             modifier = Modifier.size(110.dp, 110.dp).gravity(Alignment.Center),
-            asset = imageResource(R.drawable.cubes_gradient)
+            asset = imageResource(R.drawable.app_icon)
         )
         Column(
             modifier = Modifier.gravity(Alignment.BottomCenter).padding(bottom = 8.dp)
