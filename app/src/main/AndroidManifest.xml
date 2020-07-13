@@ -25,6 +25,10 @@
         <activity
             android:name=".ui.portfolio.PortfolioActivity"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
+
+        <activity
+            android:name=".ui.wallet_list.WalletListActivity"
+            android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
     </application>
 
 </manifest>
