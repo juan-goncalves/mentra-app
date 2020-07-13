@@ -18,11 +18,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "mentra.db" // TODO: Make build config variable for different flavors
-        ).build()
+        return Room.databaseBuilder(context, AppDatabase::class.java, "mentra.db")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
