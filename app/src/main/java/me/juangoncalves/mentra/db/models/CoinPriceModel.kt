@@ -1,9 +1,6 @@
 package me.juangoncalves.mentra.db.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.time.LocalDateTime
 
 @Entity(
@@ -15,7 +12,8 @@ import java.time.LocalDateTime
             childColumns = ["coin_symbol"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index("coin_symbol")]
 )
 data class CoinPriceModel(
     @ColumnInfo(name = "coin_symbol") val coinSymbol: String,

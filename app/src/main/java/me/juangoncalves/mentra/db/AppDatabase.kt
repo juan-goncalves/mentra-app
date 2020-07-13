@@ -9,7 +9,7 @@ import me.juangoncalves.mentra.db.models.CoinPriceModel
 
 @Database(
     entities = [CoinModel::class, CoinPriceModel::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
