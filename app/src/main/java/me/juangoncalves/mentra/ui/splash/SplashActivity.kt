@@ -31,9 +31,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.ui.common.MentraApp
-import me.juangoncalves.mentra.ui.portfolio.PortfolioActivity
 import me.juangoncalves.mentra.ui.splash.SplashViewModel.Event
 import me.juangoncalves.mentra.ui.splash.SplashViewModel.State
+import me.juangoncalves.mentra.ui.wallet_list.WalletListActivity
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
@@ -58,7 +58,7 @@ class SplashActivity : AppCompatActivity() {
     private fun processEvent(event: Event) {
         when (event) {
             is Event.NavigateToPortfolio -> {
-                val intent = Intent(this, PortfolioActivity::class.java)
+                val intent = Intent(this, WalletListActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
                 this.finish()
