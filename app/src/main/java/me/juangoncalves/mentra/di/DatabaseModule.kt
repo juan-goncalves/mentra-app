@@ -7,8 +7,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import me.juangoncalves.mentra.core.db.AppDatabase
-import me.juangoncalves.mentra.core.db.daos.CoinDao
+import me.juangoncalves.mentra.db.AppDatabase
+import me.juangoncalves.mentra.db.daos.CoinDao
 import javax.inject.Singleton
 
 @Module

@@ -1,10 +1,10 @@
 package me.juangoncalves.mentra
 
 import either.Either
-import me.juangoncalves.mentra.core.db.models.CoinModel
-import me.juangoncalves.mentra.features.portfolio.domain.entities.Coin
-import me.juangoncalves.mentra.features.portfolio.domain.entities.Currency
-import me.juangoncalves.mentra.features.portfolio.domain.entities.Price
+import me.juangoncalves.mentra.db.models.CoinModel
+import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain.models.Currency
+import me.juangoncalves.mentra.domain.models.Price
 import java.time.LocalDateTime
 
 typealias Right<T> = Either.Right<T>
