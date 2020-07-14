@@ -6,10 +6,7 @@ import androidx.compose.Composable
 import androidx.compose.getValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.ui.core.Modifier
-import androidx.ui.core.WithConstraints
-import androidx.ui.core.clip
-import androidx.ui.core.setContent
+import androidx.ui.core.*
 import androidx.ui.foundation.*
 import androidx.ui.foundation.lazy.LazyColumnItems
 import androidx.ui.foundation.shape.corner.CircleShape
@@ -21,6 +18,7 @@ import androidx.ui.livedata.observeAsState
 import androidx.ui.material.Card
 import androidx.ui.material.MaterialTheme
 import androidx.ui.res.stringResource
+import androidx.ui.res.vectorResource
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,7 +89,7 @@ fun Wallet(wallet: Wallet) {
                         CoinPlaceholder()
                     }
                 }
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 Column(
                     modifier = Modifier.fillMaxHeight(),
                     verticalArrangement = Arrangement.Center
@@ -106,6 +104,33 @@ fun Wallet(wallet: Wallet) {
                         style = MaterialTheme.typography.caption
                     )
                 }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalGravity = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "$ 1322.32",
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Spacer(modifier = Modifier.height(3.dp))
+                    TextWithIcon(
+                        icon = {
+                            Icon(
+                                modifier = Modifier.size(14.dp),
+                                asset = vectorResource(R.drawable.ic_coins),
+                                tint = MaterialTheme.typography.caption.color
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = "0.0342",
+                                style = MaterialTheme.typography.caption
+                            )
+                        }
+                    )
+                }
             }
             Row(modifier = Modifier.weight(1.25f).fillMaxHeight()) {
                 Box(
@@ -117,6 +142,18 @@ fun Wallet(wallet: Wallet) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TextWithIcon(
+    icon: @Composable() () -> Unit,
+    text: @Composable() () -> Unit
+) {
+    Row(verticalGravity = Alignment.CenterVertically) {
+        icon()
+        Spacer(modifier = Modifier.width(4.dp))
+        text()
     }
 }
 
