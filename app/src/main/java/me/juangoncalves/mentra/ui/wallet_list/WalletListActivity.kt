@@ -7,13 +7,18 @@ import androidx.compose.getValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.ui.core.Modifier
+import androidx.ui.core.WithConstraints
+import androidx.ui.core.clip
 import androidx.ui.core.setContent
+import androidx.ui.foundation.Border
 import androidx.ui.foundation.Box
 import androidx.ui.foundation.Text
+import androidx.ui.foundation.drawBackground
 import androidx.ui.foundation.lazy.LazyColumnItems
 import androidx.ui.foundation.shape.corner.CircleShape
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
+import androidx.ui.graphics.VerticalGradient
 import androidx.ui.layout.*
 import androidx.ui.livedata.observeAsState
 import androidx.ui.material.Card
@@ -26,6 +31,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.ui.common.MentraApp
+import me.juangoncalves.mentra.ui.common.NetworkImage
 import me.juangoncalves.mentra.ui.portfolio.GradientHeader
 import java.util.*
 
@@ -48,7 +54,7 @@ fun WalletListScreen(walletsLiveData: LiveData<List<Wallet>>) {
     val wallets by walletsLiveData.observeAsState()
     Column(modifier = Modifier.fillMaxSize()) {
         GradientHeader {}
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
         Text(
             text = stringResource(R.string.wallets_subtitle).toUpperCase(Locale.getDefault()),
             modifier = Modifier.padding(horizontal = 12.dp),
@@ -77,12 +83,14 @@ fun Wallet(wallet: Wallet) {
                 .height(100.dp)
                 .padding(vertical = 20.dp, horizontal = 12.dp)
         ) {
-            // TODO: Replace with image loaded from URL
             Box(
                 modifier = Modifier.size(60.dp),
-                shape = CircleShape,
-                backgroundColor = Color.DarkGray
-            )
+                shape = CircleShape
+            ) {
+                NetworkImage(url = wallet.coin.imageUrl) {
+                    CoinPlaceholder()
+                }
+            }
             Spacer(modifier = Modifier.width(16.dp))
             Column(
                 modifier = Modifier.fillMaxHeight(),
@@ -102,6 +110,31 @@ fun Wallet(wallet: Wallet) {
     }
 }
 
+@Composable
+private fun CoinPlaceholder() {
+    WithConstraints {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            shape = CircleShape,
+            border = Border(2.dp, Color.Gray)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .clip(CircleShape)
+                    .drawBackground(
+                        VerticalGradient(
+                            0.0f to Color.LightGray,
+                            1.0f to Color.Gray,
+                            startY = 0f,
+                            endY = constraints.maxWidth.toFloat()
+                        )
+                    )
+            )
+        }
+    }
+}
+
+
 private val fakeWallets = listOf(
     Wallet(
         1,
@@ -114,13 +147,18 @@ private val fakeWallets = listOf(
         "Spendable",
         Coin("Ethereum", "ETH", "https://cryptoicons.org/api/icon/eth/200"),
         0.0562
+    ),
+    Wallet(
+        2,
+        "Spendable",
+        Coin("FAKE", "FAKE", "https://wjhefw.com/jid.sj"),
+        0.0562
     )
 )
 
 @Composable
 @Preview(name = "Wallet list screen")
 fun PreviewWalletListScreen() {
-
     MentraApp(darkTheme = true) {
         WalletListScreen(MutableLiveData(fakeWallets))
     }
