@@ -10,10 +10,7 @@ import androidx.ui.core.Modifier
 import androidx.ui.core.WithConstraints
 import androidx.ui.core.clip
 import androidx.ui.core.setContent
-import androidx.ui.foundation.Border
-import androidx.ui.foundation.Box
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.drawBackground
+import androidx.ui.foundation.*
 import androidx.ui.foundation.lazy.LazyColumnItems
 import androidx.ui.foundation.shape.corner.CircleShape
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
@@ -79,32 +76,45 @@ fun Wallet(wallet: Wallet) {
         elevation = 8.dp
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .height(100.dp)
-                .padding(vertical = 20.dp, horizontal = 12.dp)
+            modifier = Modifier.fillMaxWidth().height(100.dp)
         ) {
-            Box(
-                modifier = Modifier.size(60.dp),
-                shape = CircleShape
+            Row(
+                modifier = Modifier.weight(3.75f)
+                    .fillMaxHeight()
+                    .padding(vertical = 20.dp, horizontal = 12.dp)
             ) {
-                NetworkImage(url = wallet.coin.imageUrl) {
-                    CoinPlaceholder()
+                Box(
+                    modifier = Modifier.size(60.dp),
+                    shape = CircleShape
+                ) {
+                    NetworkImage(url = wallet.coin.imageUrl) {
+                        CoinPlaceholder()
+                    }
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = wallet.coin.symbol,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Text(
+                        text = "$ 6448.06",
+                        style = MaterialTheme.typography.caption
+                    )
                 }
             }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = wallet.coin.symbol,
-                    style = MaterialTheme.typography.subtitle1
-                )
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(
-                    text = "$ 6448.06",
-                    style = MaterialTheme.typography.caption
-                )
+            Row(modifier = Modifier.weight(1.25f).fillMaxHeight()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    backgroundColor = Color(0xFF, 0x36, 0x81, 0x36),
+                    gravity = ContentGravity.BottomStart
+                ) {
+                    Text("chart")
+                }
             }
         }
     }
