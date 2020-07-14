@@ -49,7 +49,7 @@ private val subtitle2: TextStyle
 @Composable
 private fun captionFor(palette: ColorPalette): TextStyle = MaterialTheme.typography.caption.copy(
     color = palette.onSurface.copy(alpha = 0.8f),
-    fontSize = 16.sp
+    fontSize = 14.sp
 )
 
 @Composable
