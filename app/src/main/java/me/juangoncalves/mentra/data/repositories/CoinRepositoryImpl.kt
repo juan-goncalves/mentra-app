@@ -76,7 +76,7 @@ class CoinRepositoryImpl @Inject constructor(
                 // TODO: Handle storage exception
                 localDataSource.storeCoinPrice(coin, price)
                 Either.Right(price)
-            } catch (serverException: ServerException) {
+            } catch (e: Exception) {
                 Either.Left(FetchPriceFailure(cacheException.latestAvailablePrice))
             }
         }
