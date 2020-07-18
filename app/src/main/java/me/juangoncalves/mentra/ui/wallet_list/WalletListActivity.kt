@@ -1,6 +1,7 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
 import androidx.compose.getValue
@@ -16,15 +17,19 @@ import androidx.ui.graphics.VerticalGradient
 import androidx.ui.layout.*
 import androidx.ui.livedata.observeAsState
 import androidx.ui.material.Card
+import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.res.stringResource
 import androidx.ui.res.vectorResource
+import androidx.ui.text.style.TextOverflow
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.extensions.asCoinAmount
+import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.ui.common.MentraApp
 import me.juangoncalves.mentra.ui.common.NetworkImage
 import me.juangoncalves.mentra.ui.portfolio.GradientHeader
@@ -33,11 +38,13 @@ import java.util.*
 @AndroidEntryPoint
 class WalletListActivity : AppCompatActivity() {
 
+    private val viewModel: WalletListViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MentraApp {
-                WalletListScreen(MutableLiveData(fakeWallets))
+                WalletListScreen(viewModel.viewState)
             }
         }
     }
@@ -45,8 +52,9 @@ class WalletListActivity : AppCompatActivity() {
 }
 
 @Composable
-fun WalletListScreen(walletsLiveData: LiveData<List<Wallet>>) {
-    val wallets by walletsLiveData.observeAsState()
+fun WalletListScreen(viewStateLiveData: LiveData<WalletListViewModel.State>) {
+    val viewState by viewStateLiveData.observeAsState(WalletListViewModel.State.Loading())
+
     Column(modifier = Modifier.fillMaxSize()) {
         GradientHeader {}
         Spacer(modifier = Modifier.height(14.dp))
@@ -56,18 +64,40 @@ fun WalletListScreen(walletsLiveData: LiveData<List<Wallet>>) {
             style = MaterialTheme.typography.subtitle2
         )
         Spacer(modifier = Modifier.height(12.dp))
-        LazyColumnItems(
-            items = wallets ?: emptyList(),
-            modifier = Modifier.fillMaxSize()
-        ) { wallet ->
-            Wallet(wallet)
-            Spacer(modifier = Modifier.height(10.dp))
+        when (val safeState = viewState) {
+            is WalletListViewModel.State.Loading -> Loading(safeState.hasLoadedData)
+            is WalletListViewModel.State.Error -> Text(stringResource(safeState.messageId))
+            is WalletListViewModel.State.Loaded -> WalletList(safeState.wallets)
         }
     }
 }
 
 @Composable
-fun Wallet(wallet: Wallet) {
+private fun Loading(shouldShow: Boolean) {
+    if (!shouldShow) return
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        gravity = ContentGravity.TopCenter
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun WalletList(wallets: List<DisplayWallet>) {
+    LazyColumnItems(
+        items = wallets,
+        modifier = Modifier.fillMaxSize()
+    ) { wallet ->
+        Wallet(wallet)
+        Spacer(modifier = Modifier.height(10.dp))
+    }
+}
+
+@Composable
+fun Wallet(displayWallet: DisplayWallet) {
+    val wallet = displayWallet.wallet
     Card(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
@@ -100,7 +130,7 @@ fun Wallet(wallet: Wallet) {
                     )
                     Spacer(modifier = Modifier.height(3.dp))
                     Text(
-                        text = "$ 6448.06",
+                        text = "$ ${displayWallet.currentCoinPrice.asCurrency()}",
                         style = MaterialTheme.typography.caption
                     )
                 }
@@ -111,8 +141,10 @@ fun Wallet(wallet: Wallet) {
                     horizontalGravity = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "$ 1322.32",
-                        style = MaterialTheme.typography.subtitle1
+                        text = "$ ${displayWallet.currentWalletPrice.asCurrency()}",
+                        style = MaterialTheme.typography.subtitle1,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(3.dp))
                     TextWithIcon(
@@ -125,8 +157,10 @@ fun Wallet(wallet: Wallet) {
                         },
                         text = {
                             Text(
-                                text = "0.0342",
-                                style = MaterialTheme.typography.caption
+                                text = wallet.amount.asCoinAmount(),
+                                style = MaterialTheme.typography.caption,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     )
@@ -207,6 +241,6 @@ private val fakeWallets = listOf(
 @Preview(name = "Wallet list screen")
 fun PreviewWalletListScreen() {
     MentraApp(darkTheme = true) {
-        WalletListScreen(MutableLiveData(fakeWallets))
+        WalletListScreen(MutableLiveData(WalletListViewModel.State.Error(R.string.default_error)))
     }
 }
