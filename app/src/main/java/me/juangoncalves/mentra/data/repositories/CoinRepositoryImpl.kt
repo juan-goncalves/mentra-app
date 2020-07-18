@@ -73,6 +73,7 @@ class CoinRepositoryImpl @Inject constructor(
             try {
                 // TODO: Handle currencies
                 val price = remoteDataSource.fetchCoinPrice(coin)
+                // TODO: Handle storage exception
                 localDataSource.storeCoinPrice(coin, price)
                 Either.Right(price)
             } catch (serverException: ServerException) {
