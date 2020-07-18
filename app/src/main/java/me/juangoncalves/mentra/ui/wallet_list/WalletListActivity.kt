@@ -33,6 +33,7 @@ import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.ui.common.MentraApp
 import me.juangoncalves.mentra.ui.common.NetworkImage
 import me.juangoncalves.mentra.ui.portfolio.GradientHeader
+import me.juangoncalves.mentra.ui.wallet_list.WalletListViewModel.State
 import java.util.*
 
 @AndroidEntryPoint
@@ -52,8 +53,8 @@ class WalletListActivity : AppCompatActivity() {
 }
 
 @Composable
-fun WalletListScreen(viewStateLiveData: LiveData<WalletListViewModel.State>) {
-    val viewState by viewStateLiveData.observeAsState(WalletListViewModel.State.Loading())
+private fun WalletListScreen(viewStateLiveData: LiveData<State>) {
+    val viewState by viewStateLiveData.observeAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         GradientHeader {}
@@ -65,9 +66,9 @@ fun WalletListScreen(viewStateLiveData: LiveData<WalletListViewModel.State>) {
         )
         Spacer(modifier = Modifier.height(12.dp))
         when (val safeState = viewState) {
-            is WalletListViewModel.State.Loading -> Loading(safeState.hasLoadedData)
-            is WalletListViewModel.State.Error -> Text(stringResource(safeState.messageId))
-            is WalletListViewModel.State.Loaded -> WalletList(safeState.wallets)
+            is State.Loading -> Loading(!safeState.hasLoadedData)
+            is State.Error -> Text(stringResource(safeState.messageId))
+            is State.Loaded -> WalletList(safeState.wallets)
         }
     }
 }
@@ -85,7 +86,7 @@ private fun Loading(shouldShow: Boolean) {
 }
 
 @Composable
-fun WalletList(wallets: List<DisplayWallet>) {
+private fun WalletList(wallets: List<DisplayWallet>) {
     LazyColumnItems(
         items = wallets,
         modifier = Modifier.fillMaxSize()
@@ -96,7 +97,7 @@ fun WalletList(wallets: List<DisplayWallet>) {
 }
 
 @Composable
-fun Wallet(displayWallet: DisplayWallet) {
+private fun Wallet(displayWallet: DisplayWallet) {
     val wallet = displayWallet.wallet
     Card(
         shape = RoundedCornerShape(20.dp),
@@ -216,31 +217,50 @@ private fun CoinPlaceholder() {
 }
 
 
-private val fakeWallets = listOf(
-    Wallet(
-        1,
-        "Bitcoin savings",
-        Coin("Bitcoin", "BTC", "https://cryptoicons.org/api/icon/btc/200"),
-        0.3456
-    ),
-    Wallet(
-        2,
-        "Spendable",
-        Coin("Ethereum", "ETH", "https://cryptoicons.org/api/icon/eth/200"),
-        0.0562
-    ),
-    Wallet(
-        2,
-        "Spendable",
-        Coin("FAKE", "FAKE", "https://wjhefw.com/jid.sj"),
-        0.0562
+@Composable
+@Preview(name = "Loaded - Wallet list screen")
+fun PreviewWalletListScreenLoadedState() {
+    val fakeWallets = listOf(
+        Wallet(
+            1,
+            "Bitcoin savings",
+            Coin("Bitcoin", "BTC", "https://cryptoicons.org/api/icon/btc/200"),
+            0.3456
+        ),
+        Wallet(
+            2,
+            "Spendable",
+            Coin("Ethereum", "ETH", "https://cryptoicons.org/api/icon/eth/200"),
+            0.0562
+        ),
+        Wallet(
+            2,
+            "Spendable",
+            Coin("FAKE", "FAKE", "https://wjhefw.com/jid.sj"),
+            0.0562
+        )
     )
-)
+    val fakeDisplays = fakeWallets.map {
+        DisplayWallet(it, 123.32, 2341.31, emptyList())
+    }
+
+    MentraApp(darkTheme = true) {
+        WalletListScreen(MutableLiveData(State.Loaded(fakeDisplays)))
+    }
+}
 
 @Composable
-@Preview(name = "Wallet list screen")
-fun PreviewWalletListScreen() {
+@Preview(name = "Loading - Wallet list screen")
+fun PreviewWalletListScreenLoadingState() {
     MentraApp(darkTheme = true) {
-        WalletListScreen(MutableLiveData(WalletListViewModel.State.Error(R.string.default_error)))
+        WalletListScreen(MutableLiveData(State.Loading()))
+    }
+}
+
+@Composable
+@Preview(name = "Error - Wallet list screen")
+fun PreviewWalletListScreenErrorState() {
+    MentraApp(darkTheme = true) {
+        WalletListScreen(MutableLiveData(State.Error(R.string.default_error)))
     }
 }
