@@ -13,4 +13,4 @@ class StorageFailure : Failure()
 
 class InternetConnectionFailure : Failure()
 
-class FetchPriceError(val storedPrice: Price? = null) : Failure()
+class FetchPriceFailure(val storedPrice: Price? = null) : Failure()

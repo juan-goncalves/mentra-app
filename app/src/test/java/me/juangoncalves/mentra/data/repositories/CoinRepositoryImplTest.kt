@@ -198,7 +198,7 @@ class CoinRepositoryImplTest {
             val result = coinRepository.getCoinPrice(Ripple, EUR)
 
             // Assert
-            val failure = (result as Left).value as FetchPriceError
+            val failure = (result as Left).value as FetchPriceFailure
             assertNotNull(failure.storedPrice)
             assertEquals(failure.storedPrice, localPrice)
         }
@@ -214,7 +214,7 @@ class CoinRepositoryImplTest {
             val result = coinRepository.getCoinPrice(Ripple, EUR)
 
             // Assert
-            val failure = (result as Left).value as FetchPriceError
+            val failure = (result as Left).value as FetchPriceFailure
             assertNull(failure.storedPrice)
         }
 }
