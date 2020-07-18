@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.errors.Failure
+import me.juangoncalves.mentra.domain.errors.FetchPriceFailure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
@@ -53,7 +54,15 @@ class WalletListViewModel @ViewModelInject constructor(
             uniqueCoins.forEach { coin ->
                 val priceResult = getCoinPrice(coin)
                 val price = priceResult.fold(
-                    left = { -1.0 },
+                    left = { failure ->
+                        if (failure is FetchPriceFailure) {
+                            // TODO: Show warning message in corresponding wallets
+                            failure.storedPrice?.value ?: -1.0
+                        } else {
+                            // TODO: Show error message in corresponding wallets
+                            -1.0
+                        }
+                    },
                     right = { it.value }
                 )
                 coinPrices[coin] = price
