@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Mentra" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Mentra" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryDark">@color/purple_700</item>
@@ -12,16 +12,18 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <!-- Customize your theme here. -->
-        <item name="android:windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/white</item>
     </style>
 
     <style name="Theme.Mentra.NoActionBar">
         <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+        <!--        <item name="windowNoTitle">true</item>-->
     </style>
 
     <!-- Theme to force activities to have the dark theme status bar (white icons) -->

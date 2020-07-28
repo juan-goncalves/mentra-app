@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Draw the background color to cover the empty space left by the rounded corners
+         of the banner shape-->
+    <item android:drawable="?android:attr/windowBackground" />
+    <item android:drawable="@drawable/banner_background_shape" />
+</layer-list>
