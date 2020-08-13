@@ -33,7 +33,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/coinNameTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:textColor="?attr/colorOnSurface"
@@ -43,6 +43,7 @@
                 app:layout_constraintStart_toEndOf="@+id/logoImageView"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintWidth_percent="0.25"
                 tools:text="BTC" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -54,6 +55,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/coinNameTextView"
                 app:layout_constraintTop_toBottomOf="@+id/coinNameTextView"
+                app:layout_constraintWidth_percent="0.25"
                 tools:text="$ 9.322,38" />
 
             <androidx.constraintlayout.widget.Barrier
@@ -89,9 +91,9 @@
                 android:drawablePadding="3dp"
                 android:drawableTint="?attr/colorOnSurface"
                 android:ellipsize="end"
-                android:textAlignment="center"
                 android:maxLines="1"
                 android:scrollHorizontally="true"
+                android:textAlignment="center"
                 android:textColor="?attr/colorOnSurface"
                 app:drawableStartCompat="@drawable/ic_coins"
                 app:layout_constraintBottom_toBottomOf="parent"
