@@ -2,12 +2,17 @@ package me.juangoncalves.mentra.extensions
 
 import java.text.DecimalFormat
 
-fun Double.asCurrency(symbol: String = "", placeholderOnNegative: Boolean = true): String {
+fun Double.asCurrency(
+    symbol: String = "",
+    placeholderOnNegative: Boolean = true,
+    forcedDecimalPlaces: Int? = null
+): String {
     if (placeholderOnNegative && this < 0) {
         return "---,---.--"
     }
     val format = DecimalFormat()
     format.maximumFractionDigits = when {
+        forcedDecimalPlaces != null -> forcedDecimalPlaces
         this < 10 -> 4
         this < 100_000 -> 2
         else -> 0

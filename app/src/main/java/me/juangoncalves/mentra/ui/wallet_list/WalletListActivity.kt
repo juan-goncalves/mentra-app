@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListActivityBinding
+import me.juangoncalves.mentra.extensions.asCurrency
 
 @AndroidEntryPoint
 class WalletListActivity : AppCompatActivity() {
@@ -39,6 +40,10 @@ class WalletListActivity : AppCompatActivity() {
                         .show()
                 }
                 is WalletListViewModel.State.Loaded -> {
+                    binding.portfolioValueTextView.text = state.portfolioValue.value.asCurrency(
+                        symbol = "$",
+                        forcedDecimalPlaces = 2
+                    )
                     binding.recyclerView.adapter = WalletAdapter(state.wallets)
                 }
             }

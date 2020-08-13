@@ -16,11 +16,13 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.GetCoinPriceUseCase
+import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueUseCase
 import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
 
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
-    private val getCoinPrice: GetCoinPriceUseCase
+    private val getCoinPrice: GetCoinPriceUseCase,
+    private val getPortfolioValue: GetPortfolioValueUseCase
 ) : ViewModel() {
 
     val viewState: LiveData<State> get() = _viewState
@@ -50,7 +52,7 @@ class WalletListViewModel @ViewModelInject constructor(
                 right = { it }
             )
 
-            _viewState.postValue(State.Loaded(placeholdersFor(wallets)))
+            _viewState.postValue(State.Loaded(Price.None, placeholdersFor(wallets)))
 
             val coins = wallets.map { it.coin }
             val uniqueCoins = HashSet<Coin>(coins)
@@ -78,7 +80,13 @@ class WalletListViewModel @ViewModelInject constructor(
                 }
             }
 
-            _viewState.postValue(State.Loaded(displayWallets.filterNotNull()))
+            val portfolioValueResult = getPortfolioValue()
+            val portfolioValue = portfolioValueResult.fold(
+                left = { Price.None },
+                right = { it }
+            )
+
+            _viewState.postValue(State.Loaded(portfolioValue, displayWallets.filterNotNull()))
         }
     }
 
@@ -100,7 +108,10 @@ class WalletListViewModel @ViewModelInject constructor(
 
         class Error(@StringRes val messageId: Int) : State()
 
-        class Loaded(val wallets: List<DisplayWallet>) : State()
+        class Loaded(
+            val portfolioValue: Price,
+            val wallets: List<DisplayWallet>
+        ) : State()
     }
 
 }

@@ -6,8 +6,9 @@ import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class GetPortfolioValueUseCase(
+class GetPortfolioValueUseCase @Inject constructor(
     private val getWallets: GetWalletsUseCase,
     private val getCoinPrice: GetCoinPriceUseCase
 ) {
