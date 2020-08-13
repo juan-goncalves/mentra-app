@@ -1,25 +1,23 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import me.juangoncalves.mentra.databinding.ActivityClassicBinding
-import me.juangoncalves.mentra.extensions.TAG
+import me.juangoncalves.mentra.databinding.WalletListActivityBinding
 
 @AndroidEntryPoint
-class ClassicActivity : AppCompatActivity() {
+class WalletListActivity : AppCompatActivity() {
 
     private val viewModel: WalletListViewModel by viewModels()
 
-    private lateinit var binding: ActivityClassicBinding
+    private lateinit var binding: WalletListActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityClassicBinding.inflate(layoutInflater)
+        binding = WalletListActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
@@ -30,7 +28,6 @@ class ClassicActivity : AppCompatActivity() {
         }
 
         viewModel.viewState.observe(this) { state ->
-            Log.d(TAG, "Received state: $state")
             when (state) {
                 is WalletListViewModel.State.Loading -> {
                 }
