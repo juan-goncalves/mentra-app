@@ -2,17 +2,18 @@ package me.juangoncalves.mentra.ui.splash
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.SplashActivityBinding
+import me.juangoncalves.mentra.extensions.empty
 import me.juangoncalves.mentra.ui.splash.SplashViewModel.State
 import me.juangoncalves.mentra.ui.wallet_list.WalletListActivity
 
@@ -30,11 +31,11 @@ class SplashActivity : AppCompatActivity() {
 
         viewModel.viewState.observe(this) { state ->
             when (state) {
-                State.Loading -> {
-                }
+                is State.Loading -> empty()
                 is State.Error -> {
-                    // TODO: Show Snackbar with retry option
-                    Toast.makeText(this, R.string.default_error, Toast.LENGTH_LONG)
+                    Snackbar.make(binding.root, state.messageId, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.retry) { viewModel.retryInitialization() }
+                        .show()
                 }
             }
         }
