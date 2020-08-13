@@ -2,7 +2,7 @@ package me.juangoncalves.mentra.extensions
 
 import java.text.DecimalFormat
 
-fun Double.asCurrency(placeholderOnNegative: Boolean = true): String {
+fun Double.asCurrency(symbol: String = "", placeholderOnNegative: Boolean = true): String {
     if (placeholderOnNegative && this < 0) {
         return "---,---.--"
     }
@@ -12,7 +12,7 @@ fun Double.asCurrency(placeholderOnNegative: Boolean = true): String {
         this < 100_000 -> 2
         else -> 0
     }
-    return format.format(this)
+    return "$symbol ${format.format(this)}"
 }
 
 fun Double.asCoinAmount(): String {

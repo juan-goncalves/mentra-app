@@ -2,63 +2,52 @@ package me.juangoncalves.mentra.ui.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.Composable
-import androidx.compose.getValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.core.setContent
-import androidx.ui.foundation.*
-import androidx.ui.layout.*
-import androidx.ui.livedata.observeAsState
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.Snackbar
-import androidx.ui.material.snackbarPrimaryColorFor
-import androidx.ui.res.imageResource
-import androidx.ui.res.stringResource
-import androidx.ui.text.AnnotatedString
-import androidx.ui.text.TextStyle
-import androidx.ui.text.font.FontWeight
-import androidx.ui.tooling.preview.Preview
-import androidx.ui.unit.dp
+import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.ui.common.MentraApp
-import me.juangoncalves.mentra.ui.splash.SplashViewModel.Event
+import me.juangoncalves.mentra.databinding.SplashActivityBinding
 import me.juangoncalves.mentra.ui.splash.SplashViewModel.State
-import me.juangoncalves.mentra.ui.wallet_list.WalletListActivity
+import me.juangoncalves.mentra.ui.wallet_list.ClassicActivity
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
     private val viewModel: SplashViewModel by viewModels()
 
+    private lateinit var binding: SplashActivityBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            MentraApp {
-                SplashScreen(
-                    viewStateLiveData = viewModel.viewState,
-                    onRetryInitialization = viewModel::retryInitialization
-                )
+        binding = SplashActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        viewModel.viewState.observe(this) { state ->
+            when (state) {
+                State.Loading -> {
+                }
+                is State.Error -> {
+                    // TODO: Show Snackbar with retry option
+                    Toast.makeText(this, R.string.default_error, Toast.LENGTH_LONG)
+                }
             }
         }
+
         lifecycleScope.launch {
             viewModel.eventChannel.receiveAsFlow().collect { processEvent(it) }
         }
     }
 
-    private fun processEvent(event: Event) {
+    private fun processEvent(event: SplashViewModel.Event) {
         when (event) {
-            is Event.NavigateToPortfolio -> {
-                val intent = Intent(this, WalletListActivity::class.java)
+            is SplashViewModel.Event.NavigateToPortfolio -> {
+                val intent = Intent(this, ClassicActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
                 this.finish()
@@ -66,67 +55,4 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-}
-
-@Composable
-fun SplashScreen(viewStateLiveData: LiveData<State>, onRetryInitialization: () -> Unit) {
-    val viewState by viewStateLiveData.observeAsState()
-    Stack(
-        modifier = Modifier.fillMaxSize()
-            .drawBackground(MaterialTheme.colors.surface)
-    ) {
-        Image(
-            modifier = Modifier.size(110.dp, 110.dp).gravity(Alignment.Center),
-            asset = imageResource(R.drawable.app_icon)
-        )
-        Column(
-            modifier = Modifier.gravity(Alignment.BottomCenter).padding(bottom = 8.dp)
-        ) {
-            when (val safeState = viewState) {
-                is State.Loading -> Box()
-                is State.Error -> Error(stringResource(safeState.messageId), onRetryInitialization)
-            }
-        }
-    }
-}
-
-@Composable
-private fun Error(message: String, onRetry: () -> Unit) {
-    Snackbar(
-        text = { Text(message) },
-        modifier = Modifier.padding(8.dp),
-        action = {
-            ClickableText(
-                text = AnnotatedString(stringResource(R.string.retry)),
-                modifier = Modifier.padding(end = 16.dp),
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    color = snackbarPrimaryColorFor(MaterialTheme.colors)
-                ),
-                onClick = { onRetry() }
-            )
-        }
-    )
-}
-
-@Composable
-@Preview(name = "Splash Screen Loading State")
-fun PreviewSplashScreenLoading() {
-    MentraApp(darkTheme = false) {
-        SplashScreen(
-            viewStateLiveData = MutableLiveData(State.Loading),
-            onRetryInitialization = {}
-        )
-    }
-}
-
-@Composable
-@Preview(name = "Splash Screen Error State")
-fun PreviewSplashScreenError() {
-    MentraApp(darkTheme = false) {
-        SplashScreen(
-            viewStateLiveData = MutableLiveData(State.Error(R.string.default_error)),
-            onRetryInitialization = {}
-        )
-    }
 }

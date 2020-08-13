@@ -11,6 +11,9 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <!-- Surface color. -->
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">#FF444444</item>
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
