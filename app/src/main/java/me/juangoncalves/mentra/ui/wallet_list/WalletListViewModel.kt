@@ -31,6 +31,10 @@ class WalletListViewModel @ViewModelInject constructor(
         refreshWallets()
     }
 
+    fun retryWalletFetch() {
+        refreshWallets()
+    }
+
     private fun refreshWallets() {
         viewModelScope.launch(Dispatchers.IO) {
             _viewState.postValue(State.Loading())

@@ -26,9 +26,9 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                app:subtitle="(+16%)"
                 android:layout_height="70dp"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:subtitle="(+16%)" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -38,9 +38,9 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/wallet_list_item"
-        android:padding="8dp"
         android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:padding="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/wallet_list_item" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

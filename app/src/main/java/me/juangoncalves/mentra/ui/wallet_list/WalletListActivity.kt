@@ -5,7 +5,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListActivityBinding
 
 @AndroidEntryPoint
@@ -30,8 +32,12 @@ class WalletListActivity : AppCompatActivity() {
         viewModel.viewState.observe(this) { state ->
             when (state) {
                 is WalletListViewModel.State.Loading -> {
+                    // TODO: Show spinner
                 }
                 is WalletListViewModel.State.Error -> {
+                    Snackbar.make(binding.root, state.messageId, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.retry) { viewModel.retryWalletFetch() }
+                        .show()
                 }
                 is WalletListViewModel.State.Loaded -> {
                     binding.recyclerView.adapter = WalletAdapter(state.wallets)
