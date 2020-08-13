@@ -10,6 +10,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListActivityBinding
 import me.juangoncalves.mentra.extensions.asCurrency
+import me.juangoncalves.mentra.extensions.hide
+import me.juangoncalves.mentra.extensions.show
 
 @AndroidEntryPoint
 class WalletListActivity : AppCompatActivity() {
@@ -31,15 +33,15 @@ class WalletListActivity : AppCompatActivity() {
 
         viewModel.viewState.observe(this) { state ->
             when (state) {
-                is WalletListViewModel.State.Loading -> {
-                    // TODO: Show spinner
-                }
+                is WalletListViewModel.State.Loading -> binding.progressBar.show()
                 is WalletListViewModel.State.Error -> {
+                    binding.progressBar.hide()
                     Snackbar.make(binding.root, state.messageId, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.retry) { viewModel.retryWalletFetch() }
                         .show()
                 }
                 is WalletListViewModel.State.Loaded -> {
+                    binding.progressBar.hide()
                     binding.portfolioValueTextView.text = state.portfolioValue.value.asCurrency(
                         symbol = "$",
                         forcedDecimalPlaces = 2

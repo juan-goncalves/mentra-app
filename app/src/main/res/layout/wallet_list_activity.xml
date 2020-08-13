@@ -24,16 +24,26 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/walletsLabel"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:letterSpacing="0.4"
         android:text="@string/wallets_subtitle"
         android:textAllCaps="true"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerBackground" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="18dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:indeterminateTint="?attr/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/walletsLabel"
+        app:layout_constraintStart_toEndOf="@id/walletsLabel"
+        app:layout_constraintTop_toTopOf="@id/walletsLabel" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
