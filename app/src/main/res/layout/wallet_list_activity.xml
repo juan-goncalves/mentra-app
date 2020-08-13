@@ -57,4 +57,15 @@
         app:layout_constraintTop_toBottomOf="@id/walletsLabel"
         tools:listitem="@layout/wallet_list_item" />
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/addWalletButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="20dp"
+        android:text="@string/add_wallet"
+        app:icon="@drawable/ic_add_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.motion.widget.MotionLayout>
