@@ -21,7 +21,6 @@ class WalletListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = WalletListActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
 
         val viewManager = LinearLayoutManager(this)
         binding.recyclerView.apply {

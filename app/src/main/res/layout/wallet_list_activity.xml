@@ -1,46 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layoutDescription="@xml/wallet_list_scene"
     tools:context=".ui.wallet_list.WalletListActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <View
+        android:id="@+id/headerBackground"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:background="@drawable/banner_background" />
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/banner_background"
-            app:collapsedTitleGravity="center"
-            app:expandedTitleGravity="center"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:title="$ 22,315.12">
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/portfolioValueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$ 23.456,00"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="230dp" />
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                app:layout_collapseMode="pin"
-                app:subtitle="(+16%)" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/walletsLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="0.4"
+        android:text="@string/wallets_subtitle"
+        android:textAllCaps="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerBackground" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:clipToPadding="false"
         android:padding="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/walletsLabel"
         tools:listitem="@layout/wallet_list_item" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>
