@@ -12,6 +12,7 @@ import me.juangoncalves.mentra.databinding.WalletListActivityBinding
 import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.extensions.hide
 import me.juangoncalves.mentra.extensions.show
+import me.juangoncalves.mentra.ui.add_wallet.WalletFormFragment
 
 @AndroidEntryPoint
 class WalletListActivity : AppCompatActivity() {
@@ -29,6 +30,9 @@ class WalletListActivity : AppCompatActivity() {
         binding.recyclerView.apply {
             layoutManager = viewManager
             adapter = WalletAdapter(emptyList())
+        }
+        binding.addWalletButton.setOnClickListener {
+            WalletFormFragment().show(supportFragmentManager, "create_wallet")
         }
 
         viewModel.viewState.observe(this) { state ->
