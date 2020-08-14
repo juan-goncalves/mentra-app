@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.data.sources
+package me.juangoncalves.mentra.data.sources.coin
 
 import com.squareup.moshi.Types
 import io.mockk.MockKAnnotations
@@ -9,7 +9,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
-import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSourceImpl
 import me.juangoncalves.mentra.domain.errors.InternetConnectionException
 import me.juangoncalves.mentra.domain.errors.ServerException
 import me.juangoncalves.mentra.domain.models.Currency

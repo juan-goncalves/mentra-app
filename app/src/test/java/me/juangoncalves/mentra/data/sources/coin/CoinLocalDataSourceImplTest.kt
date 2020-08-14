@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.data.sources
+package me.juangoncalves.mentra.data.sources.coin
 
 import android.content.Context
 import androidx.room.Room
@@ -7,7 +7,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
-import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSourceImpl
 import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.CoinDao
 import me.juangoncalves.mentra.db.models.CoinPriceModel
