@@ -1,8 +1,7 @@
 package me.juangoncalves.mentra.domain.models
 
 data class Wallet(
-    val id: Int,
-    val name: String,
     val coin: Coin,
-    val amount: Double
+    val amount: Double,
+    val id: Long = 0
 )

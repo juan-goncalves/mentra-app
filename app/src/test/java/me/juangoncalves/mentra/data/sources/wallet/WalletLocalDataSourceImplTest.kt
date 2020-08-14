@@ -7,13 +7,16 @@ import androidx.test.core.app.ApplicationProvider
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.BitcoinModel
 import me.juangoncalves.mentra.EthereumModel
 import me.juangoncalves.mentra.RippleModel
+import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.errors.StorageException
+import me.juangoncalves.mentra.domain.models.Wallet
 import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.*
 import org.junit.Before
@@ -28,6 +31,7 @@ class WalletLocalDataSourceImplTest {
 
     private lateinit var walletDao: WalletDao
     private lateinit var db: AppDatabase
+
     private lateinit var sut: WalletLocalDataSourceImpl
 
     @Before
@@ -36,7 +40,7 @@ class WalletLocalDataSourceImplTest {
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         insertDefaultCoins()
         walletDao = db.walletDao()
-        sut = WalletLocalDataSourceImpl(walletDao)
+        initializeSut()
     }
 
     @Test
@@ -65,7 +69,7 @@ class WalletLocalDataSourceImplTest {
             // Arrange
             walletDao = mockk()
             coEvery { walletDao.getAll() } throws SQLiteException()
-            sut = WalletLocalDataSourceImpl(walletDao)
+            initializeSut()
 
             // Act
             sut.getStoredWallets()
@@ -74,6 +78,41 @@ class WalletLocalDataSourceImplTest {
             Unit
         }
 
+    @Test
+    fun `storeWallet should map and insert the received wallet into the database`() = runBlocking {
+        // Arrange
+        val wallet = Wallet(Bitcoin, 0.876)
+
+        // Act
+        sut.storeWallet(wallet)
+
+        // Assert
+        val storedWallets = walletDao.getAll()
+        val storedWallet = storedWallets.first()
+        assertEquals(1, storedWallets.size)
+        assertEquals("BTC", storedWallet.coinSymbol)
+        assertThat(storedWallet.amount, closeTo(0.876, 0.0001))
+    }
+
+    @Test(expected = StorageException::class)
+    fun `storeWallet should throw a StorageException when the database throws an exception`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 0.876)
+            walletDao = mockk()
+            coEvery { walletDao.insertAll(any()) } throws SQLiteException()
+            initializeSut()
+
+            // Act
+            sut.storeWallet(wallet)
+
+            // Assert
+            Unit
+        }
+
+    private fun initializeSut() {
+        sut = WalletLocalDataSourceImpl(walletDao, WalletMapper())
+    }
 
     private fun insertDefaultCoins() = runBlocking {
         db.coinDao().insertAll(BitcoinModel, EthereumModel, RippleModel)

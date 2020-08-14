@@ -30,9 +30,9 @@ class GetWalletsUseCaseTest {
     fun `should return wallets from the repository`() = runBlocking {
         // Arrange
         val walletStubs = listOf(
-            Wallet(9231, "BTC #1", Bitcoin, 1.32),
-            Wallet(1431, "BTC #2", Bitcoin, 0.5543),
-            Wallet(56, "Fav. Ethereum", Ethereum, 0.32)
+            Wallet(Bitcoin, 1.32),
+            Wallet(Bitcoin, 0.5543),
+            Wallet(Ethereum, 0.32)
         )
         coEvery { walletRepositoryMock.getWallets() } returns Right(walletStubs)
 

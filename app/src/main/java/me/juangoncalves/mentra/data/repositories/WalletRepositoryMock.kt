@@ -13,34 +13,31 @@ class WalletRepositoryMock @Inject constructor() : WalletRepository {
         return Either.Right(
             listOf(
                 Wallet(
-                    1,
-                    "Bitcoin savings",
                     Coin(
                         "Bitcoin",
                         "BTC",
                         "https://cryptoicons.org/api/icon/btc/200"
                     ),
-                    32.3456
+                    32.3456,
+                    1
                 ),
                 Wallet(
-                    2,
-                    "Spendable",
                     Coin(
                         "Ethereum",
                         "ETH",
                         "https://cryptoicons.org/api/icon/eth/200"
                     ),
-                    0.5562
+                    0.5562,
+                    2
                 ),
                 Wallet(
-                    3,
-                    "Spendable",
                     Coin(
                         "Nano",
                         "NANO",
                         "https://cryptoicons.org/api/icon/nano/200"
                     ),
-                    55.0562
+                    55.0562,
+                    3
                 )
             )
         )

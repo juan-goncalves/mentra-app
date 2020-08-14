@@ -33,10 +33,10 @@ class GetPortfolioValueUseCaseTest {
     fun `should return the sum of all the current values of the available wallets`() = runBlocking {
         // Arrange
         val wallets = listOf(
-            Wallet(1, "BTC #1", Bitcoin, 0.5678),
-            Wallet(2, "ETH fav", Ethereum, 1.321),
-            Wallet(3, "BTC second", Bitcoin, 0.01345),
-            Wallet(4, "Ripple!", Ripple, 20.53)
+            Wallet(Bitcoin, 0.5678),
+            Wallet(Ethereum, 1.321),
+            Wallet(Bitcoin, 0.01345),
+            Wallet(Ripple, 20.53)
         )
         coEvery { getWalletsMock() } returns Right(wallets)
         coEvery { getCoinPriceMock(Bitcoin) } returns Right(USDPrices[Bitcoin]!!)
@@ -68,10 +68,10 @@ class GetPortfolioValueUseCaseTest {
     fun `should ignore the wallet if its coin price isn't found`() = runBlocking {
         // Arrange
         val wallets = listOf(
-            Wallet(1, "BTC #1", Bitcoin, 0.5678),
-            Wallet(2, "ETH fav", Ethereum, 1.321),
-            Wallet(3, "BTC second", Bitcoin, 0.01345),
-            Wallet(4, "Ripple!", Ripple, 20.53)
+            Wallet(Bitcoin, 0.5678),
+            Wallet(Ethereum, 1.321),
+            Wallet(Bitcoin, 0.01345),
+            Wallet(Ripple, 20.53)
         )
         coEvery { getWalletsMock() } returns Right(wallets)
         coEvery { getCoinPriceMock(Bitcoin) } returns Left(PriceNotFound(Bitcoin))
