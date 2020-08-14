@@ -2,8 +2,8 @@ package me.juangoncalves.mentra.data.repositories
 
 import either.Either
 import me.juangoncalves.mentra.data.mapper.CoinMapper
-import me.juangoncalves.mentra.data.sources.CoinLocalDataSource
-import me.juangoncalves.mentra.data.sources.CoinRemoteDataSource
+import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
+import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.domain.errors.*
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Currency

@@ -4,10 +4,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import me.juangoncalves.mentra.data.sources.CoinLocalDataSource
-import me.juangoncalves.mentra.data.sources.CoinLocalDataSourceImpl
-import me.juangoncalves.mentra.data.sources.CoinRemoteDataSource
-import me.juangoncalves.mentra.data.sources.CoinRemoteDataSourceImpl
+import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
+import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSourceImpl
+import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
+import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSourceImpl
 import javax.inject.Singleton
 
 @Module

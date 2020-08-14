@@ -6,8 +6,8 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
-import me.juangoncalves.mentra.data.sources.CoinLocalDataSource
-import me.juangoncalves.mentra.data.sources.CoinRemoteDataSource
+import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
+import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.domain.errors.*
 import me.juangoncalves.mentra.domain.models.Currency.EUR
 import me.juangoncalves.mentra.domain.models.Currency.USD

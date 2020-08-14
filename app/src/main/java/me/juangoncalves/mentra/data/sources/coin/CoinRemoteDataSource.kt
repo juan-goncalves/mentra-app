@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.data.sources
+package me.juangoncalves.mentra.data.sources.coin
 
 import me.juangoncalves.mentra.domain.errors.InternetConnectionException
 import me.juangoncalves.mentra.domain.errors.ServerException

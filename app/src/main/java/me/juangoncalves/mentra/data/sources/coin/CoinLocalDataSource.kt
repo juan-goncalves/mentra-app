@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.data.sources
+package me.juangoncalves.mentra.data.sources.coin
 
 import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.domain.models.Coin
