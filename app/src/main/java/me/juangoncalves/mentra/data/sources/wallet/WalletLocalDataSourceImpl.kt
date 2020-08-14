@@ -5,8 +5,9 @@ import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.models.Wallet
+import javax.inject.Inject
 
-class WalletLocalDataSourceImpl(
+class WalletLocalDataSourceImpl @Inject constructor(
     private val walletDao: WalletDao,
     private val walletMapper: WalletMapper
 ) : WalletLocalDataSource {
