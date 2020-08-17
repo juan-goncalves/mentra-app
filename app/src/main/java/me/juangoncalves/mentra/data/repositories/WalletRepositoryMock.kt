@@ -46,15 +46,5 @@ class WalletRepositoryMock @Inject constructor() : WalletRepository {
     override suspend fun createWallet(wallet: Wallet): Either<Failure, Nothing> {
         TODO("not implemented")
     }
-
-    override suspend fun deleteWallet(wallet: Wallet): Either<Failure, Nothing> {
-        TODO("not implemented")
-    }
-
-    override suspend fun updateWallet(
-        walletToUpdate: Wallet,
-        updates: Wallet
-    ): Either<Failure, Wallet> {
-        TODO("not implemented")
-    }
+    
 }

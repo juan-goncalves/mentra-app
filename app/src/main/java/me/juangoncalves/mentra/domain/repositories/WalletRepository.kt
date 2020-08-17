@@ -10,8 +10,4 @@ interface WalletRepository {
 
     suspend fun createWallet(wallet: Wallet): Either<Failure, Nothing>
 
-    suspend fun deleteWallet(wallet: Wallet): Either<Failure, Nothing>
-
-    suspend fun updateWallet(walletToUpdate: Wallet, updates: Wallet): Either<Failure, Wallet>
-
 }
