@@ -33,4 +33,7 @@ interface CoinDao {
     @Query("SELECT * FROM CoinPrice WHERE coin_symbol = :symbol ORDER BY timestamp DESC LIMIT 1")
     suspend fun getMostRecentCoinPrice(symbol: String): CoinPriceModel?
 
+    @Query("SELECT * FROM Coin WHERE symbol = :symbol")
+    suspend fun getCoinBySymbol(symbol: String): CoinModel?
+
 }
