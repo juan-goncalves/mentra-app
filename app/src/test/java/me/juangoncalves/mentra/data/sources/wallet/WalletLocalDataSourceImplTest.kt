@@ -111,7 +111,7 @@ class WalletLocalDataSourceImplTest {
         }
 
     private fun initializeSut() {
-        sut = WalletLocalDataSourceImpl(walletDao, WalletMapper())
+        sut = WalletLocalDataSourceImpl(walletDao, WalletMapper(mockk()))
     }
 
     private fun insertDefaultCoins() = runBlocking {
