@@ -1,8 +1,10 @@
 package me.juangoncalves.mentra.data.sources.coin
 
 import android.content.Context
+import android.database.sqlite.SQLiteException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
@@ -39,10 +41,7 @@ class CoinLocalDataSourceImplTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         coinDao = db.coinDao()
-        sut = CoinLocalDataSourceImpl(
-            coinDao,
-            CoinMapper()
-        )
+        sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
     }
 
     @After
@@ -68,11 +67,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut =
-                CoinLocalDataSourceImpl(
-                    coinDao,
-                    CoinMapper()
-                )
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
 
             // Act
             sut.getStoredCoins()
@@ -99,11 +94,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut =
-                CoinLocalDataSourceImpl(
-                    coinDao,
-                    CoinMapper()
-                )
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
 
             // Act
             sut.clearCoins()
@@ -135,11 +126,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut =
-                CoinLocalDataSourceImpl(
-                    coinDao,
-                    CoinMapper()
-                )
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
 
             // Act
             sut.storeCoins(listOf(Bitcoin, Ethereum))
@@ -217,14 +204,50 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut =
-                CoinLocalDataSourceImpl(
-                    coinDao,
-                    CoinMapper()
-                )
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
 
             // Act
             sut.getLastCoinPrice(Bitcoin)
+
+            // Assert
+            Unit
+        }
+
+    @Test
+    fun `findCoinBySymbol should return the coin if is stored in the database`() = runBlocking {
+        // Arrange
+        coinDao.insertAll(BitcoinModel, EthereumModel, RippleModel)
+
+        // Act
+        val result = sut.findCoinBySymbol("BTC")
+
+        // Assert
+        assertNotNull(result)
+        assertEquals(result, BitcoinModel)
+    }
+
+    @Test
+    fun `findCoinBySymbol should return null if the coin is not in the database`() = runBlocking {
+        // Arrange
+        coinDao.insertAll(BitcoinModel, EthereumModel, RippleModel)
+
+        // Act
+        val result = sut.findCoinBySymbol("NONE")
+
+        // Assert
+        assertNull(result)
+    }
+
+    @Test(expected = StorageException::class)
+    fun `findCoinBySymbol should throw a StorageException if there's an error communicating with the database`() =
+        runBlocking {
+            // Arrange
+            coinDao = mockk()
+            coEvery { coinDao.getCoinBySymbol(any()) } throws SQLiteException()
+            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+
+            // Act
+            sut.findCoinBySymbol("BTC")
 
             // Assert
             Unit

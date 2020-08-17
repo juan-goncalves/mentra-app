@@ -54,4 +54,8 @@ class CoinLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun findCoinBySymbol(symbol: String): Coin? {
+        TODO("Not yet implemented")
+    }
+
 }
