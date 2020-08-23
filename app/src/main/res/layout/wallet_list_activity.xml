@@ -60,18 +60,28 @@
         app:layout_constraintStart_toEndOf="@id/walletsLabel"
         app:layout_constraintTop_toTopOf="@id/walletsLabel" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <com.bosphere.fadingedgelayout.FadingEdgeLayout
+        android:id="@+id/fadingEdgeLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:padding="8dp"
+        app:fel_edge="top|bottom"
+        app:fel_size_top="30dp"
+        app:fel_size_bottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/walletsLabel"
-        tools:listitem="@layout/wallet_list_item" />
+        app:layout_constraintTop_toBottomOf="@id/walletsLabel">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:padding="8dp"
+            tools:listitem="@layout/wallet_list_item" />
+
+    </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/addWalletButton"

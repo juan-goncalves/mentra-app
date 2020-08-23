@@ -8,7 +8,7 @@
 
         <OnSwipe
             motion:dragDirection="dragUp"
-            motion:touchAnchorId="@id/recyclerView"
+            motion:touchAnchorId="@id/fadingEdgeLayout"
             motion:touchAnchorSide="top" />
 
     </Transition>
