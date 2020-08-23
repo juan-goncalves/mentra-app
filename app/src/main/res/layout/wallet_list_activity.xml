@@ -13,6 +13,21 @@
         android:layout_height="200dp"
         android:background="@drawable/banner_background" />
 
+    <Space
+        android:id="@+id/spacer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="@id/headerBackground"
+        app:layout_constraintStart_toStartOf="@id/headerBackground" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/statsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/gray_blue"
+        app:srcCompat="@drawable/ic_chart" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/portfolioValueTextView"
         android:layout_width="wrap_content"
@@ -50,8 +65,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:padding="8dp"
         android:overScrollMode="never"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
