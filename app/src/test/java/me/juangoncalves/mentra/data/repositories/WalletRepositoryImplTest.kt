@@ -4,17 +4,21 @@ import either.Either
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.Ethereum
+import me.juangoncalves.mentra.Left
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.db.models.WalletModel
+import me.juangoncalves.mentra.domain.errors.StorageException
+import me.juangoncalves.mentra.domain.errors.StorageFailure
+import me.juangoncalves.mentra.log.Logger
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
@@ -22,6 +26,7 @@ class WalletRepositoryImplTest {
 
     @MockK lateinit var walletLocalDataSource: WalletLocalDataSource
     @MockK lateinit var coinLocalDataSource: CoinLocalDataSource
+    @MockK lateinit var loggerMock: Logger
 
     private lateinit var sut: WalletRepositoryImpl
 
@@ -29,7 +34,7 @@ class WalletRepositoryImplTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         val walletMapper = WalletMapper(coinLocalDataSource)
-        sut = WalletRepositoryImpl(walletLocalDataSource, walletMapper)
+        sut = WalletRepositoryImpl(walletLocalDataSource, walletMapper, loggerMock)
     }
 
     @Test
@@ -57,6 +62,19 @@ class WalletRepositoryImplTest {
         assertThat(ethWallet!!.amount, closeTo(1.25, 0.0001))
     }
 
-    // TODO: getWallets returns appropriate failure when a StorageException is thrown
+    @Test
+    fun `getWallets returns a StorageFailure when a StorageException is thrown and logs it`() =
+        runBlocking {
+            // Arrange
+            coEvery { walletLocalDataSource.getStoredWallets() } throws StorageException()
+
+            // act
+            val result = sut.getWallets()
+
+            // assert
+            val failure = (result as Left).value
+            assertTrue(failure is StorageFailure)
+            verify { loggerMock.error(any(), any()) }
+        }
 
 }
