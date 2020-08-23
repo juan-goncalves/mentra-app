@@ -28,8 +28,14 @@ class WalletRepositoryImpl constructor(
         }
     }
 
-    override suspend fun createWallet(wallet: Wallet): Either<Failure, Nothing> {
-        TODO("Not yet implemented")
+    override suspend fun createWallet(wallet: Wallet): Either<Failure, Unit> {
+        return try {
+            localDataSource.storeWallet(wallet)
+            Either.Right(Unit)
+        } catch (e: StorageException) {
+            logger.error(TAG, "Error communicating with the local database.\n$$e")
+            Either.Left(StorageFailure())
+        }
     }
 
 }

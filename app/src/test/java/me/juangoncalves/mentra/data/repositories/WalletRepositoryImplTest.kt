@@ -3,18 +3,21 @@ package me.juangoncalves.mentra.data.repositories
 import either.Either
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.Ethereum
 import me.juangoncalves.mentra.Left
+import me.juangoncalves.mentra.Right
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.errors.StorageFailure
+import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.log.Logger
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
@@ -77,4 +80,33 @@ class WalletRepositoryImplTest {
             verify { loggerMock.error(any(), any()) }
         }
 
+    @Test
+    fun `createWallet uses the local data source to store the received wallet`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 0.45)
+
+            // Act
+            val result = sut.createWallet(wallet)
+
+            // Assert
+            coVerify { walletLocalDataSource.storeWallet(wallet) }
+            assert(result is Right)
+        }
+
+    @Test
+    fun `createWallet returns a StorageFailure when a StorageException is thrown and logs it`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 0.45)
+            coEvery { walletLocalDataSource.storeWallet(any()) } throws StorageException()
+
+            // Act
+            val result = sut.createWallet(wallet)
+
+            // Assert
+            val failure = (result as Left).value
+            assertTrue(failure is StorageFailure)
+            verify { loggerMock.error(any(), any()) }
+        }
 }

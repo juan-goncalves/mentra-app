@@ -8,6 +8,6 @@ interface WalletRepository {
 
     suspend fun getWallets(): Either<Failure, List<Wallet>>
 
-    suspend fun createWallet(wallet: Wallet): Either<Failure, Nothing>
+    suspend fun createWallet(wallet: Wallet): Either<Failure, Unit>
 
 }
