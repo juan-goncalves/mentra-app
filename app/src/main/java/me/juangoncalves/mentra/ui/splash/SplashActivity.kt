@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.SplashActivityBinding
-import me.juangoncalves.mentra.extensions.empty
+import me.juangoncalves.mentra.extensions.hide
+import me.juangoncalves.mentra.extensions.show
 import me.juangoncalves.mentra.ui.splash.SplashViewModel.State
 import me.juangoncalves.mentra.ui.wallet_list.WalletListActivity
 
@@ -31,8 +32,9 @@ class SplashActivity : AppCompatActivity() {
 
         viewModel.viewState.observe(this) { state ->
             when (state) {
-                is State.Loading -> empty()
+                is State.Loading -> binding.progressBar.show()
                 is State.Error -> {
+                    binding.progressBar.hide()
                     Snackbar.make(binding.root, state.messageId, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.retry) { viewModel.retryInitialization() }
                         .show()
