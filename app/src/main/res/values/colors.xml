@@ -8,6 +8,8 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 
+    <color name="gray_blue">#506295</color>
+
     <color name="header_gradient_start">#8776E5</color>
     <color name="header_gradient_end">#FF3681</color>
     <color name="dark_background">#343E5C</color>

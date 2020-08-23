@@ -6,7 +6,7 @@
         <item name="colorPrimaryDark">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/header_gradient_start</item>
+        <item name="colorSecondary">@color/gray_blue</item>
         <item name="colorSecondaryVariant">@color/header_gradient_end</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
