@@ -15,6 +15,7 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.GetCoinPriceUseCase
+import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
 import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueUseCase
 import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
 import me.juangoncalves.mentra.ui.common.DisplayError
@@ -22,7 +23,8 @@ import me.juangoncalves.mentra.ui.common.DisplayError
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
     private val getCoinPrice: GetCoinPriceUseCase,
-    private val getPortfolioValue: GetPortfolioValueUseCase
+    private val getPortfolioValue: GetPortfolioValueUseCase,
+    private val getGradientCoinIcon: GetGradientCoinIconUseCase
 ) : ViewModel() {
 
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
@@ -81,7 +83,13 @@ class WalletListViewModel @ViewModelInject constructor(
 
             val displayWallets = wallets.mapNotNull { wallet ->
                 coinPrices[wallet.coin]?.let { price ->
-                    DisplayWallet(wallet, price, price * wallet.amount, emptyList())
+                    DisplayWallet(
+                        wallet,
+                        getGradientCoinIcon(wallet.coin),
+                        price,
+                        price * wallet.amount,
+                        emptyList()
+                    )
                 }
             }
 
@@ -101,7 +109,7 @@ class WalletListViewModel @ViewModelInject constructor(
 
     private fun placeholdersFor(wallets: List<Wallet>): List<DisplayWallet> {
         return wallets.map { wallet ->
-            DisplayWallet(wallet, -1.0, -1.0, emptyList())
+            DisplayWallet(wallet, getGradientCoinIcon(wallet.coin), -1.0, -1.0, emptyList())
         }
     }
 

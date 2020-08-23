@@ -5,6 +5,7 @@ import me.juangoncalves.mentra.domain.models.Wallet
 
 data class DisplayWallet(
     val wallet: Wallet,
+    val gradientIconUrl: String,
     val currentCoinPrice: Double,
     val currentWalletPrice: Double,
     val historicPrice: List<Price>

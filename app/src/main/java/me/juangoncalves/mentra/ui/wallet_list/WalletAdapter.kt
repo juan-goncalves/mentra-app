@@ -1,12 +1,11 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListItemBinding
-import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.extensions.asCoinAmount
 import me.juangoncalves.mentra.extensions.asCurrency
 
@@ -20,7 +19,6 @@ class WalletAdapter(val data: List<DisplayWallet>) : RecyclerView.Adapter<Wallet
 
     override fun onBindViewHolder(holder: WalletViewHolder, position: Int) {
         val displayWallet = data[position]
-        Log.d(TAG, "Binding $displayWallet | ${holder.binding}")
         holder.binding.apply {
             coinNameTextView.text = displayWallet.wallet.coin.name
             coinAmountTextView.text = displayWallet.wallet.amount.asCoinAmount()
@@ -28,7 +26,16 @@ class WalletAdapter(val data: List<DisplayWallet>) : RecyclerView.Adapter<Wallet
             walletValueTextView.text = displayWallet.currentWalletPrice.asCurrency(symbol = "$")
 
             Glide.with(root)
-                .load(displayWallet.wallet.coin.imageUrl)
+                .load(displayWallet.gradientIconUrl)
+                // TODO: Make a placeholder png with the same dimensions as the gradient drawables
+                // .placeholder(R.drawable.coin_placeholder)
+                // .transition(DrawableTransitionOptions.withCrossFade())
+                .error(
+                    Glide.with(root)
+                        .load(displayWallet.wallet.coin.imageUrl)
+                        .circleCrop()
+                        .error(R.drawable.coin_placeholder)
+                )
                 .into(logoImageView)
         }
     }
