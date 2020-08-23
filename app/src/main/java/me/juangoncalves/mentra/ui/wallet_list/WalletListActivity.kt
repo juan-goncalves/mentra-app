@@ -9,8 +9,8 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListActivityBinding
+import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.asCurrency
-import me.juangoncalves.mentra.extensions.updateVisibility
 import me.juangoncalves.mentra.ui.add_wallet.WalletFormFragment
 
 @AndroidEntryPoint
@@ -42,7 +42,7 @@ class WalletListActivity : AppCompatActivity() {
 
     private fun initObservers() {
         viewModel.shouldShowProgressBar.observe(this) { shouldShow ->
-            binding.progressBar.updateVisibility(shouldShow)
+            binding.progressBar.animateVisibility(shouldShow)
         }
 
         viewModel.portfolioValue.observe(this) { price ->
