@@ -1,6 +1,5 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
-import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +17,7 @@ import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.GetCoinPriceUseCase
 import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueUseCase
 import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
+import me.juangoncalves.mentra.ui.common.DisplayError
 
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
@@ -25,25 +25,30 @@ class WalletListViewModel @ViewModelInject constructor(
     private val getPortfolioValue: GetPortfolioValueUseCase
 ) : ViewModel() {
 
-    val viewState: LiveData<State> get() = _viewState
+    val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
+    val portfolioValue: LiveData<Price> get() = _portfolioValue
+    val wallets: LiveData<List<DisplayWallet>> get() = _wallets
+    val error: LiveData<DisplayError> get() = _error
 
-    private val _viewState: MutableLiveData<State> = MutableLiveData(State.Loading(false))
+    private val _shouldShowProgressBar: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val _portfolioValue: MutableLiveData<Price> = MutableLiveData(Price.None)
+    private val _wallets: MutableLiveData<List<DisplayWallet>> = MutableLiveData(emptyList())
+    private val _error: MutableLiveData<DisplayError> = MutableLiveData()
 
     init {
         refreshWallets()
-    }
-
-    fun retryWalletFetch() {
-        refreshWallets()
+        refreshPortfolioValue()
     }
 
     private fun refreshWallets() {
         viewModelScope.launch(Dispatchers.IO) {
-            _viewState.postValue(State.Loading())
+            _shouldShowProgressBar.postValue(true)
 
             val getWalletsResult = getWallets()
             if (getWalletsResult is Failure) {
-                _viewState.postValue(failureToErrorState(getWalletsResult))
+                val error = DisplayError(R.string.default_error, ::refreshWallets)
+                _error.postValue(error)
+                _shouldShowProgressBar.postValue(false)
                 return@launch
             }
 
@@ -52,7 +57,7 @@ class WalletListViewModel @ViewModelInject constructor(
                 right = { it }
             )
 
-            _viewState.postValue(State.Loaded(Price.None, placeholdersFor(wallets)))
+            _wallets.postValue(placeholdersFor(wallets))
 
             val coins = wallets.map { it.coin }
             val uniqueCoins = HashSet<Coin>(coins)
@@ -74,20 +79,24 @@ class WalletListViewModel @ViewModelInject constructor(
                 coinPrices[coin] = price
             }
 
-            val displayWallets = wallets.map { wallet ->
+            val displayWallets = wallets.mapNotNull { wallet ->
                 coinPrices[wallet.coin]?.let { price ->
                     DisplayWallet(wallet, price, price * wallet.amount, emptyList())
                 }
             }
 
-            val portfolioValueResult = getPortfolioValue()
-            val portfolioValue = portfolioValueResult.fold(
-                left = { Price.None },
-                right = { it }
-            )
-
-            _viewState.postValue(State.Loaded(portfolioValue, displayWallets.filterNotNull()))
+            _wallets.postValue(displayWallets)
+            _shouldShowProgressBar.postValue(false)
         }
+    }
+
+    private fun refreshPortfolioValue() = viewModelScope.launch(Dispatchers.IO) {
+        val result = getPortfolioValue()
+        val value = result.fold(
+            left = { Price.None },
+            right = { it }
+        )
+        _portfolioValue.postValue(value)
     }
 
     private fun placeholdersFor(wallets: List<Wallet>): List<DisplayWallet> {
@@ -96,34 +105,4 @@ class WalletListViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun failureToErrorState(failure: Failure): State.Error {
-        return when (failure) {
-            // TODO: Handle failure types
-            else -> State.Error(R.string.default_error)
-        }
-    }
-
-    sealed class State {
-        class Loading(val hasLoadedData: Boolean = false) : State()
-
-        class Error(@StringRes val messageId: Int) : State()
-
-        class Loaded(
-            val portfolioValue: Price,
-            val wallets: List<DisplayWallet>
-        ) : State()
-    }
-
 }
-
-data class DisplayWallet(
-    val wallet: Wallet,
-    val currentCoinPrice: Double,
-    val currentWalletPrice: Double,
-    val historicPrice: List<Price>
-
-    // In this class we could add an attribute to show a warning, for example if the price fetching
-    // fails completely we can show an error indicator over the coin image, and if we didn't manage
-    // to get the latest price but we had one cached, we can show a warning over the coin image
-    // (Maybe a red border over the coin image for errors and a yellow one for warnings)
-)

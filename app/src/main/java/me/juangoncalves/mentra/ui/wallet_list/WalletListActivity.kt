@@ -10,8 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListActivityBinding
 import me.juangoncalves.mentra.extensions.asCurrency
-import me.juangoncalves.mentra.extensions.hide
-import me.juangoncalves.mentra.extensions.show
+import me.juangoncalves.mentra.extensions.updateVisibility
 import me.juangoncalves.mentra.ui.add_wallet.WalletFormFragment
 
 @AndroidEntryPoint
@@ -25,34 +24,42 @@ class WalletListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = WalletListActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        configureView()
+        initObservers()
+    }
 
+    private fun configureView() {
         val viewManager = LinearLayoutManager(this)
         binding.recyclerView.apply {
             layoutManager = viewManager
             adapter = WalletAdapter(emptyList())
         }
+
         binding.addWalletButton.setOnClickListener {
             WalletFormFragment().show(supportFragmentManager, "create_wallet")
         }
+    }
 
-        viewModel.viewState.observe(this) { state ->
-            when (state) {
-                is WalletListViewModel.State.Loading -> binding.progressBar.show()
-                is WalletListViewModel.State.Error -> {
-                    binding.progressBar.hide()
-                    Snackbar.make(binding.root, state.messageId, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.retry) { viewModel.retryWalletFetch() }
-                        .show()
-                }
-                is WalletListViewModel.State.Loaded -> {
-                    binding.progressBar.hide()
-                    binding.portfolioValueTextView.text = state.portfolioValue.value.asCurrency(
-                        symbol = "$",
-                        forcedDecimalPlaces = 2
-                    )
-                    binding.recyclerView.adapter = WalletAdapter(state.wallets)
-                }
-            }
+    private fun initObservers() {
+        viewModel.shouldShowProgressBar.observe(this) { shouldShow ->
+            binding.progressBar.updateVisibility(shouldShow)
+        }
+
+        viewModel.portfolioValue.observe(this) { price ->
+            binding.portfolioValueTextView.text = price.value.asCurrency(
+                symbol = "$",
+                forcedDecimalPlaces = 2
+            )
+        }
+
+        viewModel.wallets.observe(this) { wallets ->
+            binding.recyclerView.adapter = WalletAdapter(wallets)
+        }
+
+        viewModel.error.observe(this) { error ->
+            Snackbar.make(binding.root, error.messageId, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.retry) { error.retryAction() }
+                .show()
         }
     }
 }
