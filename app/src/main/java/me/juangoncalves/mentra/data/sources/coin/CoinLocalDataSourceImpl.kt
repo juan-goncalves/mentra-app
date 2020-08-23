@@ -42,6 +42,13 @@ class CoinLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun findCoinBySymbol(symbol: String): Coin? {
+        return orStorageException("Exception when finding coin by symbol.") {
+            val coin = coinDao.getCoinBySymbol(symbol)
+            if (coin != null) coinMapper.map(coin) else null
+        }
+    }
+
     @Throws(StorageException::class)
     private suspend fun <T> orStorageException(
         message: String = "",
@@ -52,10 +59,6 @@ class CoinLocalDataSourceImpl @Inject constructor(
         } catch (e: Exception) {
             throw StorageException("$message\n$e")
         }
-    }
-
-    override suspend fun findCoinBySymbol(symbol: String): Coin? {
-        TODO("Not yet implemented")
     }
 
 }

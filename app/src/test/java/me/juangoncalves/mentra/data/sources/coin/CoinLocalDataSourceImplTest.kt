@@ -223,7 +223,7 @@ class CoinLocalDataSourceImplTest {
 
         // Assert
         assertNotNull(result)
-        assertEquals(result, BitcoinModel)
+        assertEquals(result, Bitcoin)
     }
 
     @Test
