@@ -8,7 +8,7 @@ fun Double.asCurrency(
     forcedDecimalPlaces: Int? = null
 ): String {
     if (placeholderOnNegative && this < 0) {
-        return "---,---.--"
+        return "$symbol ---,---.--"
     }
     val format = DecimalFormat()
     format.maximumFractionDigits = when {
