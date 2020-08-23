@@ -10,8 +10,9 @@ import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.log.Logger
+import javax.inject.Inject
 
-class WalletRepositoryImpl constructor(
+class WalletRepositoryImpl @Inject constructor(
     private val localDataSource: WalletLocalDataSource,
     private val walletMapper: WalletMapper,
     private val logger: Logger
