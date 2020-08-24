@@ -6,8 +6,8 @@
 
     <gradient
         android:angle="180"
-        android:endColor="@color/header_gradient_end"
-        android:startColor="@color/header_gradient_start"
+        android:endColor="@color/wild_strawberry"
+        android:startColor="@color/medium_purple"
         android:type="linear" />
 
     <corners

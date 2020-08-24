@@ -2,25 +2,29 @@
     <!-- Application theme for dark theme. -->
     <style name="Theme.Mentra" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorPrimary">@color/wild_strawberry</item>
+        <item name="colorPrimaryDark">@color/lipstick</item>
         <item name="colorOnPrimary">@color/black</item>
+
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/header_gradient_start</item>
-        <item name="colorSecondaryVariant">@color/header_gradient_end</item>
+        <item name="colorSecondary">@color/blue_violet</item>
+        <item name="colorSecondaryVariant">@color/medium_purple</item>
         <item name="colorOnSecondary">@color/white</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
         <!-- Surface color. -->
-        <item name="colorSurface">#343E5C</item>
+        <item name="colorSurface">@color/pickled_bluewood</item>
         <item name="colorOnSurface">@color/white</item>
+
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
-        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="android:windowBackground">@color/pickled_bluewood</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
 
@@ -33,4 +37,15 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
+    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
+    </style>
+
+    <style name="CustomShapeAppearanceBottomSheetDialog">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
 </resources>

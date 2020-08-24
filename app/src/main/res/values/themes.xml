@@ -2,18 +2,22 @@
     <!-- Base application theme. -->
     <style name="Theme.Mentra" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/wild_strawberry</item>
+        <item name="colorPrimaryDark">@color/lipstick</item>
+        <item name="colorOnPrimary">@color/black</item>
+
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/gray_blue</item>
-        <item name="colorSecondaryVariant">@color/header_gradient_end</item>
+        <item name="colorSecondary">@color/kashmir_blue</item>
+        <item name="colorSecondaryVariant">@color/cello</item>
         <item name="colorOnSecondary">@color/white</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
+
         <!-- Surface color. -->
         <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">#FF444444</item>
+        <item name="colorOnSurface">@color/tundora</item>
+
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
@@ -22,16 +26,15 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/white</item>
-        <item name="android:textColor">#FF444444</item>
+        <item name="android:textColor">@color/tundora</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
 
     <style name="Theme.Mentra.NoActionBar">
         <item name="windowActionBar">false</item>
-        <!--        <item name="windowNoTitle">true</item>-->
     </style>
 
-    <!-- Theme to force activities to have the dark theme status bar (white icons) -->
+    <!-- Theme to force activities to have the dark theme status bar (white icons). -->
     <style name="Theme.Mentra.LightStatusBarIcons" parent="Theme.Mentra">
         <item name="android:windowLightStatusBar">false</item>
     </style>
@@ -44,7 +47,7 @@
         <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:navigationBarColor">#E9E9E9</item>
+        <item name="android:navigationBarColor">@color/mercury</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
@@ -53,12 +56,11 @@
         <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
     </style>
 
-    <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
+    <style name="CustomShapeAppearanceBottomSheetDialog">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopRight">16dp</item>
         <item name="cornerSizeTopLeft">16dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
-
 </resources>

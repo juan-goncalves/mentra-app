@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#BB86FC</color>
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
-    <color name="teel_200">#03DAC6</color>
-    <color name="teel_700">#018786</color>
+    <!-- Color names generated using: http://chir.ag/projects/name-that-color -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-
-    <color name="gray_blue">#506295</color>
-
-    <color name="header_gradient_start">#8776E5</color>
-    <color name="header_gradient_end">#FF3681</color>
-    <color name="dark_background">#343E5C</color>
+    <color name="medium_purple">#8776E5</color>
+    <color name="blue_violet">#544ab2</color>
+    <color name="wild_strawberry">#FF3681</color>
+    <color name="lipstick">#C60055</color>
+    <color name="pickled_bluewood">#343E5C</color>
+    <color name="kashmir_blue">#506295</color>
+    <color name="cello">#213867</color>
+    <color name="tundora">#444444</color>
+    <color name="mercury">#E9E9E9</color>
 </resources>

@@ -25,7 +25,6 @@
         android:id="@+id/statsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/gray_blue"
         app:srcCompat="@drawable/ic_chart" />
 
     <androidx.appcompat.widget.AppCompatTextView

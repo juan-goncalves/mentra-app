@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="30dp"
             android:alpha="1.0"
-            android:backgroundTint="@color/gray_blue"
+            android:backgroundTint="@color/kashmir_blue"
             motion:borderWidth="0dp"
             motion:layout_constraintEnd_toEndOf="@id/headerBackground"
             motion:layout_constraintTop_toTopOf="@id/spacer" />
