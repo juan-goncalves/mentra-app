@@ -81,8 +81,7 @@ class WalletListViewModel @ViewModelInject constructor(
                         wallet,
                         getGradientCoinIcon(wallet.coin),
                         price,
-                        price * wallet.amount,
-                        emptyList()
+                        price * wallet.amount
                     )
                 }
             }
@@ -94,7 +93,7 @@ class WalletListViewModel @ViewModelInject constructor(
 
     private fun placeholdersFor(wallets: List<Wallet>): List<DisplayWallet> {
         return wallets.map { wallet ->
-            DisplayWallet(wallet, getGradientCoinIcon(wallet.coin), -1.0, -1.0, emptyList())
+            DisplayWallet(wallet, getGradientCoinIcon(wallet.coin), -1.0, -1.0)
         }
     }
 

@@ -19,10 +19,11 @@ import me.juangoncalves.mentra.ui.add_wallet.WalletFormFragment
 class WalletListFragment : Fragment() {
 
     private val viewModel: WalletListViewModel by viewModels()
+    private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
-
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,7 +38,7 @@ class WalletListFragment : Fragment() {
         val viewManager = LinearLayoutManager(context)
         binding.recyclerView.apply {
             layoutManager = viewManager
-            adapter = WalletAdapter(emptyList())
+            adapter = walletAdapter
         }
         binding.addWalletButton.setOnClickListener {
             WalletFormFragment().show(parentFragmentManager, "create_wallet")
@@ -51,7 +52,7 @@ class WalletListFragment : Fragment() {
         }
 
         viewModel.wallets.observe(viewLifecycleOwner) { wallets ->
-            binding.recyclerView.adapter = WalletAdapter(wallets)
+            walletAdapter.data = wallets
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
