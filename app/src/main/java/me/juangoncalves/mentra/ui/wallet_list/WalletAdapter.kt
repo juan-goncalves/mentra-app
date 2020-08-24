@@ -72,7 +72,7 @@ class WalletDiffCallback(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return old[oldItemPosition].wallet == next[newItemPosition].wallet
+        return old[oldItemPosition] == next[newItemPosition]
     }
 
 }
