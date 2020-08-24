@@ -8,7 +8,7 @@
 
         <OnSwipe
             motion:dragDirection="dragUp"
-            motion:touchAnchorId="@id/fadingEdgeLayout"
+            motion:touchAnchorId="@id/fragmentContainer"
             motion:touchAnchorSide="top" />
 
     </Transition>
@@ -40,6 +40,15 @@
             motion:borderWidth="0dp"
             motion:layout_constraintEnd_toEndOf="@id/headerBackground"
             motion:layout_constraintTop_toTopOf="@id/spacer" />
+
+        <Constraint
+            android:id="@id/fragmentContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/headerBackground" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/collapsed">
@@ -72,5 +81,15 @@
             motion:layout_constraintEnd_toEndOf="@id/headerBackground"
             motion:layout_constraintTop_toTopOf="@id/spacer" />
 
+        <Constraint
+            android:id="@id/fragmentContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/headerBackground" />
     </ConstraintSet>
 </MotionScene>

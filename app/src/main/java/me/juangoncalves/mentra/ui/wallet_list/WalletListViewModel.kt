@@ -12,34 +12,28 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.FetchPriceFailure
 import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.GetCoinPriceUseCase
 import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
-import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueUseCase
 import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
 import me.juangoncalves.mentra.ui.common.DisplayError
 
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
     private val getCoinPrice: GetCoinPriceUseCase,
-    private val getPortfolioValue: GetPortfolioValueUseCase,
     private val getGradientCoinIcon: GetGradientCoinIconUseCase
 ) : ViewModel() {
 
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
-    val portfolioValue: LiveData<Price> get() = _portfolioValue
     val wallets: LiveData<List<DisplayWallet>> get() = _wallets
     val error: LiveData<DisplayError> get() = _error
 
     private val _shouldShowProgressBar: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _portfolioValue: MutableLiveData<Price> = MutableLiveData(Price.None)
     private val _wallets: MutableLiveData<List<DisplayWallet>> = MutableLiveData(emptyList())
     private val _error: MutableLiveData<DisplayError> = MutableLiveData()
 
     init {
         refreshWallets()
-        refreshPortfolioValue()
     }
 
     private fun refreshWallets() {
@@ -96,15 +90,6 @@ class WalletListViewModel @ViewModelInject constructor(
             _wallets.postValue(displayWallets)
             _shouldShowProgressBar.postValue(false)
         }
-    }
-
-    private fun refreshPortfolioValue() = viewModelScope.launch(Dispatchers.IO) {
-        val result = getPortfolioValue()
-        val value = result.fold(
-            left = { Price.None },
-            right = { it }
-        )
-        _portfolioValue.postValue(value)
     }
 
     private fun placeholdersFor(wallets: List<Wallet>): List<DisplayWallet> {

@@ -15,8 +15,8 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.SplashActivityBinding
 import me.juangoncalves.mentra.extensions.hide
 import me.juangoncalves.mentra.extensions.show
+import me.juangoncalves.mentra.ui.dashboard.DashboardActivity
 import me.juangoncalves.mentra.ui.splash.SplashViewModel.State
-import me.juangoncalves.mentra.ui.wallet_list.WalletListActivity
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
@@ -50,7 +50,7 @@ class SplashActivity : AppCompatActivity() {
     private fun processEvent(event: SplashViewModel.Event) {
         when (event) {
             is SplashViewModel.Event.NavigateToPortfolio -> {
-                val intent = Intent(this, WalletListActivity::class.java)
+                val intent = Intent(this, DashboardActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
                 this.finish()
