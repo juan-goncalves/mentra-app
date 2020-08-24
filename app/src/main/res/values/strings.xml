@@ -7,4 +7,7 @@
     <string name="add_wallet">Add wallet</string>
     <string name="wallet_name_input_label">Wallet name</string>
     <string name="action_save_wallet">Save</string>
+    <string name="create_wallet">Create wallet</string>
+    <string name="coin_name_hint">Coin name</string>
+    <string name="amount_hint">Amount owned</string>
 </resources>
