@@ -4,19 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.SplashActivityBinding
-import me.juangoncalves.mentra.extensions.hide
-import me.juangoncalves.mentra.extensions.show
+import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.ui.dashboard.DashboardActivity
-import me.juangoncalves.mentra.ui.splash.SplashViewModel.State
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
@@ -29,33 +23,30 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = SplashActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initObservers()
+    }
 
-        viewModel.viewState.observe(this) { state ->
-            when (state) {
-                is State.Loading -> binding.progressBar.show()
-                is State.Error -> {
-                    binding.progressBar.hide()
-                    Snackbar.make(binding.root, state.messageId, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.retry) { viewModel.retryInitialization() }
-                        .show()
-                }
-            }
+    private fun initObservers() {
+        viewModel.error.observe(this) { error ->
+            Snackbar.make(binding.root, error.messageId, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.retry) { error.retryAction() }
+                .show()
         }
 
-        lifecycleScope.launch {
-            viewModel.eventChannel.receiveAsFlow().collect { processEvent(it) }
+        viewModel.shouldShowProgressBar.observe(this) { shouldShow ->
+            binding.progressBar.animateVisibility(shouldShow)
+        }
+
+        viewModel.navigateToDashboard.observe(this) { event ->
+            event.getContent()?.let { launchDashboardActivity() }
         }
     }
 
-    private fun processEvent(event: SplashViewModel.Event) {
-        when (event) {
-            is SplashViewModel.Event.NavigateToPortfolio -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
-                this.finish()
-            }
-        }
+    private fun launchDashboardActivity() {
+        val intent = Intent(this, DashboardActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        this.finish()
     }
 
 }
