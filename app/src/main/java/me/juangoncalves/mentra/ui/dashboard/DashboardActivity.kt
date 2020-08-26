@@ -23,7 +23,8 @@ class DashboardActivity : FragmentActivity() {
         setContentView(binding.root)
 
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainer, WalletListFragment())
+            .replace(R.id.fragmentContainer, WalletListFragment())
+            .addToBackStack("wallet_list_fragment")
             .commit()
 
         initObservers()
