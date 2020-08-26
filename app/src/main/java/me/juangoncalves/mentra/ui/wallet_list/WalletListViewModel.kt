@@ -36,6 +36,8 @@ class WalletListViewModel @ViewModelInject constructor(
         refreshWallets()
     }
 
+    fun walletCreated() = refreshWallets()
+
     private fun refreshWallets() {
         viewModelScope.launch(Dispatchers.IO) {
             _shouldShowProgressBar.postValue(true)

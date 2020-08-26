@@ -29,10 +29,12 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val coins: LiveData<List<Coin>> get() = _coins
     val shouldScrollToStart: LiveData<Boolean> get() = _shouldScrollToStart
     val warning: LiveData<WarningEvent> get() = _warning
+    val onSuccessfulSave: LiveData<Unit> get() = _onSuccessfulSave
 
     private val _coins: MutableLiveData<List<Coin>> = MutableLiveData(emptyList())
     private val _shouldScrollToStart: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _warning: MutableLiveData<WarningEvent> = MutableLiveData()
+    private val _onSuccessfulSave: MutableLiveData<Unit> = MutableLiveData()
 
     private var unfilteredCoins: List<Coin> = emptyList()
     private var filterJob: Job? = null
@@ -90,7 +92,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
             if (result is Either.Left) {
                 // TODO: Show error / retry
             } else {
-                // TODO: push navigation event / finish activity
+                _onSuccessfulSave.postValue(Unit)
             }
         }
     }

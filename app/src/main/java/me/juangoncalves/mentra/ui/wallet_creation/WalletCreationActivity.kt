@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.ui.wallet_creation
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -64,6 +65,12 @@ class WalletCreationActivity : AppCompatActivity() {
                     .setBackgroundTint(getColor(R.color.lighting_yellow))
                     .show()
             }
+        }
+
+        // TODO: Refactor to VM to VM communication
+        viewModel.onSuccessfulSave.observe(this) {
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 
