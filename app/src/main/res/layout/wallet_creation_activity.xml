@@ -9,7 +9,7 @@
     <View
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
-        android:layout_height="140dp"
+        android:layout_height="200dp"
         android:background="@drawable/banner_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -19,7 +19,7 @@
         style="@style/Widget.AppCompat.ActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:src="@drawable/ic_arrow_back"
         android:textColor="@color/white"
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginStart="34dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/create_wallet"
         android:textColor="?attr/colorOnBackground"
         android:textSize="26sp"

@@ -11,11 +11,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.CreateWalletUseCase
 import me.juangoncalves.mentra.domain.usecases.GetCoinsUseCase
+import me.juangoncalves.mentra.ui.common.Event
 import java.util.*
+
+typealias WarningEvent = Event<Int>
 
 class WalletCreationViewModel @ViewModelInject constructor(
     private val createWallet: CreateWalletUseCase,
@@ -24,9 +28,11 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
     val coins: LiveData<List<Coin>> get() = _coins
     val shouldScrollToStart: LiveData<Boolean> get() = _shouldScrollToStart
+    val warning: LiveData<WarningEvent> get() = _warning
 
     private val _coins: MutableLiveData<List<Coin>> = MutableLiveData(emptyList())
     private val _shouldScrollToStart: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val _warning: MutableLiveData<WarningEvent> = MutableLiveData()
 
     private var unfilteredCoins: List<Coin> = emptyList()
     private var filterJob: Job? = null
@@ -66,9 +72,20 @@ class WalletCreationViewModel @ViewModelInject constructor(
         }
     }
 
-    fun submitForm(coin: Coin, amount: Double) {
+    fun submitForm(coin: Coin?, amount: String) {
+        if (coin == null) {
+            _warning.postValue(WarningEvent(R.string.no_coin_selected_warning))
+            return
+        }
+
+        val parsedAmount = amount.toDoubleOrNull()
+        if (parsedAmount == null || parsedAmount <= 0) {
+            _warning.postValue(WarningEvent(R.string.invalid_amount_warning))
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
-            val wallet = Wallet(coin, amount)
+            val wallet = Wallet(coin, parsedAmount)
             val result = createWallet(wallet)
             if (result is Either.Left) {
                 // TODO: Show error / retry
