@@ -14,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
-import me.juangoncalves.mentra.ui.add_wallet.WalletCreationActivity
+import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 
 @AndroidEntryPoint
 class WalletListFragment : Fragment() {

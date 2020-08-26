@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.ui.add_wallet
+package me.juangoncalves.mentra.ui.wallet_creation
 
 import android.os.Bundle
 import androidx.activity.viewModels

@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.ui.add_wallet
+package me.juangoncalves.mentra.ui.wallet_creation
 
 import me.juangoncalves.mentra.domain.models.Coin
 
