@@ -15,22 +15,20 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.CreateWalletUseCase
 import me.juangoncalves.mentra.domain.usecases.GetCoinsUseCase
-import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
 import java.util.*
 
 class WalletCreationViewModel @ViewModelInject constructor(
     private val createWallet: CreateWalletUseCase,
-    private val getCoins: GetCoinsUseCase,
-    private val getGradientCoinIcon: GetGradientCoinIconUseCase
+    private val getCoins: GetCoinsUseCase
 ) : ViewModel() {
 
-    val coins: LiveData<List<DisplayCoin>> get() = _coins
+    val coins: LiveData<List<Coin>> get() = _coins
     val shouldScrollToStart: LiveData<Boolean> get() = _shouldScrollToStart
 
-    private val _coins: MutableLiveData<List<DisplayCoin>> = MutableLiveData(emptyList())
+    private val _coins: MutableLiveData<List<Coin>> = MutableLiveData(emptyList())
     private val _shouldScrollToStart: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private var unfilteredCoins: List<DisplayCoin> = emptyList()
+    private var unfilteredCoins: List<Coin> = emptyList()
     private var filterJob: Job? = null
 
     init {
@@ -44,12 +42,9 @@ class WalletCreationViewModel @ViewModelInject constructor(
                 left = { emptyList() },
                 right = { it }
             )
-            val displayCoins = coins.map { coin ->
-                DisplayCoin(getGradientCoinIcon(coin), coin)
-            }
-            _coins.postValue(displayCoins)
-            unfilteredCoins = displayCoins
-            _shouldScrollToStart.postValue(coins.isNotEmpty())
+
+            _coins.postValue(coins)
+            unfilteredCoins = coins
         }
     }
 
@@ -71,9 +66,9 @@ class WalletCreationViewModel @ViewModelInject constructor(
         }
     }
 
-    fun submitForm(selectedCoin: DisplayCoin, amount: Double) {
+    fun submitForm(coin: Coin, amount: Double) {
         viewModelScope.launch(Dispatchers.IO) {
-            val wallet = Wallet(selectedCoin.coin, amount)
+            val wallet = Wallet(coin, amount)
             val result = createWallet(wallet)
             if (result is Either.Left) {
                 // TODO: Show error / retry
@@ -83,13 +78,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
         }
     }
 
-    private suspend fun filterCoinsByName(query: String): List<DisplayCoin> =
+    private suspend fun filterCoinsByName(query: String): List<Coin> =
         withContext(Dispatchers.Default) {
-            return@withContext unfilteredCoins.filter { displayCoin ->
-                val comparableCoinName = displayCoin.coin.name.toLowerCase(Locale.ROOT)
+            return@withContext unfilteredCoins.filter { coin ->
+                val comparableCoinName = coin.name.toLowerCase(Locale.ROOT)
                 comparableCoinName.contains(query.toLowerCase(Locale.ROOT))
             }.sortedBy { match ->
-                match.coin.name.length - query.length
+                match.name.length - query.length
             }
         }
 }

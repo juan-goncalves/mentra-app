@@ -9,12 +9,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinRecommendationItemBinding
+import me.juangoncalves.mentra.domain.models.Coin
 
 class CoinAdapter : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
 
-    private val differ: AsyncListDiffer<DisplayCoin> = AsyncListDiffer(this, CoinItemCallback())
+    private val differ: AsyncListDiffer<Coin> = AsyncListDiffer(this, CoinItemCallback())
 
-    var selectedCoin: DisplayCoin? = null
+    var selectedCoin: Coin? = null
         private set
 
     override fun getItemCount() = differ.currentList.size
@@ -29,42 +30,42 @@ class CoinAdapter : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val displayCoin = differ.currentList[position];
+        val coin = differ.currentList[position];
         holder.binding.apply {
-            nameTextView.text = displayCoin.coin.name
-            if (displayCoin == selectedCoin) {
+            nameTextView.text = coin.name
+            if (coin == selectedCoin) {
                 radioButton.post { radioButton.isChecked = true }
             } else {
                 radioButton.isChecked = false
             }
 
             Glide.with(root)
-                .load(displayCoin.coin.imageUrl)
+                .load(coin.imageUrl)
                 .circleCrop()
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.coin_placeholder)
                 .into(coinImageView)
 
             root.setOnClickListener {
-                selectedCoin = displayCoin
+                selectedCoin = coin
                 notifyDataSetChanged()
             }
         }
     }
 
-    fun submitList(data: List<DisplayCoin>) = differ.submitList(data)
+    fun submitList(data: List<Coin>) = differ.submitList(data)
 
     inner class ViewHolder(val binding: CoinRecommendationItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
 }
 
-class CoinItemCallback : DiffUtil.ItemCallback<DisplayCoin>() {
-    override fun areItemsTheSame(oldItem: DisplayCoin, newItem: DisplayCoin): Boolean {
-        return oldItem.coin.symbol == newItem.coin.symbol
+class CoinItemCallback : DiffUtil.ItemCallback<Coin>() {
+    override fun areItemsTheSame(oldItem: Coin, newItem: Coin): Boolean {
+        return oldItem.symbol == newItem.symbol
     }
 
-    override fun areContentsTheSame(oldItem: DisplayCoin, newItem: DisplayCoin): Boolean {
+    override fun areContentsTheSame(oldItem: Coin, newItem: Coin): Boolean {
         return oldItem == newItem
     }
 }
