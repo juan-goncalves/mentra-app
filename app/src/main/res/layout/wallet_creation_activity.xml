@@ -21,11 +21,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginStart="20dp"
-        android:textSize="26sp"
-        android:textStyle="bold"
         android:layout_marginBottom="8dp"
         android:text="@string/create_wallet"
         android:textColor="?attr/colorOnBackground"
+        android:textSize="26sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/headerBackground"
         app:layout_constraintStart_toStartOf="@+id/headerBackground" />
 
@@ -41,9 +41,9 @@
         app:boxCornerRadiusBottomStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
         app:boxCornerRadiusTopStart="16dp"
-        app:errorEnabled="true"
         app:endIconDrawable="@drawable/ic_search"
         app:endIconMode="custom"
+        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerBackground">
@@ -55,8 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:imeOptions="actionNext"
-            android:lines="1"
             android:inputType="text"
+            android:lines="1"
             android:nextFocusDown="@id/amountInput"
             android:singleLine="true" />
 
@@ -65,11 +65,12 @@
     <com.bosphere.fadingedgelayout.FadingEdgeLayout
         android:id="@+id/fadingEdgeLayout"
         android:layout_width="0dp"
-        android:layout_height="250dp"
+        android:layout_height="0dp"
         app:fel_edge="top|bottom"
-        app:fel_size_top="20dp"
         app:fel_size_bottom="20dp"
+        app:fel_size_top="20dp"
         app:layout_constraintEnd_toEndOf="@+id/nameInputLayout"
+        app:layout_constraintHeight_percent="0.30"
         app:layout_constraintStart_toStartOf="@+id/nameInputLayout"
         app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
 
@@ -111,8 +112,8 @@
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="?attr/colorSecondary"
         android:layout_marginTop="8dp"
+        android:backgroundTint="?attr/colorSecondary"
         android:text="@string/action_save_wallet"
         android:textColor="?attr/colorOnSecondary"
         app:layout_constraintEnd_toEndOf="@+id/amountInputLayout"
