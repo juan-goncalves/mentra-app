@@ -27,6 +27,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.add_wallet.WalletCreationActivity"
+            android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
+
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
-import me.juangoncalves.mentra.ui.add_wallet.WalletFormFragment
+import me.juangoncalves.mentra.ui.add_wallet.WalletCreationActivity
 
 @AndroidEntryPoint
 class WalletListFragment : Fragment() {
@@ -23,7 +24,7 @@ class WalletListFragment : Fragment() {
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,7 +42,8 @@ class WalletListFragment : Fragment() {
             adapter = walletAdapter
         }
         binding.addWalletButton.setOnClickListener {
-            WalletFormFragment().show(parentFragmentManager, "create_wallet")
+            val intent = Intent(requireContext(), WalletCreationActivity::class.java)
+            startActivity(intent)
         }
         initObservers()
     }

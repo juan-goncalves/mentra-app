@@ -27,6 +27,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="android:textColor">@color/tundora</item>
+        <item name="android:textColorPrimary">@color/tundora</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
 
