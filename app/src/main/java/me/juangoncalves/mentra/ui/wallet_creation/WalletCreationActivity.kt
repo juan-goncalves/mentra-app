@@ -41,6 +41,9 @@ class WalletCreationActivity : AppCompatActivity() {
                 viewModel.submitForm(coin, amount)
             }
         }
+        binding.backButton.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun initObservers() {
