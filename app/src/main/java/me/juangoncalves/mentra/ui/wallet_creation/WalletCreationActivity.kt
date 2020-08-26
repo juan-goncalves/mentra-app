@@ -13,7 +13,7 @@ import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
 class WalletCreationActivity : AppCompatActivity() {
 
     private val viewModel: WalletCreationViewModel by viewModels()
-    private val coinAdapter: CoinAdapter = CoinAdapter(emptyList())
+    private val coinAdapter: CoinAdapter = CoinAdapter()
 
     private lateinit var binding: WalletCreationActivityBinding
 
@@ -33,7 +33,7 @@ class WalletCreationActivity : AppCompatActivity() {
             setHasFixedSize(true)
         }
         binding.coinNameInput.addTextChangedListener { text ->
-            viewModel.filterByName(text.toString())
+            viewModel.submitQuery(text.toString())
         }
         binding.saveButton.setOnClickListener {
             val amount = binding.amountInput.text.toString().toDouble()
@@ -45,7 +45,7 @@ class WalletCreationActivity : AppCompatActivity() {
 
     private fun initObservers() {
         viewModel.coins.observe(this) { coins ->
-            coinAdapter.data = coins
+            coinAdapter.submitList(coins)
         }
         viewModel.shouldScrollToStart.observe(this) {
             binding.coinSelectionList.smoothScrollToPosition(0)

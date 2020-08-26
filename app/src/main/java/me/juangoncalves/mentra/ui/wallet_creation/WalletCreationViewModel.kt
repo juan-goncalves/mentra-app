@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import either.Either
 import either.fold
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.CreateWalletUseCase
@@ -29,6 +31,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     private val _shouldScrollToStart: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private var unfilteredCoins: List<DisplayCoin> = emptyList()
+    private var filterJob: Job? = null
 
     init {
         fetchCoins()
@@ -50,7 +53,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
         }
     }
 
-    fun filterByName(query: String) {
+    fun submitQuery(query: String) {
         if (query.length in 1..2) return
 
         if (query.isEmpty()) {
@@ -58,15 +61,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
             return
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val matching = unfilteredCoins.filter { displayCoin ->
-                val comparableCoinName = displayCoin.coin.name.toLowerCase(Locale.ROOT)
-                comparableCoinName.contains(query.toLowerCase(Locale.ROOT))
-            }.sortedBy { match ->
-                match.coin.name.length - query.length
-            }
-            _coins.postValue(matching)
-            _shouldScrollToStart.postValue(true)
+        val workInProgress = filterJob?.isActive ?: false
+        if (workInProgress) filterJob?.cancel()
+
+        filterJob = viewModelScope.launch {
+            val matching = filterCoinsByName(query)
+            _coins.value = matching
+            _shouldScrollToStart.value = true
         }
     }
 
@@ -81,4 +82,14 @@ class WalletCreationViewModel @ViewModelInject constructor(
             }
         }
     }
+
+    private suspend fun filterCoinsByName(query: String): List<DisplayCoin> =
+        withContext(Dispatchers.Default) {
+            return@withContext unfilteredCoins.filter { displayCoin ->
+                val comparableCoinName = displayCoin.coin.name.toLowerCase(Locale.ROOT)
+                comparableCoinName.contains(query.toLowerCase(Locale.ROOT))
+            }.sortedBy { match ->
+                match.coin.name.length - query.length
+            }
+        }
 }
