@@ -4,6 +4,7 @@ import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.errors.StorageException
+import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import javax.inject.Inject
 
@@ -21,6 +22,10 @@ class WalletLocalDataSourceImpl @Inject constructor(
         orStorageException("Exception when saving wallet.") {
             walletDao.insertAll(model)
         }
+    }
+
+    override suspend fun findWalletsByCoin(coin: Coin): List<WalletModel> {
+        TODO("Not yet implemented")
     }
 
     @Throws(StorageException::class)
