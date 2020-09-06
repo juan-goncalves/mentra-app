@@ -9,6 +9,7 @@ import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.CoinDao
+import me.juangoncalves.mentra.db.daos.CoinPriceDao
 import me.juangoncalves.mentra.db.daos.WalletDao
 import javax.inject.Singleton
 
@@ -26,6 +27,9 @@ object DatabaseModule {
 
     @Provides
     fun provideCoinDao(database: AppDatabase): CoinDao = database.coinDao()
+
+    @Provides
+    fun provideCoinPriceDao(database: AppDatabase): CoinPriceDao = database.coinPriceDao()
 
     @Provides
     fun provideWalletDao(database: AppDatabase): WalletDao = database.walletDao()

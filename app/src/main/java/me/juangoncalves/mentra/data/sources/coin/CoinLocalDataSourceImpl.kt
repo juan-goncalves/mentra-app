@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.data.sources.coin
 
 import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.db.daos.CoinDao
+import me.juangoncalves.mentra.db.daos.CoinPriceDao
 import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.domain.errors.PriceCacheMissException
@@ -13,6 +14,7 @@ import javax.inject.Inject
 
 class CoinLocalDataSourceImpl @Inject constructor(
     private val coinDao: CoinDao,
+    private val coinPriceDao: CoinPriceDao,
     private val coinMapper: CoinMapper
 ) : CoinLocalDataSource {
 
@@ -27,7 +29,7 @@ class CoinLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getLastCoinPrice(coin: Coin): Price {
         val priceModel = orStorageException {
-            coinDao.getMostRecentCoinPrice(coin.symbol)
+            coinPriceDao.getMostRecentCoinPrice(coin.symbol)
         } ?: throw PriceCacheMissException()
         return Price(Currency.USD, priceModel.valueInUSD, priceModel.timestamp)
     }
@@ -38,7 +40,7 @@ class CoinLocalDataSourceImpl @Inject constructor(
         }
         val model = CoinPriceModel(coin.symbol, price.value, price.date)
         return orStorageException("Exception when saving coin price.") {
-            coinDao.insertCoinPrice(model)
+            coinPriceDao.insertCoinPrice(model)
         }
     }
 

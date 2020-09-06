@@ -11,6 +11,7 @@ import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.CoinDao
+import me.juangoncalves.mentra.db.daos.CoinPriceDao
 import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.domain.errors.PriceCacheMissException
 import me.juangoncalves.mentra.domain.errors.StorageException
@@ -32,6 +33,7 @@ import java.time.LocalDateTime
 class CoinLocalDataSourceImplTest {
 
     private lateinit var coinDao: CoinDao
+    private lateinit var coinPriceDao: CoinPriceDao
     private lateinit var db: AppDatabase
 
     private lateinit var sut: CoinLocalDataSourceImpl
@@ -41,7 +43,8 @@ class CoinLocalDataSourceImplTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         coinDao = db.coinDao()
-        sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+        coinPriceDao = db.coinPriceDao()
+        sut = CoinLocalDataSourceImpl(coinDao, coinPriceDao, CoinMapper())
     }
 
     @After
@@ -67,7 +70,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+            sut = CoinLocalDataSourceImpl(coinDao, coinPriceDao, CoinMapper())
 
             // Act
             sut.getStoredCoins()
@@ -94,7 +97,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+            sut = CoinLocalDataSourceImpl(coinDao, coinPriceDao, CoinMapper())
 
             // Act
             sut.clearCoins()
@@ -126,7 +129,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+            sut = CoinLocalDataSourceImpl(coinDao, coinPriceDao, CoinMapper())
 
             // Act
             sut.storeCoins(listOf(Bitcoin, Ethereum))
@@ -145,7 +148,7 @@ class CoinLocalDataSourceImplTest {
         sut.storeCoinPrice(Bitcoin, price)
 
         // Assert
-        val latestPrice = coinDao.getCoinPriceHistory(Bitcoin.symbol).first()
+        val latestPrice = coinPriceDao.getCoinPriceHistory(Bitcoin.symbol).first()
         assertThat(latestPrice.valueInUSD, closeTo(price.value, 0.0001))
     }
 
@@ -180,7 +183,7 @@ class CoinLocalDataSourceImplTest {
                 CoinPriceModel("BTC", 738.5, LocalDateTime.of(2020, 8, 13, 9, 30)),
                 CoinPriceModel("BTC", 245.5, LocalDateTime.of(2019, 1, 23, 5, 30))
             )
-            prices.forEach { coinDao.insertCoinPrice(it) }
+            prices.forEach { coinPriceDao.insertCoinPrice(it) }
 
             // Act
             val result = sut.getLastCoinPrice(Bitcoin)
@@ -204,7 +207,8 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+            coinPriceDao = mockk()
+            sut = CoinLocalDataSourceImpl(coinDao, coinPriceDao, CoinMapper())
 
             // Act
             sut.getLastCoinPrice(Bitcoin)
@@ -244,7 +248,7 @@ class CoinLocalDataSourceImplTest {
             // Arrange
             coinDao = mockk()
             coEvery { coinDao.getCoinBySymbol(any()) } throws SQLiteException()
-            sut = CoinLocalDataSourceImpl(coinDao, CoinMapper())
+            sut = CoinLocalDataSourceImpl(coinDao, coinPriceDao, CoinMapper())
 
             // Act
             sut.findCoinBySymbol("BTC")
