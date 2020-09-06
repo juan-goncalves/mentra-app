@@ -7,6 +7,7 @@ import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.extensions.TAG
@@ -45,6 +46,16 @@ class WalletRepositoryImpl @Inject constructor(
             val models = localDataSource.findWalletsByCoin(coin)
             val wallets = models.map { walletMapper.map(it) }
             Either.Right(wallets)
+        } catch (e: StorageException) {
+            logger.error(TAG, "Error communicating with the local database.\n$$e")
+            Either.Left(StorageFailure())
+        }
+    }
+
+    override suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<Failure, Unit> {
+        return try {
+            localDataSource.updateWalletValue(wallet, price)
+            Either.Right(Unit)
         } catch (e: StorageException) {
             logger.error(TAG, "Error communicating with the local database.\n$$e")
             Either.Left(StorageFailure())
