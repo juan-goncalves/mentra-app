@@ -7,10 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.Bitcoin
-import me.juangoncalves.mentra.BitcoinModel
-import me.juangoncalves.mentra.EthereumModel
-import me.juangoncalves.mentra.RippleModel
+import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.WalletDao
@@ -44,7 +41,7 @@ class WalletLocalDataSourceImplTest {
     }
 
     @Test
-    fun `getStoredWallets should return every stored wallet in the database`() = runBlocking {
+    fun `getStoredWallets returns every stored wallet in the database`() = runBlocking {
         // Arrange
         val btcWallet = WalletModel("BTC", 0.53)
         val ethWallet = WalletModel("ETH", 1.0)
@@ -79,7 +76,7 @@ class WalletLocalDataSourceImplTest {
         }
 
     @Test
-    fun `storeWallet should map and insert the received wallet into the database`() = runBlocking {
+    fun `storeWallet maps and inserts the received wallet into the database`() = runBlocking {
         // Arrange
         val wallet = Wallet(Bitcoin, 0.876)
 
@@ -95,7 +92,7 @@ class WalletLocalDataSourceImplTest {
     }
 
     @Test(expected = StorageException::class)
-    fun `storeWallet should throw a StorageException when the database throws an exception`() =
+    fun `storeWallet throws a StorageException when the database throws an exception`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.876)
@@ -105,6 +102,40 @@ class WalletLocalDataSourceImplTest {
 
             // Act
             sut.storeWallet(wallet)
+
+            // Assert
+            Unit
+        }
+
+    @Test
+    fun `findWalletsByCoin returns all the wallets that hold the specified coin`() =
+        runBlocking {
+            // Arrange
+            val btcWallet1 = WalletModel("BTC", 0.22)
+            val btcWallet2 = WalletModel("BTC", 1.233)
+            val ethWallet = WalletModel("ETH", 3.982)
+            walletDao.insertAll(btcWallet1, ethWallet, btcWallet2)
+
+            // Act
+            val result = sut.findWalletsByCoin(Bitcoin)
+
+            // Assert
+            assertEquals(2, result.size)
+            result.forEach { assertEquals("BTC", it.coinSymbol) }
+            assertThat(result[0].amount, closeTo(0.22, 0.0001))
+            assertThat(result[1].amount, closeTo(1.233, 0.0001))
+        }
+
+    @Test(expected = StorageException::class)
+    fun `findWalletsByCoin throws a StorageException when the database throws an exception`() =
+        runBlocking {
+            // Arrange
+            walletDao = mockk()
+            coEvery { walletDao.findByCoin(any()) } throws SQLiteException()
+            initializeSut()
+
+            // Act
+            sut.findWalletsByCoin(Ripple)
 
             // Assert
             Unit

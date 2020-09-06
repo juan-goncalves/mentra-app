@@ -25,7 +25,7 @@ class WalletLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun findWalletsByCoin(coin: Coin): List<WalletModel> {
-        TODO("Not yet implemented")
+        return orStorageException { walletDao.findByCoin(coin.symbol) }
     }
 
     @Throws(StorageException::class)
