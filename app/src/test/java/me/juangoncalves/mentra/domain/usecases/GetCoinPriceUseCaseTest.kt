@@ -34,14 +34,8 @@ class GetCoinPriceUseCaseTest {
     @Test
     fun `should return the price of the selected coin from the repository`() = runBlocking {
         // Arrange
-        val dataStub = Right(
-            Price(
-                Currency.USD,
-                9834.23,
-                LocalDateTime.now()
-            )
-        )
-        coEvery { coinRepositoryMock.getCoinPrice(Bitcoin, Currency.USD) } returns dataStub
+        val fakeResult = Right(Price(Currency.USD, 9834.23, LocalDateTime.now()))
+        coEvery { coinRepositoryMock.getCoinPrice(Bitcoin, Currency.USD) } returns fakeResult
 
         // Act
         val result = getCoinPrice(Bitcoin)
@@ -56,18 +50,13 @@ class GetCoinPriceUseCaseTest {
     fun `should fail if the price of the selected coin is not found`() = runBlocking {
         // Arrange
         val failure = PriceNotFound(Ethereum)
-        coEvery { coinRepositoryMock.getCoinPrice(Ethereum, any()) } returns Left(
-            failure
-        )
+        coEvery { coinRepositoryMock.getCoinPrice(Ethereum, any()) } returns Left(failure)
 
         // Act
         val result = getCoinPrice(Ethereum) as Either.Left
 
         // Assert
         assertTrue(result.value is PriceNotFound)
-        assertEquals(
-            (result.value as PriceNotFound).coin,
-            Ethereum
-        )
+        assertEquals((result.value as PriceNotFound).coin, Ethereum)
     }
 }
