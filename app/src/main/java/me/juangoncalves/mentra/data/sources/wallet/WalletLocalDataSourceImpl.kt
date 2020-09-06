@@ -2,7 +2,9 @@ package me.juangoncalves.mentra.data.sources.wallet
 
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.db.daos.WalletDao
+import me.juangoncalves.mentra.db.daos.WalletValueDao
 import me.juangoncalves.mentra.db.models.WalletModel
+import me.juangoncalves.mentra.db.models.WalletValueModel
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
@@ -11,6 +13,7 @@ import javax.inject.Inject
 
 class WalletLocalDataSourceImpl @Inject constructor(
     private val walletDao: WalletDao,
+    private val walletValueDao: WalletValueDao,
     private val walletMapper: WalletMapper
 ) : WalletLocalDataSource {
 
@@ -30,7 +33,10 @@ class WalletLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun updateWalletValue(wallet: Wallet, price: Price) {
-        TODO("Not yet implemented")
+        val model = WalletValueModel(wallet.id, price.value, price.date.toLocalDate())
+        orStorageException("Exception when inserting wallet value.") {
+            walletValueDao.insert(model)
+        }
     }
 
     @Throws(StorageException::class)

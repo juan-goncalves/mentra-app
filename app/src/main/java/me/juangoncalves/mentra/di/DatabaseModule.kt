@@ -11,6 +11,7 @@ import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.CoinDao
 import me.juangoncalves.mentra.db.daos.CoinPriceDao
 import me.juangoncalves.mentra.db.daos.WalletDao
+import me.juangoncalves.mentra.db.daos.WalletValueDao
 import javax.inject.Singleton
 
 @Module
@@ -33,5 +34,8 @@ object DatabaseModule {
 
     @Provides
     fun provideWalletDao(database: AppDatabase): WalletDao = database.walletDao()
+
+    @Provides
+    fun provideWalletValueDao(database: AppDatabase): WalletValueDao = database.walletValueDao()
 
 }
