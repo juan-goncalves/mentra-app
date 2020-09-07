@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="me.juangoncalves.mentra">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -30,6 +31,12 @@
         <activity
             android:name=".ui.wallet_creation.WalletCreationActivity"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
+
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            android:exported="false"
+            tools:node="remove" />
 
     </application>
 
