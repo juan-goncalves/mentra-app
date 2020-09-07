@@ -10,17 +10,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.errors.Failure
-import me.juangoncalves.mentra.domain.errors.FetchPriceFailure
-import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.GetCoinPriceUseCase
 import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
 import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
+import me.juangoncalves.mentra.domain.usecases.RefreshWalletValueUseCase
+import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.ui.common.DisplayError
 
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
     private val getCoinPrice: GetCoinPriceUseCase,
+    private val refreshWalletValue: RefreshWalletValueUseCase,
     private val getGradientCoinIcon: GetGradientCoinIconUseCase
 ) : ViewModel() {
 
@@ -57,35 +58,13 @@ class WalletListViewModel @ViewModelInject constructor(
 
             _wallets.postValue(placeholdersFor(wallets))
 
-            val coins = wallets.map { it.coin }
-            val uniqueCoins = HashSet<Coin>(coins)
-            val coinPrices = hashMapOf<Coin, Double>()
-            uniqueCoins.forEach { coin ->
-                val priceResult = getCoinPrice(coin)
-                val price = priceResult.fold(
-                    left = { failure ->
-                        if (failure is FetchPriceFailure) {
-                            // TODO: Show warning message in corresponding wallets
-                            failure.storedPrice?.value ?: -1.0
-                        } else {
-                            // TODO: Show error message in corresponding wallets
-                            -1.0
-                        }
-                    },
-                    right = { it.value }
-                )
-                coinPrices[coin] = price
-            }
-
-            val displayWallets = wallets.mapNotNull { wallet ->
-                coinPrices[wallet.coin]?.let { price ->
-                    DisplayWallet(
-                        wallet,
-                        getGradientCoinIcon(wallet.coin),
-                        price,
-                        price * wallet.amount
-                    )
-                }
+            val displayWallets = wallets.map { wallet ->
+                val refreshResult = refreshWalletValue(wallet)
+                // TODO: Handle failure appropriately
+                val walletValue = refreshResult.rightValue?.value ?: -1.0
+                val coinPrice = walletValue / wallet.amount
+                val iconUrl = getGradientCoinIcon(wallet.coin)
+                DisplayWallet(wallet, iconUrl, coinPrice, walletValue)
             }
 
             _wallets.postValue(displayWallets)
