@@ -2,6 +2,9 @@ package me.juangoncalves.mentra.extensions
 
 import either.Either
 
+typealias Right<T> = Either.Right<T>
+typealias Left<T> = Either.Left<T>
+
 val <L, R> Either<L, R>.rightValue: R?
     get() = (this as? Either.Right)?.value
 
@@ -11,3 +14,5 @@ val <L, R> Either<L, R>.leftValue: L?
 fun <L, R> Either<L, R>.requireRight(): R = (this as Either.Right).value
 
 fun <L, R> Either<L, R>.requireLeft(): L = (this as Either.Left).value
+
+fun <L, R> Either<L, R>.isLeft(): Boolean = (this is Left)
