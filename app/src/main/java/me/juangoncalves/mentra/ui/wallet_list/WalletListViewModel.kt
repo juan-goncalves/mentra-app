@@ -5,13 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.GetCoinPriceUseCase
 import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
 import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
 import me.juangoncalves.mentra.domain.usecases.RefreshWalletValueUseCase
@@ -20,7 +17,6 @@ import me.juangoncalves.mentra.ui.common.DisplayError
 
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
-    private val getCoinPrice: GetCoinPriceUseCase,
     private val refreshWalletValue: RefreshWalletValueUseCase,
     private val getGradientCoinIcon: GetGradientCoinIconUseCase
 ) : ViewModel() {
@@ -44,17 +40,7 @@ class WalletListViewModel @ViewModelInject constructor(
             _shouldShowProgressBar.postValue(true)
 
             val getWalletsResult = getWallets()
-            if (getWalletsResult is Failure) {
-                val error = DisplayError(R.string.default_error, ::refreshWallets)
-                _error.postValue(error)
-                _shouldShowProgressBar.postValue(false)
-                return@launch
-            }
-
-            val wallets = getWalletsResult.fold(
-                left = { emptyList<Wallet>() },
-                right = { it }
-            )
+            val wallets = getWalletsResult.rightValue ?: return@launch displayErrorState()
 
             _wallets.postValue(placeholdersFor(wallets))
 
@@ -70,6 +56,12 @@ class WalletListViewModel @ViewModelInject constructor(
             _wallets.postValue(displayWallets)
             _shouldShowProgressBar.postValue(false)
         }
+    }
+
+    private fun displayErrorState() {
+        val error = DisplayError(R.string.default_error, ::refreshWallets)
+        _error.postValue(error)
+        _shouldShowProgressBar.postValue(false)
     }
 
     private fun placeholdersFor(wallets: List<Wallet>): List<DisplayWallet> {
