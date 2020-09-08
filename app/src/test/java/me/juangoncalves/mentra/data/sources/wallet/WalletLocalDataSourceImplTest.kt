@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.data.sources.wallet
 
+import android.app.Application
 import android.content.Context
 import android.database.sqlite.SQLiteException
 import androidx.room.Room
@@ -29,7 +30,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, application = Application::class)
 class WalletLocalDataSourceImplTest {
 
     private lateinit var walletDao: WalletDao
