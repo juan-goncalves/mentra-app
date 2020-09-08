@@ -100,4 +100,5 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.work:work-testing:$work_version"
 
+    debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 }
