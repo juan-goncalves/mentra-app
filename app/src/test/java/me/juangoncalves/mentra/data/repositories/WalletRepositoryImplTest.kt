@@ -7,16 +7,15 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.Bitcoin
-import me.juangoncalves.mentra.Ethereum
-import me.juangoncalves.mentra.Left
-import me.juangoncalves.mentra.Right
+import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.errors.StorageFailure
+import me.juangoncalves.mentra.domain.models.Currency
+import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.log.Logger
 import org.hamcrest.MatcherAssert.assertThat
@@ -24,6 +23,7 @@ import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 
 class WalletRepositoryImplTest {
 
@@ -109,4 +109,70 @@ class WalletRepositoryImplTest {
             assertTrue(failure is StorageFailure)
             verify { loggerMock.error(any(), any()) }
         }
+
+    @Test
+    fun `findWalletsByCoin uses the local data source to find the wallets by coin`() = runBlocking {
+        // Arrange
+        val walletModel = WalletModel("BTC", 0.781, 1)
+        coEvery { walletLocalDataSource.findWalletsByCoin(Bitcoin) } returns listOf(walletModel)
+        coEvery { coinLocalDataSource.findCoinBySymbol("BTC") } returns Bitcoin
+
+        // Act
+        val result = sut.findWalletsByCoin(Bitcoin)
+
+        // Assert
+        val data = (result as Right).value
+        coVerify { walletLocalDataSource.findWalletsByCoin(Bitcoin) }
+        assertEquals(1, data.size)
+    }
+
+    @Test
+    fun `findWalletsByCoin returns a StorageFailure when a StorageException is thrown and logs it`() =
+        runBlocking {
+            // Arrange
+            coEvery { walletLocalDataSource.findWalletsByCoin(any()) } throws StorageException()
+
+            // Act
+            val result = sut.findWalletsByCoin(Ripple)
+
+            // Assert
+            val failure = (result as Left).value
+            assertTrue(failure is StorageFailure)
+            verify { loggerMock.error(any(), any()) }
+        }
+
+    @Test
+    fun `updateWalletValue uses the local data source to store the received wallet value`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Ripple, 20.781, 1)
+            val newPrice = Price(Currency.USD, 1.34, LocalDateTime.now())
+
+            // Act
+            val result = sut.updateWalletValue(wallet, newPrice)
+
+            // Assert
+            assertEquals(true, result is Right)
+            coVerify { walletLocalDataSource.updateWalletValue(wallet, newPrice) }
+        }
+
+    @Test
+    fun `updateWalletValue returns a StorageFailure when a StorageException is thrown and logs it`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Ripple, 20.781, 1)
+            val newPrice = Price(Currency.USD, 1.34, LocalDateTime.now())
+            coEvery {
+                walletLocalDataSource.updateWalletValue(any(), any())
+            } throws StorageException()
+
+            // Act
+            val result = sut.updateWalletValue(wallet, newPrice)
+
+            // Assert
+            val failure = (result as Left).value
+            assertTrue(failure is StorageFailure)
+            verify { loggerMock.error(any(), any()) }
+        }
+
 }

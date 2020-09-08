@@ -15,4 +15,7 @@ interface WalletDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg wallets: WalletModel)
 
+    @Query("SELECT * FROM Wallet WHERE coin_symbol = :symbol")
+    suspend fun findByCoin(symbol: String): List<WalletModel>
+
 }

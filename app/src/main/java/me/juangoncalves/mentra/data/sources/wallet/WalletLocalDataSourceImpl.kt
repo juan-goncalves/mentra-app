@@ -2,13 +2,18 @@ package me.juangoncalves.mentra.data.sources.wallet
 
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.db.daos.WalletDao
+import me.juangoncalves.mentra.db.daos.WalletValueDao
 import me.juangoncalves.mentra.db.models.WalletModel
+import me.juangoncalves.mentra.db.models.WalletValueModel
 import me.juangoncalves.mentra.domain.errors.StorageException
+import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import javax.inject.Inject
 
 class WalletLocalDataSourceImpl @Inject constructor(
     private val walletDao: WalletDao,
+    private val walletValueDao: WalletValueDao,
     private val walletMapper: WalletMapper
 ) : WalletLocalDataSource {
 
@@ -20,6 +25,17 @@ class WalletLocalDataSourceImpl @Inject constructor(
         val model = walletMapper.map(wallet)
         orStorageException("Exception when saving wallet.") {
             walletDao.insertAll(model)
+        }
+    }
+
+    override suspend fun findWalletsByCoin(coin: Coin): List<WalletModel> {
+        return orStorageException { walletDao.findByCoin(coin.symbol) }
+    }
+
+    override suspend fun updateWalletValue(wallet: Wallet, price: Price) {
+        val model = WalletValueModel(wallet.id, price.value, price.date.toLocalDate())
+        orStorageException("Exception when inserting wallet value.") {
+            walletValueDao.insert(model)
         }
     }
 
