@@ -204,6 +204,14 @@ class WalletLocalDataSourceImplTest {
             Unit
         }
 
+    /*
+        TODO: Test the `getWalletValueHistory` method
+              Cases: 1. returns the stored WalletValues for a given wallet id
+                     2. wallet does not exist
+                     3. the wallet values are returned in descending order (by date)
+                     4. exceptions
+    */
+
     private fun initializeSut() {
         sut = WalletLocalDataSourceImpl(walletDao, walletValueDao, WalletMapper(mockk()))
     }

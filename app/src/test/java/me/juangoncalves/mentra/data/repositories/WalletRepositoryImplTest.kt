@@ -175,4 +175,11 @@ class WalletRepositoryImplTest {
             verify { loggerMock.error(any(), any()) }
         }
 
+    /*
+        TODO: Test the `getWalletValueHistory` method
+              Cases: 1. returns the expected list of prices (mapped from WalletModels)
+                     2. failure if the wallet doesn't exist?
+                     3. classic failures when a StorageException is thrown
+     */
+
 }

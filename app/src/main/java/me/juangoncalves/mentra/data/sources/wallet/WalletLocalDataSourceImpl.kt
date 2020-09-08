@@ -39,6 +39,12 @@ class WalletLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun getWalletValueHistory(wallet: Wallet): List<WalletValueModel> {
+        return orStorageException("Exception while fetching the wallet value history.") {
+            walletValueDao.getWalletValueHistory(wallet.id)
+        }
+    }
+
     @Throws(StorageException::class)
     private suspend fun <T> orStorageException(
         message: String = "",
