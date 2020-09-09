@@ -19,7 +19,7 @@ import me.juangoncalves.mentra.db.models.WalletValueModel
         WalletModel::class,
         WalletValueModel::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
