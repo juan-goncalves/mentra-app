@@ -4,10 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.math.MathUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
+import me.juangoncalves.mentra.extensions.getThemeColor
+import java.time.LocalDate
+
 
 @AndroidEntryPoint
 class StatsFragment : Fragment() {
@@ -28,11 +38,76 @@ class StatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        styleLineChart()
         initObservers()
     }
 
     private fun initObservers() {
+        viewModel.portfolioValueHistory.observe(viewLifecycleOwner) { history ->
+            val indexToDate = hashMapOf<Float, LocalDate>()
+            val dateAxisFormatter = DateAxisFormatter(indexToDate)
 
+            val entries = history.entries.mapIndexed { index, entry ->
+                val (date, value) = entry
+                val indexAsFloat = index.toFloat()
+                indexToDate[indexAsFloat] = date
+                Entry(indexAsFloat, value.toFloat())
+            }
+
+            val dataSet = LineDataSet(entries, "Value").apply {
+                val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
+                mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+                color = colorPrimary
+                fillDrawable = requireContext().getDrawable(R.drawable.line_chart_background)
+                valueTextColor = requireContext().getThemeColor(R.attr.colorOnSurface)
+                lineWidth = 3f
+                circleRadius = 5f
+                valueTextSize = 10f
+                valueFormatter = ValueAxisFormatter()
+                setDrawCircleHole(false)
+                setCircleColor(colorPrimary)
+                setDrawFilled(true)
+            }
+            val lineData = LineData(dataSet)
+
+            binding.chart.apply {
+                data = lineData
+                xAxis.valueFormatter = dateAxisFormatter
+                xAxis.setLabelCount(MathUtils.clamp(entries.size, 0, 5), true)
+                moveViewToX(entries.lastIndex.toFloat())
+                notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun styleLineChart() = with(binding.chart) {
+        setExtraOffsets(30f, 0f, 30f, 0f)
+        isHighlightPerTapEnabled = false
+        isHighlightPerDragEnabled = false
+        description.isEnabled = false
+        isAutoScaleMinMaxEnabled = true
+        legend.isEnabled = false
+
+        axisLeft.apply {
+            isEnabled = false
+            setDrawAxisLine(false)
+            setDrawGridLines(false)
+            removeAllLimitLines()
+            setDrawZeroLine(false)
+        }
+
+        axisRight.apply {
+            isEnabled = false
+        }
+
+        xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            textColor = requireContext().getThemeColor(R.attr.colorOnSurface)
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+        }
+
+        animateXY(250, 250)
     }
 
     override fun onDestroyView() {
