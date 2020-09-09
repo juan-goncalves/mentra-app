@@ -8,6 +8,7 @@ import me.juangoncalves.mentra.extensions.Right
 import me.juangoncalves.mentra.extensions.requireLeft
 import me.juangoncalves.mentra.extensions.rightValue
 import java.time.LocalDate
+import java.util.*
 import javax.inject.Inject
 
 class GetPortfolioValueHistoryUseCase @Inject constructor(
@@ -24,7 +25,7 @@ class GetPortfolioValueHistoryUseCase @Inject constructor(
         }
 
         // Group the values of each wallet by day
-        val dateToTotalValue: HashMap<LocalDate, Double> = hashMapOf()
+        val dateToTotalValue: TreeMap<LocalDate, Double> = TreeMap()
         valueHistories.forEach { valueHistory ->
             valueHistory.forEach { value ->
                 val date = value.date.toLocalDate()
