@@ -35,3 +35,5 @@ val RippleModel = CoinModel(
     "http://url.com/xrp.png",
     "Ripple"
 )
+
+fun Double.toPrice(): Price = Price(Currency.USD, this, LocalDateTime.now())
