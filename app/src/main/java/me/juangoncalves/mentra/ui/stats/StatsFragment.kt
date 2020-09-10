@@ -11,6 +11,8 @@ import androidx.lifecycle.observe
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
@@ -37,6 +39,7 @@ class StatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         styleLineChart()
+        stylePieChart()
         initObservers()
     }
 
@@ -52,6 +55,15 @@ class StatsFragment : Fragment() {
                 xAxis.setLabelCount(MathUtils.clamp(entries.size, 0, 5), true)
                 moveViewToX(entries.lastIndex.toFloat())
                 notifyDataSetChanged()
+            }
+        }
+
+        viewModel.distributionChartData.observe(viewLifecycleOwner) { entries ->
+            val dataSet = PieDataSet(entries, "value").styled()
+            val pieData = PieData(dataSet)
+            binding.distributionPieChart.apply {
+                data = pieData
+                invalidate()
             }
         }
     }
@@ -86,6 +98,11 @@ class StatsFragment : Fragment() {
         animateXY(250, 250)
     }
 
+    private fun stylePieChart() = with(binding.distributionPieChart) {
+        setExtraOffsets(30f, 0f, 30f, 0f)
+        description.isEnabled = false
+    }
+
     private fun LineDataSet.styled(): LineDataSet = apply {
         val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
         mode = LineDataSet.Mode.HORIZONTAL_BEZIER
@@ -99,6 +116,12 @@ class StatsFragment : Fragment() {
         setDrawCircleHole(false)
         setCircleColor(colorPrimary)
         setDrawFilled(true)
+    }
+
+    private fun PieDataSet.styled(): PieDataSet = apply {
+        sliceSpace = 3f
+        selectionShift = 5f
+        valueFormatter = PercentageFormatter()
     }
 
     override fun onDestroyView() {
