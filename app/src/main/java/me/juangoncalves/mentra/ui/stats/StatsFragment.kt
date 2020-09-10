@@ -9,14 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
 import me.juangoncalves.mentra.extensions.getThemeColor
-import java.time.LocalDate
 
 
 @AndroidEntryPoint
@@ -43,31 +41,9 @@ class StatsFragment : Fragment() {
     }
 
     private fun initObservers() {
-        viewModel.portfolioValueHistory.observe(viewLifecycleOwner) { history ->
-            val indexToDate = hashMapOf<Float, LocalDate>()
-            val dateAxisFormatter = DateAxisFormatter(indexToDate)
-
-            val entries = history.entries.mapIndexed { index, entry ->
-                val (date, value) = entry
-                val indexAsFloat = index.toFloat()
-                indexToDate[indexAsFloat] = date
-                Entry(indexAsFloat, value.toFloat())
-            }
-
-            val dataSet = LineDataSet(entries, "Value").apply {
-                val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
-                mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-                color = colorPrimary
-                fillDrawable = requireContext().getDrawable(R.drawable.line_chart_background)
-                valueTextColor = requireContext().getThemeColor(R.attr.colorOnSurface)
-                lineWidth = 3f
-                circleRadius = 5f
-                valueTextSize = 10f
-                valueFormatter = ValueAxisFormatter()
-                setDrawCircleHole(false)
-                setCircleColor(colorPrimary)
-                setDrawFilled(true)
-            }
+        viewModel.valueChartData.observe(viewLifecycleOwner) { (entries, indicesToDates) ->
+            val dateAxisFormatter = DateAxisFormatter(indicesToDates)
+            val dataSet = LineDataSet(entries, "value").applyStyle()
             val lineData = LineData(dataSet)
 
             binding.chart.apply {
@@ -108,6 +84,21 @@ class StatsFragment : Fragment() {
         }
 
         animateXY(250, 250)
+    }
+
+    private fun LineDataSet.applyStyle(): LineDataSet = apply {
+        val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
+        mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+        color = colorPrimary
+        fillDrawable = requireContext().getDrawable(R.drawable.line_chart_background)
+        valueTextColor = requireContext().getThemeColor(R.attr.colorOnSurface)
+        lineWidth = 3f
+        circleRadius = 5f
+        valueTextSize = 10f
+        valueFormatter = ValueAxisFormatter()
+        setDrawCircleHole(false)
+        setCircleColor(colorPrimary)
+        setDrawFilled(true)
     }
 
     override fun onDestroyView() {
