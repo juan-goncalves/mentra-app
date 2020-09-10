@@ -22,7 +22,7 @@ class DashboardViewModel @ViewModelInject constructor(
 
     private val _portfolioValue: MutableLiveData<Price> = MutableLiveData(Price.None)
     private val _error: MutableLiveData<DisplayError> = MutableLiveData()
-    private val _openedTab: MutableLiveData<Tab> = MutableLiveData(Tab.WALLETS)
+    private val _openedTab: MutableLiveData<Tab> = MutableLiveData(Tab.STATS)
 
     init {
         refreshPortfolioValue()
