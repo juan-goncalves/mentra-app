@@ -43,10 +43,10 @@ class StatsFragment : Fragment() {
     private fun initObservers() {
         viewModel.valueChartData.observe(viewLifecycleOwner) { (entries, indicesToDates) ->
             val dateAxisFormatter = DateAxisFormatter(indicesToDates)
-            val dataSet = LineDataSet(entries, "value").applyStyle()
+            val dataSet = LineDataSet(entries, "value").styled()
             val lineData = LineData(dataSet)
 
-            binding.chart.apply {
+            binding.valueLineChart.apply {
                 data = lineData
                 xAxis.valueFormatter = dateAxisFormatter
                 xAxis.setLabelCount(MathUtils.clamp(entries.size, 0, 5), true)
@@ -56,7 +56,7 @@ class StatsFragment : Fragment() {
         }
     }
 
-    private fun styleLineChart() = with(binding.chart) {
+    private fun styleLineChart() = with(binding.valueLineChart) {
         setExtraOffsets(30f, 0f, 30f, 0f)
         isHighlightPerTapEnabled = false
         isHighlightPerDragEnabled = false
@@ -86,7 +86,7 @@ class StatsFragment : Fragment() {
         animateXY(250, 250)
     }
 
-    private fun LineDataSet.applyStyle(): LineDataSet = apply {
+    private fun LineDataSet.styled(): LineDataSet = apply {
         val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
         mode = LineDataSet.Mode.HORIZONTAL_BEZIER
         color = colorPrimary
