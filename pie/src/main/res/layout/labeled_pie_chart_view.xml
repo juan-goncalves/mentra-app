@@ -13,18 +13,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pieChartLabelList"
-        android:layout_width="0dp"
+    <com.bosphere.fadingedgelayout.FadingEdgeLayout
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_default"
-        android:overScrollMode="never"
-        android:paddingTop="@dimen/margin_medium"
-        android:paddingBottom="@dimen/margin_medium"
+        app:fel_edge="top|bottom"
+        app:fel_size_bottom="30dp"
+        app:fel_size_top="30dp"
         app:layout_constraintBottom_toBottomOf="@+id/pieChartView"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pieChartView"
-        app:layout_constraintTop_toTopOf="@+id/pieChartView"
-        tools:listitem="@layout/pie_piece_label" />
+        app:layout_constraintTop_toTopOf="@+id/pieChartView">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pieChartLabelList"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="3dp"
+            android:overScrollMode="never"
+            android:paddingTop="@dimen/margin_medium"
+            android:paddingBottom="@dimen/margin_medium"
+            tools:listitem="@layout/pie_piece_label" />
+
+    </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
 </merge>

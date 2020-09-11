@@ -143,7 +143,7 @@ internal class PieChartView(context: Context?, attrs: AttributeSet?) : View(cont
     }
 
     companion object {
-        private const val PIE_RADIUS = 200
+        private const val PIE_RADIUS = 230
         private const val PIE_DIAMETER = PIE_RADIUS * 2
         const val PORTION_THRESHOLD = 0.01
     }

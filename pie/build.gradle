@@ -31,6 +31,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
+    implementation "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:1.0.0"
 
     testImplementation 'junit:junit:4.12'
 

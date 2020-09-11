@@ -39,7 +39,7 @@
 
     <me.juangoncalves.pie.labeled.LabeledPieChartView
         android:id="@+id/distributionPieChart"
-        android:layout_width="300dp"
+        android:layout_width="wrap_content"
         android:layout_height="250dp"
         app:pie_colors="@array/pie_colors"
         app:layout_constraintEnd_toEndOf="parent"
