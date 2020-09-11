@@ -34,7 +34,7 @@ internal class LabelAdapter : RecyclerView.Adapter<MyViewHolder>() {
         val currentItem = dataset[position]
         holder.apply {
             pieceLabelTextView.text = currentItem.text
-            dotImageView.setColorFilter(currentItem.color, PorterDuff.Mode.MULTIPLY)
+            dotImageView.setColorFilter(currentItem.color, PorterDuff.Mode.SRC_IN)
         }
     }
 
