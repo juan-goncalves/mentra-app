@@ -19,6 +19,8 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
     private var paintsForPortions: Map<PiePortion, Paint> = emptyMap()
     private val portionValidator = PiePortionValidator()
 
+    var colors: IntArray? = null
+
     fun setPortions(portions: Array<PiePortion>) {
         portionValidator.validatePortions(portions)
         Arrays.sort(portions, Collections.reverseOrder())
@@ -30,18 +32,18 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
 
     private fun selectPaintsForPortions(portions: Array<PiePortion>): Map<PiePortion, Paint> {
         val piecePaintMap = hashMapOf<PiePortion, Paint>()
-        val colors = context.resources.getIntArray(R.array.defaultPieColorPairs)
-        check(colors.size % 2 == 0) {
+        val portionColors = colors ?: context.resources.getIntArray(R.array.defaultPieColorPairs)
+        check(portionColors.size % 2 == 0) {
             // This is a programming error caused by developers, this shouldn't be thrown in a production release
             "The defaultPieColorPairs array has to have an even amount of items."
         }
         var colorIndex = 0
         for (piece in portions) {
-            val colorFrom = colors[colorIndex++]
-            val colorTo = colors[colorIndex++]
+            val colorFrom = portionColors[colorIndex++]
+            val colorTo = portionColors[colorIndex++]
             val paint = generatePiecePaint(colorFrom, colorTo)
             piecePaintMap[piece] = paint
-            if (colorIndex + 1 >= colors.size) {
+            if (colorIndex + 1 >= portionColors.size) {
                 colorIndex = 0
             }
         }
@@ -71,6 +73,7 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
         for (i in portions.indices) {
             val angles = anglesForPortions[i]
             val currentPortionPaint = paintsForPortions[portions[i]]
+            if (portions[i].percentage < 0.01) continue
             canvas.drawArc(
                 pieChartContainer,
                 angles.startAngle.toFloat(),
@@ -123,14 +126,17 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
         return Paint().apply {
             style = Paint.Style.STROKE
             color = colorFrom
-            strokeWidth = 14f
+            strokeWidth = 16f
             isAntiAlias = true
             strokeCap = Paint.Cap.ROUND
-            shader = SweepGradient(
-                pieChartContainer.centerX(),
-                pieChartContainer.centerY(),
+            shader = LinearGradient(
+                pieChartContainer.left,
+                pieChartContainer.bottom,
+                pieChartContainer.right,
+                pieChartContainer.top,
                 colorFrom,
-                colorTo
+                colorTo,
+                Shader.TileMode.MIRROR
             )
         }
     }

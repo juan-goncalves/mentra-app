@@ -17,6 +17,12 @@ class LabeledPieChartView(context: Context, attrs: AttributeSet?) :
     private val labelAdapter: LabelAdapter
     private val pieManager = PieManager()
 
+    var colors: IntArray? = null
+        set(value) {
+            pieChartView.colors = value
+            field = colors
+        }
+
     init {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         inflater.inflate(R.layout.labeled_pie_chart_view, this, true)
