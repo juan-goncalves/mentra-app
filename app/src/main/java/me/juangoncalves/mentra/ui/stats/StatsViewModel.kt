@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.usecases.CalculatePortfolioDistributionUseCase
 import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueHistoryUseCase
 import me.juangoncalves.mentra.extensions.rightValue
-import me.juangoncalves.pie.PieManager
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 
@@ -28,8 +27,6 @@ class StatsViewModel @ViewModelInject constructor(
 
     private val _valueChartData: MutableLiveData<TimeChartData> = MutableLiveData()
     private val _distributionChartData: MutableLiveData<Array<PiePortion>> = MutableLiveData()
-
-    private val portionManager: PieManager = PieManager()
 
     init {
         loadPortfolioValueChart()
@@ -55,9 +52,10 @@ class StatsViewModel @ViewModelInject constructor(
     private fun loadPortfolioDistributionChart() {
         viewModelScope.launch(Dispatchers.Default) {
             val result = calculatePortfolioDistribution()
-            result.rightValue?.entries?.map { (coin, value) -> PiePortion(value, coin.symbol) }
-                ?.let { portionManager.reducePortions(it.toTypedArray(), "Other") }
-                ?.also { _distributionChartData.postValue(it) }
+            result.rightValue?.entries?.map { (coin, value) ->
+                PiePortion(value, coin.symbol)
+            }
+                ?.also { _distributionChartData.postValue(it.toTypedArray()) }
         }
     }
 
