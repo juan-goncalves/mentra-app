@@ -6,12 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.PieEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.usecases.CalculatePortfolioDistributionUseCase
 import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueHistoryUseCase
 import me.juangoncalves.mentra.extensions.rightValue
+import me.juangoncalves.pie.PieManager
+import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 
 // Group a list of entries with a map to build the labels for the time axis
@@ -23,10 +24,12 @@ class StatsViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     val valueChartData: LiveData<TimeChartData> get() = _valueChartData
-    val distributionChartData: LiveData<List<PieEntry>> get() = _distributionChartData
+    val distributionChartData: LiveData<Array<PiePortion>> get() = _distributionChartData
 
     private val _valueChartData: MutableLiveData<TimeChartData> = MutableLiveData()
-    private val _distributionChartData: MutableLiveData<List<PieEntry>> = MutableLiveData()
+    private val _distributionChartData: MutableLiveData<Array<PiePortion>> = MutableLiveData()
+
+    private val portionManager: PieManager = PieManager()
 
     init {
         loadPortfolioValueChart()
@@ -52,9 +55,9 @@ class StatsViewModel @ViewModelInject constructor(
     private fun loadPortfolioDistributionChart() {
         viewModelScope.launch(Dispatchers.Default) {
             val result = calculatePortfolioDistribution()
-            result.rightValue?.entries?.map { (coin, value) ->
-                PieEntry(value.toFloat(), coin.symbol)
-            }?.also { _distributionChartData.postValue(it) }
+            result.rightValue?.entries?.map { (coin, value) -> PiePortion(value, coin.symbol) }
+                ?.let { portionManager.reducePortions(it.toTypedArray(), "Other") }
+                ?.also { _distributionChartData.postValue(it) }
         }
     }
 

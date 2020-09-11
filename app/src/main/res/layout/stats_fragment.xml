@@ -37,11 +37,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/valueLineChart" />
 
-    <com.github.mikephil.charting.charts.PieChart
+    <me.juangoncalves.pie.labeled.LabeledPieChartView
         android:id="@+id/distributionPieChart"
-        android:layout_width="0dp"
+        android:layout_width="300dp"
         android:layout_height="250dp"
-        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/distributionChartTitle" />
