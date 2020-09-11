@@ -6,13 +6,13 @@
         <item>@color/lightBlue</item>
         <item>@color/lavender</item>
         <item>@color/magenta</item>
-        <item>#f996fa</item>
+        <item>@color/mauve</item>
+        <item>@color/darkOrange</item>
+        <item>@color/lightYellow</item>
         <item>@color/cyan</item>
         <item>@color/skyBlue</item>
         <item>@color/lightGreen</item>
         <item>@color/darkGreen</item>
-        <item>@color/lightYellow</item>
-        <item>@color/darkOrange</item>
     </array>
 
 </resources>
