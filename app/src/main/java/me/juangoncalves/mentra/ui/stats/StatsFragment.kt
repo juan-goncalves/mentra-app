@@ -37,6 +37,8 @@ class StatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         styleLineChart()
+        binding.distributionPieChart.colors =
+            requireContext().resources.getIntArray(R.array.pie_colors)
         initObservers()
     }
 
