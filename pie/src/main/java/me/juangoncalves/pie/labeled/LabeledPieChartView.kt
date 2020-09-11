@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.labeled_pie_chart_view.view.*
 import me.juangoncalves.pie.PieManager
 import me.juangoncalves.pie.PiePortion
 import me.juangoncalves.pie.R
+import me.juangoncalves.pie.extensions.asPercentage
 
 class LabeledPieChartView(context: Context, attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
@@ -32,7 +33,12 @@ class LabeledPieChartView(context: Context, attrs: AttributeSet?) :
         val reducedPortions = pieManager.reducePortions(portions, accumulatedPortionText)
         pieChartView.setPortions(reducedPortions)
         val labelItems =
-            reducedPortions.map { LabelItem(it.text, pieChartView.getColorForPortions(it)) }
+            reducedPortions.map {
+                LabelItem(
+                    "${it.text} (${it.percentage.asPercentage()})",
+                    pieChartView.getColorForPortions(it)
+                )
+            }
         labelAdapter.updateDataSet(labelItems.toTypedArray())
     }
 
