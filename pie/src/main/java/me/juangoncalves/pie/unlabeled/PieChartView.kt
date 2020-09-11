@@ -9,7 +9,7 @@ import me.juangoncalves.pie.PiePortion
 import me.juangoncalves.pie.R
 import java.util.*
 
-class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+internal class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private val pieChartContainer = RectF()
     private val defaultPaint = generatePiecePaint(Color.CYAN, Color.GRAY)
@@ -62,9 +62,10 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
     }
 
     @ColorInt
-    fun getColorForPortions(portion: PiePortion): Int {
+    fun getPortionColor(portion: PiePortion): Int {
         val paint = paintsForPortions[portion]
             ?: throw IllegalArgumentException("PiePortion not present in the PieChart")
+
         return paint.color
     }
 
@@ -73,7 +74,7 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
         for (i in portions.indices) {
             val angles = anglesForPortions[i]
             val currentPortionPaint = paintsForPortions[portions[i]]
-            if (portions[i].percentage < 0.01) continue
+            if (portions[i].percentage < PORTION_THRESHOLD) continue
             canvas.drawArc(
                 pieChartContainer,
                 angles.startAngle.toFloat(),
@@ -144,6 +145,7 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
     companion object {
         private const val PIE_RADIUS = 200
         private const val PIE_DIAMETER = PIE_RADIUS * 2
+        const val PORTION_THRESHOLD = 0.01
     }
 
 }

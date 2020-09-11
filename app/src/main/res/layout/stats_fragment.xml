@@ -41,6 +41,7 @@
         android:id="@+id/distributionPieChart"
         android:layout_width="300dp"
         android:layout_height="250dp"
+        app:pie_colors="@array/pie_colors"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/distributionChartTitle" />
