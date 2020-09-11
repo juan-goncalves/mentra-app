@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- This array has to have an even amount of items, as it is used to create gradients between pair of colors -->
+    <array name="defaultPieColorPairs">
+        <item>@color/lightBlue</item>
+        <item>@color/lavender</item>
+        <item>@color/magenta</item>
+        <item>@color/pink</item>
+        <item>@color/cyan</item>
+        <item>@color/skyBlue</item>
+        <item>@color/lightOrange</item>
+        <item>@color/pink</item>
+        <item>@color/lightGreen</item>
+        <item>@color/darkGreen</item>
+        <item>@color/lighYellow</item>
+        <item>@color/darkOrange</item>
+    </array>
+
+</resources>

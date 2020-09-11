@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#8573E6</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="topColorBackground">#343E5C</color>
+    <color name="bottomColorBackground">#222A3F</color>
+
+    <!-- Pie chart colors -->
+    <color name="lightBlue">#54C4FA</color>
+    <color name="lavender">#708CD9</color>
+    <color name="magenta">#C373C4</color>
+    <color name="pink">#FB6DA5</color>
+    <color name="cyan">#16C3D7</color>
+    <color name="skyBlue">#0FA1E7</color>
+    <color name="lightOrange">#FDA087</color>
+    <color name="lightGreen">#87FD93</color>
+    <color name="darkGreen">#238A44</color>
+    <color name="lighYellow">#FDE587</color>
+    <color name="darkOrange">#F08545</color>
+
+</resources>
