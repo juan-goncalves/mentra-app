@@ -1,2 +1,3 @@
+include ':pie'
 include ':app'
 rootProject.name = "Mentra"
