@@ -15,7 +15,7 @@ import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 
 // Group a list of entries with a map to build the labels for the time axis
-typealias TimeChartData = Pair<List<Entry>, Map<Float, LocalDate>>
+typealias TimeChartData = Pair<List<Entry>, Map<Int, LocalDate>>
 
 class StatsViewModel @ViewModelInject constructor(
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
@@ -37,12 +37,11 @@ class StatsViewModel @ViewModelInject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             val result = getPortfolioValueHistory()
             result.rightValue?.let { valuesByDate ->
-                val indexToDate = hashMapOf<Float, LocalDate>()
+                val indexToDate = hashMapOf<Int, LocalDate>()
                 val entries = valuesByDate.entries.mapIndexed { index, entry ->
                     val (date, value) = entry
-                    val indexAsFloat = index.toFloat()
-                    indexToDate[indexAsFloat] = date
-                    Entry(indexAsFloat, value.toFloat())
+                    indexToDate[index] = date
+                    Entry(index.toFloat(), value.toFloat())
                 }
                 _valueChartData.postValue(Pair(entries, indexToDate))
             }

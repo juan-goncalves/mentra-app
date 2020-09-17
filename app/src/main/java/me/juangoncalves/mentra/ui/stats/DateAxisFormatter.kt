@@ -6,17 +6,17 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 class DateAxisFormatter(
-    private val indexToDates: Map<Float, LocalDate>
+    private val indexToDates: Map<Int, LocalDate>
 ) : ValueFormatter() {
 
     override fun getFormattedValue(value: Float): String {
-        val date = indexToDates[value]
+        val date = indexToDates[value.toInt()]
         if (date != null) {
             val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
             return formatter.format(date)
         }
 
-        return ""
+        return "-"
     }
 
 }

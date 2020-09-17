@@ -49,7 +49,7 @@ class StatsFragment : Fragment() {
             binding.valueLineChart.apply {
                 data = lineData
                 xAxis.valueFormatter = dateAxisFormatter
-                xAxis.setLabelCount(MathUtils.clamp(entries.size, 0, 5), true)
+                xAxis.labelCount = MathUtils.clamp(entries.size, 0, 5)
                 moveViewToX(entries.lastIndex.toFloat())
                 notifyDataSetChanged()
             }
