@@ -8,6 +8,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.extensions.asCurrency
+import me.juangoncalves.mentra.extensions.hide
+import me.juangoncalves.mentra.extensions.showExistingOrCreate
 import me.juangoncalves.mentra.ui.stats.StatsFragment
 import me.juangoncalves.mentra.ui.wallet_list.WalletListFragment
 
@@ -44,58 +46,50 @@ class DashboardActivity : FragmentActivity() {
                 DashboardViewModel.Tab.WALLETS -> loadWalletsTab()
             }
         }
+
+        viewModel.closeEvent.observe(this) { event ->
+            event.getContent()?.let { finish() }
+        }
     }
 
     private fun loadStatsTab() {
-        val existingInstance =
-            supportFragmentManager.findFragmentByTag(STATS_FRAGMENT_TAG)
-
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(
                 R.anim.fade_in, R.anim.fade_out,
                 R.anim.fade_in, R.anim.fade_out
             )
-            .apply {
-                if (existingInstance != null) {
-                    show(existingInstance)
-                } else {
-                    add(R.id.fragmentContainer, StatsFragment(), STATS_FRAGMENT_TAG)
-                }
-                supportFragmentManager.findFragmentByTag(WALLETS_FRAGMENT_TAG)?.let { hide(it) }
-            }
+            .showExistingOrCreate(
+                STATS_FRAGMENT_TAG,
+                lazy { StatsFragment() },
+                supportFragmentManager
+            )
+            .hide(WALLETS_FRAGMENT_TAG, supportFragmentManager)
             .commit()
 
         binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_wallet))
-        binding.navButton.setOnClickListener { viewModel.openWalletsScreen() }
+        binding.navButton.setOnClickListener { viewModel.openWalletsSelected() }
     }
 
     private fun loadWalletsTab() {
-        val existingInstance = supportFragmentManager.findFragmentByTag(WALLETS_FRAGMENT_TAG)
-
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(
                 R.anim.fade_in, R.anim.fade_out,
                 R.anim.fade_in, R.anim.fade_out
             )
-            .apply {
-                if (existingInstance != null) {
-                    show(existingInstance)
-                } else {
-                    add(R.id.fragmentContainer, WalletListFragment(), WALLETS_FRAGMENT_TAG)
-                }
-                supportFragmentManager.findFragmentByTag(STATS_FRAGMENT_TAG)?.let { hide(it) }
-            }
+            .showExistingOrCreate(
+                WALLETS_FRAGMENT_TAG,
+                lazy { WalletListFragment() },
+                supportFragmentManager
+            )
+            .hide(STATS_FRAGMENT_TAG, supportFragmentManager)
             .commit()
 
         binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_chart))
-        binding.navButton.setOnClickListener { viewModel.openStatsScreen() }
+        binding.navButton.setOnClickListener { viewModel.openStatsSelected() }
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 1) {
-            supportFragmentManager.popBackStackImmediate()
-        } else {
-            finish()
-        }
+        viewModel.backPressed()
     }
+
 }
