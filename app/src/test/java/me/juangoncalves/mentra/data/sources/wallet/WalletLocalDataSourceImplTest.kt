@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.data.sources.wallet
 
+import android.app.Application
 import android.content.Context
 import android.database.sqlite.SQLiteException
 import androidx.room.Room
@@ -29,7 +30,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, application = Application::class)
 class WalletLocalDataSourceImplTest {
 
     private lateinit var walletDao: WalletDao
@@ -202,6 +203,14 @@ class WalletLocalDataSourceImplTest {
             // Assert
             Unit
         }
+
+    /*
+        TODO: Test the `getWalletValueHistory` method
+              Cases: 1. returns the stored WalletValues for a given wallet id
+                     2. wallet does not exist
+                     3. the wallet values are returned in descending order (by date)
+                     4. exceptions
+    */
 
     private fun initializeSut() {
         sut = WalletLocalDataSourceImpl(walletDao, walletValueDao, WalletMapper(mockk()))

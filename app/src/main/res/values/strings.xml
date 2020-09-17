@@ -12,4 +12,6 @@
     <string name="amount_hint">Amount owned</string>
     <string name="no_coin_selected_warning">You haven\'t selected a coin</string>
     <string name="invalid_amount_warning">Invalid coin amount, it must be greater than zero</string>
+    <string name="value_history">Value history</string>
+    <string name="coin_distribution">Coin Distribution</string>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="LabeledPieChartView">
+        <attr name="pie_hiddenLabelColor" format="color" />
+        <attr name="pie_colors" format="reference" />
+    </declare-styleable>
+
+</resources>

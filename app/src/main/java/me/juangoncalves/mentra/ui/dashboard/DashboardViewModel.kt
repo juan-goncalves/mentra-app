@@ -18,12 +18,22 @@ class DashboardViewModel @ViewModelInject constructor(
 
     val portfolioValue: LiveData<Price> get() = _portfolioValue
     val error: LiveData<DisplayError> get() = _error
+    val openedTab: LiveData<Tab> get() = _openedTab
 
     private val _portfolioValue: MutableLiveData<Price> = MutableLiveData(Price.None)
     private val _error: MutableLiveData<DisplayError> = MutableLiveData()
+    private val _openedTab: MutableLiveData<Tab> = MutableLiveData(Tab.STATS)
 
     init {
         refreshPortfolioValue()
+    }
+
+    fun openStatsScreen() {
+        _openedTab.value = Tab.STATS
+    }
+
+    fun openWalletsScreen() {
+        _openedTab.value = Tab.WALLETS
     }
 
     private fun refreshPortfolioValue() = viewModelScope.launch(Dispatchers.IO) {
@@ -34,5 +44,7 @@ class DashboardViewModel @ViewModelInject constructor(
         )
         _portfolioValue.postValue(value)
     }
+
+    enum class Tab { STATS, WALLETS }
 
 }
