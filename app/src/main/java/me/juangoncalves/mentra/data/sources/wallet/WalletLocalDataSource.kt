@@ -9,16 +9,16 @@ import me.juangoncalves.mentra.domain.models.Wallet
 
 interface WalletLocalDataSource {
 
-    suspend fun getStoredWallets(): List<WalletModel>
+    suspend fun getAll(): List<WalletModel>
 
-    suspend fun storeWallet(wallet: Wallet)
+    suspend fun save(wallet: Wallet)
 
     suspend fun delete(wallet: WalletModel)
 
-    suspend fun findWalletsByCoin(coin: Coin): List<WalletModel>
+    suspend fun findByCoin(coin: Coin): List<WalletModel>
 
-    suspend fun updateWalletValue(wallet: Wallet, price: Price)
+    suspend fun updateValue(wallet: Wallet, price: Price)
 
-    suspend fun getWalletValueHistory(wallet: Wallet): List<WalletValueModel>
+    suspend fun getValueHistory(wallet: Wallet): List<WalletValueModel>
 
 }

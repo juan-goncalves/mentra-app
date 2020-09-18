@@ -57,7 +57,7 @@ class WalletLocalDataSourceImplTest {
         walletDao.insertAll(btcWallet, ethWallet)
 
         // Act
-        val result = sut.getStoredWallets()
+        val result = sut.getAll()
 
         // Assert
         val savedBtcWallet = result.find { it.coinSymbol == "BTC" }
@@ -78,7 +78,7 @@ class WalletLocalDataSourceImplTest {
             initializeSut()
 
             // Act
-            sut.getStoredWallets()
+            sut.getAll()
 
             // Assert
             Unit
@@ -90,7 +90,7 @@ class WalletLocalDataSourceImplTest {
         val wallet = Wallet(Bitcoin, 0.876)
 
         // Act
-        sut.storeWallet(wallet)
+        sut.save(wallet)
 
         // Assert
         val storedWallets = walletDao.getAll()
@@ -110,7 +110,7 @@ class WalletLocalDataSourceImplTest {
             initializeSut()
 
             // Act
-            sut.storeWallet(wallet)
+            sut.save(wallet)
 
             // Assert
             Unit
@@ -126,7 +126,7 @@ class WalletLocalDataSourceImplTest {
             walletDao.insertAll(btcWallet1, ethWallet, btcWallet2)
 
             // Act
-            val result = sut.findWalletsByCoin(Bitcoin)
+            val result = sut.findByCoin(Bitcoin)
 
             // Assert
             assertEquals(2, result.size)
@@ -144,7 +144,7 @@ class WalletLocalDataSourceImplTest {
             initializeSut()
 
             // Act
-            sut.findWalletsByCoin(Ripple)
+            sut.findByCoin(Ripple)
 
             // Assert
             Unit
@@ -159,7 +159,7 @@ class WalletLocalDataSourceImplTest {
         val newValue = Price(Currency.USD, 1235.11, LocalDateTime.now())
 
         // Act
-        sut.updateWalletValue(wallet, newValue)
+        sut.updateValue(wallet, newValue)
 
         // Assert
         val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
@@ -179,7 +179,7 @@ class WalletLocalDataSourceImplTest {
             val newValue = Price(Currency.USD, 432.11, repeatedDay.atStartOfDay())
 
             // Act
-            sut.updateWalletValue(wallet, newValue)
+            sut.updateValue(wallet, newValue)
 
             // Assert
             val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
@@ -198,7 +198,7 @@ class WalletLocalDataSourceImplTest {
             initializeSut()
 
             // Act
-            sut.updateWalletValue(wallet, newValue)
+            sut.updateValue(wallet, newValue)
 
             // Assert
             Unit

@@ -46,7 +46,7 @@ class WalletRepositoryImplTest {
         val btcWalletModel = WalletModel("BTC", 0.781, 1)
         val ethWalletModel = WalletModel("ETH", 1.25, 2)
         coEvery {
-            walletLocalDataSource.getStoredWallets()
+            walletLocalDataSource.getAll()
         } returns listOf(btcWalletModel, ethWalletModel)
         coEvery { coinLocalDataSource.findCoinBySymbol("BTC") } returns Bitcoin
         coEvery { coinLocalDataSource.findCoinBySymbol("ETH") } returns Ethereum
@@ -69,7 +69,7 @@ class WalletRepositoryImplTest {
     fun `getWallets returns a StorageFailure when a StorageException is thrown and logs it`() =
         runBlocking {
             // Arrange
-            coEvery { walletLocalDataSource.getStoredWallets() } throws StorageException()
+            coEvery { walletLocalDataSource.getAll() } throws StorageException()
 
             // act
             val result = sut.getWallets()
@@ -90,7 +90,7 @@ class WalletRepositoryImplTest {
             val result = sut.createWallet(wallet)
 
             // Assert
-            coVerify { walletLocalDataSource.storeWallet(wallet) }
+            coVerify { walletLocalDataSource.save(wallet) }
             assert(result is Right)
         }
 
@@ -99,7 +99,7 @@ class WalletRepositoryImplTest {
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45)
-            coEvery { walletLocalDataSource.storeWallet(any()) } throws StorageException()
+            coEvery { walletLocalDataSource.save(any()) } throws StorageException()
 
             // Act
             val result = sut.createWallet(wallet)
@@ -114,7 +114,7 @@ class WalletRepositoryImplTest {
     fun `findWalletsByCoin uses the local data source to find the wallets by coin`() = runBlocking {
         // Arrange
         val walletModel = WalletModel("BTC", 0.781, 1)
-        coEvery { walletLocalDataSource.findWalletsByCoin(Bitcoin) } returns listOf(walletModel)
+        coEvery { walletLocalDataSource.findByCoin(Bitcoin) } returns listOf(walletModel)
         coEvery { coinLocalDataSource.findCoinBySymbol("BTC") } returns Bitcoin
 
         // Act
@@ -122,7 +122,7 @@ class WalletRepositoryImplTest {
 
         // Assert
         val data = (result as Right).value
-        coVerify { walletLocalDataSource.findWalletsByCoin(Bitcoin) }
+        coVerify { walletLocalDataSource.findByCoin(Bitcoin) }
         assertEquals(1, data.size)
     }
 
@@ -130,7 +130,7 @@ class WalletRepositoryImplTest {
     fun `findWalletsByCoin returns a StorageFailure when a StorageException is thrown and logs it`() =
         runBlocking {
             // Arrange
-            coEvery { walletLocalDataSource.findWalletsByCoin(any()) } throws StorageException()
+            coEvery { walletLocalDataSource.findByCoin(any()) } throws StorageException()
 
             // Act
             val result = sut.findWalletsByCoin(Ripple)
@@ -153,7 +153,7 @@ class WalletRepositoryImplTest {
 
             // Assert
             assertEquals(true, result is Right)
-            coVerify { walletLocalDataSource.updateWalletValue(wallet, newPrice) }
+            coVerify { walletLocalDataSource.updateValue(wallet, newPrice) }
         }
 
     @Test
@@ -163,7 +163,7 @@ class WalletRepositoryImplTest {
             val wallet = Wallet(Ripple, 20.781, 1)
             val newPrice = Price(Currency.USD, 1.34, LocalDateTime.now())
             coEvery {
-                walletLocalDataSource.updateWalletValue(any(), any())
+                walletLocalDataSource.updateValue(any(), any())
             } throws StorageException()
 
             // Act

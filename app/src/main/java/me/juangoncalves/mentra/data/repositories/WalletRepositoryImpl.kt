@@ -25,7 +25,7 @@ class WalletRepositoryImpl @Inject constructor(
 
     override suspend fun getWallets(): Either<Failure, List<Wallet>> {
         return try {
-            val models = localDataSource.getStoredWallets()
+            val models = localDataSource.getAll()
             val wallets = models.map { walletMapper.map(it) }
             Either.Right(wallets)
         } catch (e: StorageException) {
@@ -36,7 +36,7 @@ class WalletRepositoryImpl @Inject constructor(
 
     override suspend fun createWallet(wallet: Wallet): Either<Failure, Unit> {
         return try {
-            localDataSource.storeWallet(wallet)
+            localDataSource.save(wallet)
             Either.Right(Unit)
         } catch (e: StorageException) {
             logger.error(TAG, "Error communicating with the local database.\n$$e")
@@ -46,7 +46,7 @@ class WalletRepositoryImpl @Inject constructor(
 
     override suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>> {
         return try {
-            val models = localDataSource.findWalletsByCoin(coin)
+            val models = localDataSource.findByCoin(coin)
             val wallets = models.map { walletMapper.map(it) }
             Either.Right(wallets)
         } catch (e: StorageException) {
@@ -57,7 +57,7 @@ class WalletRepositoryImpl @Inject constructor(
 
     override suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<Failure, Unit> {
         return try {
-            localDataSource.updateWalletValue(wallet, price)
+            localDataSource.updateValue(wallet, price)
             Either.Right(Unit)
         } catch (e: StorageException) {
             logger.error(TAG, "Error communicating with the local database.\n$$e")
@@ -67,7 +67,7 @@ class WalletRepositoryImpl @Inject constructor(
 
     override suspend fun getWalletValueHistory(wallet: Wallet): Either<Failure, List<Price>> {
         return try {
-            val prices = localDataSource.getWalletValueHistory(wallet).map { valueModel ->
+            val prices = localDataSource.getValueHistory(wallet).map { valueModel ->
                 Price(Currency.USD, valueModel.valueInUSD, valueModel.date.atStartOfDay())
             }
             Right(prices)
