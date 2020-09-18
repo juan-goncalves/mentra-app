@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
+import me.juangoncalves.mentra.ui.wallet_actions.WalletActionsDialogFragment
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 
 @AndroidEntryPoint
@@ -25,7 +26,7 @@ class WalletListFragment : Fragment() {
     }
 
     private val viewModel: WalletListViewModel by viewModels()
-    private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
+    private val walletAdapter: WalletAdapter = WalletAdapter(emptyList(), ::onWalletSelected)
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
@@ -42,15 +43,18 @@ class WalletListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewManager = LinearLayoutManager(context)
+
         binding.recyclerView.apply {
             layoutManager = viewManager
             adapter = walletAdapter
         }
+
         binding.addWalletButton.setOnClickListener {
             // TODO: Refactor to VM to VM communication
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
             startActivityForResult(intent, CREATE_WALLET)
         }
+
         initObservers()
     }
 
@@ -68,6 +72,10 @@ class WalletListFragment : Fragment() {
                 .setAction(R.string.retry) { error.retryAction() }
                 .show()
         }
+    }
+
+    private fun onWalletSelected(wallet: DisplayWallet) {
+        WalletActionsDialogFragment().show(parentFragmentManager, "wallet_actions")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

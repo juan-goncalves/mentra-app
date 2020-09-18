@@ -10,7 +10,10 @@ import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
 import me.juangoncalves.mentra.extensions.asCurrency
 
-class WalletAdapter(data: List<DisplayWallet>) : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
+class WalletAdapter(
+    data: List<DisplayWallet>,
+    private val onWalletSelected: (DisplayWallet) -> Unit
+) : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 
     var data: List<DisplayWallet> = data
         set(value) {
@@ -50,6 +53,8 @@ class WalletAdapter(data: List<DisplayWallet>) : RecyclerView.Adapter<WalletAdap
                         .error(R.drawable.coin_placeholder)
                 )
                 .into(logoImageView)
+
+            card.setOnClickListener { onWalletSelected(displayWallet) }
         }
     }
 
