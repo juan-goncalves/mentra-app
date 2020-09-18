@@ -18,6 +18,10 @@
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/tundora</item>
 
+        <!-- Error color. -->
+        <item name="colorError">@color/torch_red</item>
+        <item name="colorOnError">@color/white</item>
+
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>

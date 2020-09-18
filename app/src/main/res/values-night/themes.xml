@@ -18,6 +18,10 @@
         <item name="colorSurface">@color/pickled_bluewood</item>
         <item name="colorOnSurface">@color/white</item>
 
+        <!-- Error color. -->
+        <item name="colorError">@color/torch_red</item>
+        <item name="colorOnError">@color/white</item>
+
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
