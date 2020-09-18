@@ -1,9 +1,6 @@
 package me.juangoncalves.mentra.db.daos
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import me.juangoncalves.mentra.db.models.WalletModel
 
 @Dao
@@ -17,5 +14,8 @@ interface WalletDao {
 
     @Query("SELECT * FROM Wallet WHERE coin_symbol = :symbol")
     suspend fun findByCoin(symbol: String): List<WalletModel>
+
+    @Delete
+    suspend fun delete(wallet: WalletModel)
 
 }

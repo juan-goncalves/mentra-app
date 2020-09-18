@@ -2,6 +2,7 @@ package me.juangoncalves.mentra
 
 import either.Either
 import me.juangoncalves.mentra.db.models.CoinModel
+import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
@@ -35,5 +36,10 @@ val RippleModel = CoinModel(
     "http://url.com/xrp.png",
     "Ripple"
 )
+
+
+val BitcoinWallet = WalletModel("BTC", 0.22, 1)
+val EthereumWallet = WalletModel("ETH", 1.233, 2)
+val RippleWallet = WalletModel("XRP", 23.982, 3)
 
 fun Double.toPrice(): Price = Price(Currency.USD, this, LocalDateTime.now())

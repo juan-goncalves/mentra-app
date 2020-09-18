@@ -204,6 +204,19 @@ class WalletLocalDataSourceImplTest {
             Unit
         }
 
+    @Test
+    fun `delete removes the wallet from the database`() = runBlocking {
+        // Arrange
+        walletDao.insertAll(BitcoinWallet, EthereumWallet, RippleWallet)
+
+        // Act
+        sut.delete(EthereumWallet)
+
+        // Assert
+        val foundWallet = walletDao.getAll().find { it.coinSymbol == "ETH" }
+        assertNull(foundWallet)
+    }
+
     /*
         TODO: Test the `getWalletValueHistory` method
               Cases: 1. returns the stored WalletValues for a given wallet id

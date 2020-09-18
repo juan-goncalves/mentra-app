@@ -45,6 +45,10 @@ class WalletLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun delete(wallet: WalletModel) {
+        walletDao.delete(wallet)
+    }
+
     @Throws(StorageException::class)
     private suspend fun <T> orStorageException(
         message: String = "",
