@@ -33,6 +33,12 @@ class WalletRepositoryImpl @Inject constructor(
         Either.Right(Unit)
     }
 
+    override suspend fun deleteWallet(wallet: Wallet): Either<Failure, Unit> = handleException {
+        val model = walletMapper.map(wallet)
+        localDataSource.delete(model)
+        Either.Right(Unit)
+    }
+
     override suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>> =
         handleException {
             val models = localDataSource.findByCoin(coin)

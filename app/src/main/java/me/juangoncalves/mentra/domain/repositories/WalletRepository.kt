@@ -12,6 +12,8 @@ interface WalletRepository {
 
     suspend fun createWallet(wallet: Wallet): Either<Failure, Unit>
 
+    suspend fun deleteWallet(wallet: Wallet): Either<Failure, Unit>
+
     suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>>
 
     suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<Failure, Unit>

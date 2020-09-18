@@ -9,15 +9,19 @@ import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.db.models.WalletModel
+import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.extensions.leftValue
+import me.juangoncalves.mentra.extensions.requireLeft
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.log.Logger
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
+import org.hamcrest.Matchers.isA
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -174,6 +178,37 @@ class WalletRepositoryImplTest {
             val failure = (result as Left).value
             assertTrue(failure is StorageFailure)
             verify { loggerMock.error(any(), any()) }
+        }
+
+    @Test
+    fun `deleteWallet passes the id of the wallet to delete to the local data source`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 0.45, 15)
+            val slot = slot<WalletModel>()
+            coEvery { walletLocalDataSource.delete(capture(slot)) } just Runs
+
+            // Act
+            val result = sut.deleteWallet(wallet)
+
+            // Assert
+            assertNotNull(result.rightValue)
+            assertEquals(15, slot.captured.id)
+        }
+
+    @Test
+    fun `deleteWallet returns a failure when the local data source throws an exception`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 0.45, 15)
+            coEvery { walletLocalDataSource.delete(any()) } throws Exception()
+
+            // Act
+            val result = sut.deleteWallet(wallet)
+
+            // Assert
+            assertNotNull(result.leftValue)
+            assertThat(result.requireLeft(), isA(Failure::class.java))
         }
 
     /*
