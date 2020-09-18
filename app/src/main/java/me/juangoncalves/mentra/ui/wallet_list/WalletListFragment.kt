@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,10 +44,13 @@ class WalletListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewManager = LinearLayoutManager(context)
+        val swipeHandler = SwipeToDeleteHelper(requireContext())
+        val touchHelper = ItemTouchHelper(swipeHandler)
 
         binding.recyclerView.apply {
             layoutManager = viewManager
             adapter = walletAdapter
+            touchHelper.attachToRecyclerView(this)
         }
 
         binding.addWalletButton.setOnClickListener {
