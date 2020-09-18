@@ -11,7 +11,7 @@ interface WalletLocalDataSource {
 
     suspend fun getAll(): List<WalletModel>
 
-    suspend fun save(wallet: Wallet)
+    suspend fun save(wallet: WalletModel)
 
     suspend fun delete(wallet: WalletModel)
 

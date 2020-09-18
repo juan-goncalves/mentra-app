@@ -36,7 +36,8 @@ class WalletRepositoryImpl @Inject constructor(
 
     override suspend fun createWallet(wallet: Wallet): Either<Failure, Unit> {
         return try {
-            localDataSource.save(wallet)
+            val model = walletMapper.map(wallet)
+            localDataSource.save(model)
             Either.Right(Unit)
         } catch (e: StorageException) {
             logger.error(TAG, "Error communicating with the local database.\n$$e")

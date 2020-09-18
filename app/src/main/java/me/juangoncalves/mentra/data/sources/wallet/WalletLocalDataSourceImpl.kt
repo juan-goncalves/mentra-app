@@ -1,6 +1,5 @@
 package me.juangoncalves.mentra.data.sources.wallet
 
-import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.daos.WalletValueDao
 import me.juangoncalves.mentra.db.models.WalletModel
@@ -13,18 +12,16 @@ import javax.inject.Inject
 
 class WalletLocalDataSourceImpl @Inject constructor(
     private val walletDao: WalletDao,
-    private val walletValueDao: WalletValueDao,
-    private val walletMapper: WalletMapper
+    private val walletValueDao: WalletValueDao
 ) : WalletLocalDataSource {
 
     override suspend fun getAll(): List<WalletModel> {
         return orStorageException { walletDao.getAll() }
     }
 
-    override suspend fun save(wallet: Wallet) {
-        val model = walletMapper.map(wallet)
+    override suspend fun save(wallet: WalletModel) {
         orStorageException("Exception when saving wallet.") {
-            walletDao.insertAll(model)
+            walletDao.insertAll(wallet)
         }
     }
 

@@ -1,11 +1,8 @@
 package me.juangoncalves.mentra.data.repositories
 
 import either.Either
-import io.mockk.MockKAnnotations
-import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.WalletMapper
@@ -17,6 +14,7 @@ import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.log.Logger
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
@@ -85,13 +83,16 @@ class WalletRepositoryImplTest {
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45)
+            val slot = slot<WalletModel>()
+            coEvery { walletLocalDataSource.save(capture(slot)) } just Runs
 
             // Act
             val result = sut.createWallet(wallet)
 
             // Assert
-            coVerify { walletLocalDataSource.save(wallet) }
-            assert(result is Right)
+            assertNotNull(result.rightValue)
+            assertEquals(Bitcoin.symbol, slot.captured.coinSymbol)
+            assertThat(slot.captured.amount, closeTo(0.45, 0.0001))
         }
 
     @Test

@@ -38,8 +38,8 @@ val RippleModel = CoinModel(
 )
 
 
-val BitcoinWallet = WalletModel("BTC", 0.22, 1)
-val EthereumWallet = WalletModel("ETH", 1.233, 2)
-val RippleWallet = WalletModel("XRP", 23.982, 3)
+val BTCWalletModel = WalletModel("BTC", 0.22, 1)
+val ETHWalletModel = WalletModel("ETH", 1.233, 2)
+val XRPWalletModel = WalletModel("XRP", 23.982, 3)
 
 fun Double.toPrice(): Price = Price(Currency.USD, this, LocalDateTime.now())
