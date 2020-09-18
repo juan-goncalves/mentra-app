@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -14,21 +13,23 @@ import androidx.core.math.MathUtils
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.extensions.getThemeColor
 import kotlin.math.abs
 
-class SwipeToDeleteHelper(context: Context) : ItemTouchHelper.Callback() {
+class SwipeToDeleteHelper(
+    context: Context,
+    private val onDelete: (Int) -> Unit
+) : ItemTouchHelper.Callback() {
 
     private val deleteDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_trash)
     private val intrinsicWidth: Int = deleteDrawable?.intrinsicWidth ?: 0
     private val intrinsicHeight: Int = deleteDrawable?.intrinsicHeight ?: 0
+    private val colorOnError: Int = context.getThemeColor(R.attr.colorOnError)
     private val errorPaint: Paint = Paint().apply {
         color = context.getThemeColor(R.attr.colorError)
         isAntiAlias = true
         setShadowLayer(8f, 0.0f, 0.0f, color)
     }
-    private val colorOnError: Int = context.getThemeColor(R.attr.colorOnError)
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
@@ -44,8 +45,7 @@ class SwipeToDeleteHelper(context: Context) : ItemTouchHelper.Callback() {
     override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.7f
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        // TODO: notify that the user wants to delete the wallet
-        Log.i(TAG, "Delete gesture detected")
+        onDelete(viewHolder.adapterPosition)
     }
 
     override fun onChildDraw(

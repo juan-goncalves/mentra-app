@@ -44,7 +44,7 @@ class WalletListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewManager = LinearLayoutManager(context)
-        val swipeHandler = SwipeToDeleteHelper(requireContext())
+        val swipeHandler = SwipeToDeleteHelper(requireContext(), ::onDeleteItemAtPosition)
         val touchHelper = ItemTouchHelper(swipeHandler)
 
         binding.recyclerView.apply {
@@ -80,6 +80,12 @@ class WalletListFragment : Fragment() {
 
     private fun onWalletSelected(wallet: DisplayWallet) {
         WalletActionsDialogFragment().show(parentFragmentManager, "wallet_actions")
+    }
+
+    private fun onDeleteItemAtPosition(position: Int) {
+        // TODO: Pass it to the view model and delete the wallet in the db
+        val newData = walletAdapter.data.filterIndexed { index, _ -> index != position }
+        walletAdapter.data = newData
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
