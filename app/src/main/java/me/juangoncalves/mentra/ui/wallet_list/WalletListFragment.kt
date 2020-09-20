@@ -16,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
-import me.juangoncalves.mentra.ui.wallet_actions.WalletActionsDialogFragment
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 
 @AndroidEntryPoint
@@ -79,13 +78,14 @@ class WalletListFragment : Fragment() {
     }
 
     private fun onWalletSelected(wallet: DisplayWallet) {
-        WalletActionsDialogFragment().show(parentFragmentManager, "wallet_actions")
+
     }
 
     private fun onDeleteItemAtPosition(position: Int) {
-        // TODO: Pass it to the view model and delete the wallet in the db
-        val newData = walletAdapter.data.filterIndexed { index, _ -> index != position }
-        walletAdapter.data = newData
+        DeleteWalletConfirmationDialogFragment(
+            onCancel = { walletAdapter.notifyItemChanged(position) },
+            onConfirm = { walletAdapter.notifyItemRemoved(position) }
+        ).show(parentFragmentManager, "delete_wallet")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

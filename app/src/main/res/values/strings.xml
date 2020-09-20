@@ -14,4 +14,8 @@
     <string name="invalid_amount_warning">Invalid coin amount, it must be greater than zero</string>
     <string name="value_history">Value history</string>
     <string name="coin_distribution">Coin Distribution</string>
+    <string name="delete_wallet">Delete wallet</string>
+    <string name="delete_wallet_confirmation">Are you sure you want to delete this wallet? This action cannot be undone.</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm_wallet_deletion">Yes, delete it</string>
 </resources>
