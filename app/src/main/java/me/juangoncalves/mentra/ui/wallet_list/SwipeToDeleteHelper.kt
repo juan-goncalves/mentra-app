@@ -42,7 +42,7 @@ class SwipeToDeleteHelper(
         target: RecyclerView.ViewHolder
     ): Boolean = false
 
-    override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.7f
+    override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.2f
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         onDelete(viewHolder.adapterPosition)
@@ -57,8 +57,6 @@ class SwipeToDeleteHelper(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-
         val itemView = viewHolder.itemView
         val (scaledHeight, scaledWidth) = scaleDimensionsByCurrentSwipe(dX, recyclerView)
         val rect = generateIconRect(itemView, scaledHeight, scaledWidth)
@@ -78,6 +76,19 @@ class SwipeToDeleteHelper(
             )
             draw(canvas)
         }
+
+        val leftMax = recyclerView.width * -0.185f
+        val rightMax = leftMax * -1
+
+        super.onChildDraw(
+            canvas,
+            recyclerView,
+            viewHolder,
+            MathUtils.clamp(dX, leftMax, rightMax),
+            dY,
+            actionState,
+            isCurrentlyActive
+        )
     }
 
     private fun scaleDimensionsByCurrentSwipe(
