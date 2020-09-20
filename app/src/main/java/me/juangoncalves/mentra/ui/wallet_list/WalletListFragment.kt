@@ -26,7 +26,7 @@ class WalletListFragment : Fragment() {
     }
 
     private val viewModel: WalletListViewModel by viewModels()
-    private val walletAdapter: WalletAdapter = WalletAdapter(emptyList(), ::onWalletSelected)
+    private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
@@ -77,14 +77,10 @@ class WalletListFragment : Fragment() {
         }
     }
 
-    private fun onWalletSelected(wallet: DisplayWallet) {
-
-    }
-
     private fun onDeleteItemAtPosition(position: Int) {
         DeleteWalletConfirmationDialogFragment(
             onCancel = { walletAdapter.notifyItemChanged(position) },
-            onConfirm = { walletAdapter.notifyItemRemoved(position) }
+            onConfirm = { viewModel.deleteWalletSelected(walletAdapter.data[position]) }
         ).show(parentFragmentManager, "delete_wallet")
     }
 

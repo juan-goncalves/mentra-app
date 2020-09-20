@@ -9,16 +9,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.domain.usecases.DeleteWalletUseCase
 import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
 import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
 import me.juangoncalves.mentra.domain.usecases.RefreshWalletValueUseCase
+import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.ui.common.DisplayError
 
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
     private val refreshWalletValue: RefreshWalletValueUseCase,
-    private val getGradientCoinIcon: GetGradientCoinIconUseCase
+    private val getGradientCoinIcon: GetGradientCoinIconUseCase,
+    private val deleteWallet: DeleteWalletUseCase
 ) : ViewModel() {
 
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
@@ -34,6 +37,19 @@ class WalletListViewModel @ViewModelInject constructor(
     }
 
     fun walletCreated() = refreshWallets()
+
+    fun deleteWalletSelected(displayWallet: DisplayWallet) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = deleteWallet(displayWallet.wallet)
+            if (result.isLeft()) {
+                // TODO: Show error message
+            } else {
+                val currentWallets = wallets.value ?: emptyList()
+                val withoutRemoved = currentWallets.filter { it != displayWallet }
+                _wallets.postValue(withoutRemoved)
+            }
+        }
+    }
 
     private fun refreshWallets() {
         viewModelScope.launch(Dispatchers.IO) {
