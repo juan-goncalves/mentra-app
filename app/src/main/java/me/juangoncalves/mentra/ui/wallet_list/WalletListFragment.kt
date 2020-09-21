@@ -11,11 +11,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
+import me.juangoncalves.mentra.extensions.createErrorSnackbar
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 
 @AndroidEntryPoint
@@ -70,9 +71,13 @@ class WalletListFragment : Fragment() {
             walletAdapter.data = wallets
         }
 
-        viewModel.error.observe(viewLifecycleOwner) { error ->
-            Snackbar.make(binding.root, error.messageId, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.retry) { error.retryAction() }
+        viewModel.generalError.observe(viewLifecycleOwner) { error ->
+            createErrorSnackbar(error, binding.addWalletButton).show()
+        }
+
+        viewModel.walletManagementError.observe(viewLifecycleOwner) { (error, position) ->
+            createErrorSnackbar(error, binding.addWalletButton)
+                .addCallback(DismissCallback(position))
                 .show()
         }
     }
@@ -80,7 +85,7 @@ class WalletListFragment : Fragment() {
     private fun onDeleteItemAtPosition(position: Int) {
         DeleteWalletConfirmationDialogFragment(
             onCancel = { walletAdapter.notifyItemChanged(position) },
-            onConfirm = { viewModel.deleteWalletSelected(walletAdapter.data[position]) }
+            onConfirm = { viewModel.deleteWalletSelected(position) }
         ).show(parentFragmentManager, "delete_wallet")
     }
 
@@ -96,4 +101,17 @@ class WalletListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private inner class DismissCallback(
+        val itemPosition: Int
+    ) : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+
+        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+            super.onDismissed(transientBottomBar, event)
+            if (event != DISMISS_EVENT_ACTION) walletAdapter.notifyItemChanged(itemPosition)
+            transientBottomBar?.removeCallback(this)
+        }
+
+    }
+
 }

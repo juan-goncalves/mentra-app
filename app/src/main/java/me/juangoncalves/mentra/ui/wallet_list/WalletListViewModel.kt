@@ -17,6 +17,9 @@ import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.ui.common.DisplayError
 
+// Error with the position of the wallet being modified
+typealias WalletManagementError = Pair<DisplayError, Int>
+
 class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
     private val refreshWalletValue: RefreshWalletValueUseCase,
@@ -26,11 +29,13 @@ class WalletListViewModel @ViewModelInject constructor(
 
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
     val wallets: LiveData<List<DisplayWallet>> get() = _wallets
-    val error: LiveData<DisplayError> get() = _error
+    val generalError: LiveData<DisplayError> get() = _generalError
+    val walletManagementError: LiveData<WalletManagementError> get() = _walletManagementError
 
     private val _shouldShowProgressBar: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _wallets: MutableLiveData<List<DisplayWallet>> = MutableLiveData(emptyList())
-    private val _error: MutableLiveData<DisplayError> = MutableLiveData()
+    private val _generalError: MutableLiveData<DisplayError> = MutableLiveData()
+    private val _walletManagementError: MutableLiveData<WalletManagementError> = MutableLiveData()
 
     init {
         refreshWallets()
@@ -38,11 +43,15 @@ class WalletListViewModel @ViewModelInject constructor(
 
     fun walletCreated() = refreshWallets()
 
-    fun deleteWalletSelected(displayWallet: DisplayWallet) {
+    fun deleteWalletSelected(walletPosition: Int) {
+        val displayWallet = _wallets.value?.get(walletPosition) ?: return
         viewModelScope.launch(Dispatchers.IO) {
             val result = deleteWallet(displayWallet.wallet)
             if (result.isLeft()) {
-                // TODO: Show error message
+                val error = DisplayError(R.string.default_error) {
+                    deleteWalletSelected(walletPosition)
+                }
+                _walletManagementError.postValue(Pair(error, walletPosition))
             } else {
                 val currentWallets = wallets.value ?: emptyList()
                 val withoutRemoved = currentWallets.filter { it != displayWallet }
@@ -76,7 +85,7 @@ class WalletListViewModel @ViewModelInject constructor(
 
     private fun displayErrorState() {
         val error = DisplayError(R.string.default_error, ::refreshWallets)
-        _error.postValue(error)
+        _generalError.postValue(error)
         _shouldShowProgressBar.postValue(false)
     }
 
