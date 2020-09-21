@@ -33,6 +33,7 @@
         <item name="android:textColor">@color/tundora</item>
         <item name="android:textColorPrimary">@color/tundora</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="snackbarButtonStyle">@style/SnackbarButton</item>
     </style>
 
     <style name="Theme.Mentra.NoActionBar">
@@ -80,4 +81,7 @@
         <item name="android:focusable">true</item>
     </style>
 
+    <style name="SnackbarButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="android:backgroundTint">@android:color/transparent</item>
+    </style>
 </resources>
