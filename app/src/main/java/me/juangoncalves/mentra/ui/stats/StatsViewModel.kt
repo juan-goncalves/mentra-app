@@ -2,60 +2,52 @@ package me.juangoncalves.mentra.ui.stats
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.asLiveData
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import me.juangoncalves.mentra.domain.usecases.CalculatePortfolioDistributionUseCase
-import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueHistoryUseCase
-import me.juangoncalves.mentra.extensions.rightValue
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 // Group a list of entries with a map to build the labels for the time axis
 typealias TimeChartData = Pair<List<Entry>, Map<Int, LocalDate>>
 
 class StatsViewModel @ViewModelInject constructor(
-    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
-    private val calculatePortfolioDistribution: CalculatePortfolioDistributionUseCase
+    portfolioRepository: PortfolioRepository
 ) : ViewModel() {
 
-    val valueChartData: LiveData<TimeChartData> get() = _valueChartData
-    val distributionChartData: LiveData<Array<PiePortion>> get() = _distributionChartData
+    val valueChartData: LiveData<TimeChartData> = portfolioRepository.portfolioValueHistory
+        .toTimeChartData()
+        .flowOn(Dispatchers.Default)
+        .asLiveData()
 
-    private val _valueChartData: MutableLiveData<TimeChartData> = MutableLiveData()
-    private val _distributionChartData: MutableLiveData<Array<PiePortion>> = MutableLiveData()
+    val pieChartData: LiveData<Array<PiePortion>> = portfolioRepository.portfolioDistribution
+        .toPiePortions()
+        .flowOn(Dispatchers.Default)
+        .asLiveData()
 
-    init {
-        loadPortfolioValueChart()
-        loadPortfolioDistributionChart()
+    private fun Flow<List<Price>>.toTimeChartData() = map { prices ->
+        val indexToDate = hashMapOf<Int, LocalDate>()
+        val entries = prices.mapIndexed { index, price ->
+            indexToDate[index] = price.date.toLocalDate()
+            Entry(index.toFloat(), price.value.toFloat())
+        }
+        Pair(entries, indexToDate)
     }
 
-    private fun loadPortfolioValueChart() {
-        viewModelScope.launch(Dispatchers.Default) {
-            val result = getPortfolioValueHistory()
-            result.rightValue?.let { valuesByDate ->
-                val indexToDate = hashMapOf<Int, LocalDate>()
-                val entries = valuesByDate.entries.mapIndexed { index, entry ->
-                    val (date, value) = entry
-                    indexToDate[index] = date
-                    Entry(index.toFloat(), value.toFloat())
-                }
-                _valueChartData.postValue(Pair(entries, indexToDate))
-            }
-        }
-    }
-
-    private fun loadPortfolioDistributionChart() {
-        viewModelScope.launch(Dispatchers.Default) {
-            val result = calculatePortfolioDistribution()
-            result.rightValue?.entries?.map { (coin, value) ->
-                PiePortion(value, coin.symbol)
-            }
-                ?.also { _distributionChartData.postValue(it.toTypedArray()) }
-        }
+    private fun Flow<Map<Coin, Double>>.toPiePortions() = map { coinPercentages ->
+        coinPercentages.entries.map { (coin, value) ->
+            PiePortion(value, coin.symbol)
+        }.toTypedArray()
     }
 
 }

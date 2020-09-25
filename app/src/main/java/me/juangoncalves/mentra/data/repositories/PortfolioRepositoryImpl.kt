@@ -1,44 +1,62 @@
 package me.juangoncalves.mentra.data.repositories
 
 import either.Either
-import me.juangoncalves.mentra.data.sources.portfolio.PortfolioLocalDataSource
-import me.juangoncalves.mentra.db.models.PortfolioValueModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import me.juangoncalves.mentra.data.mapper.PortfolioValueMapper
+import me.juangoncalves.mentra.db.daos.PortfolioDao
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageFailure
+import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
+import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.extensions.Right
 import me.juangoncalves.mentra.extensions.TAG
-import me.juangoncalves.mentra.extensions.toPrice
+import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.log.Logger
-import java.time.LocalDate
 import javax.inject.Inject
 
 class PortfolioRepositoryImpl @Inject constructor(
-    private val localDataSource: PortfolioLocalDataSource,
+    private val portfolioDao: PortfolioDao,
+    private val portfolioValueMapper: PortfolioValueMapper,
+    private val walletRepository: WalletRepository,
     private val logger: Logger
 ) : PortfolioRepository {
 
-    override suspend fun getLatestPortfolioValue(): Either<Failure, Price?> = handleException {
-        val valueModel = localDataSource.getLatestValue()
-        valueModel?.run { valueInUSD.toPrice(timestamp = date.atStartOfDay()) }
-    }
+    override val portfolioValue: Flow<Price> get() = _portfolioValue
+    override val portfolioValueHistory: Flow<List<Price>> get() = _portfolioValueHistory
+    override val portfolioDistribution: Flow<Map<Coin, Double>> get() = _portfolioDistribution
+
+    private val _portfolioValue: Flow<Price> =
+        portfolioDao.getPortfolioValue().map(portfolioValueMapper::map)
+
+    private val _portfolioValueHistory: Flow<List<Price>> =
+        portfolioDao.getPortfolioValueHistory().map(portfolioValueMapper::map)
+
+    private val _portfolioDistribution: Flow<Map<Coin, Double>> =
+        _portfolioValue.onEachCalculateDistribution()
+
 
     override suspend fun updatePortfolioValue(value: Price): Either<Failure, Unit> =
         handleException {
-            val model = PortfolioValueModel(value.value, value.date.toLocalDate())
-            localDataSource.saveValue(model)
+            val model = portfolioValueMapper.map(value)
+            portfolioDao.insertValue(model)
         }
 
-    override suspend fun getPortfolioValueHistory(): Either<Failure, Map<LocalDate, Double>> =
-        handleException {
-            localDataSource.getValueHistory()
-                .sortedByDescending { it.date }
-                .associateBy(
-                    keySelector = { it.date },
-                    valueTransform = { it.valueInUSD }
-                )
+    private fun <T> Flow<T>.onEachCalculateDistribution(): Flow<Map<Coin, Double>> = map {
+        val wallets = walletRepository.getWallets().rightValue ?: emptyList()
+
+        val amountPerCoin = hashMapOf<Coin, Double>()
+        wallets.forEach { wallet ->
+            val price = walletRepository.getWalletValueHistory(wallet).rightValue?.firstOrNull()
+            val value = price?.value ?: 0.0
+            amountPerCoin[wallet.coin] = amountPerCoin.getOrDefault(wallet.coin, 0.0) + value
         }
+
+        val total = amountPerCoin.values.sum()
+        amountPerCoin.mapValues { (_, value) -> value / total }
+    }
 
     private suspend fun <R> handleException(source: suspend () -> R): Either<Failure, R> {
         return try {
