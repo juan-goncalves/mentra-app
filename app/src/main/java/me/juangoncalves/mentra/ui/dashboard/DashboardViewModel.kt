@@ -28,7 +28,8 @@ class DashboardViewModel @ViewModelInject constructor(
     private val _closeEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     init {
-        refreshPortfolioValue()
+        fetchPortfolioValue()
+        // TODO: Subscribe to EventBus to refresh the portfolio value after any updates
     }
 
     fun openStatsSelected() {
@@ -48,11 +49,11 @@ class DashboardViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun refreshPortfolioValue() = viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchPortfolioValue() = viewModelScope.launch(Dispatchers.IO) {
         val result = getLatestPortfolioValue()
         val value = result.fold(
             left = { Price.None },
-            right = { it }
+            right = { it ?: Price.None }
         )
         _portfolioValue.postValue(value)
     }

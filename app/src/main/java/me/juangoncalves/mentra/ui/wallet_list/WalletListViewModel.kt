@@ -9,10 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.DeleteWalletUseCase
-import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
-import me.juangoncalves.mentra.domain.usecases.GetWalletsUseCase
-import me.juangoncalves.mentra.domain.usecases.RefreshWalletValueUseCase
+import me.juangoncalves.mentra.domain.usecases.*
 import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.ui.common.DisplayError
@@ -24,7 +21,8 @@ class WalletListViewModel @ViewModelInject constructor(
     private val getWallets: GetWalletsUseCase,
     private val refreshWalletValue: RefreshWalletValueUseCase,
     private val getGradientCoinIcon: GetGradientCoinIconUseCase,
-    private val deleteWallet: DeleteWalletUseCase
+    private val deleteWallet: DeleteWalletUseCase,
+    private val refreshPortfolioValue: RefreshPortfolioValueUseCase
 ) : ViewModel() {
 
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
@@ -67,7 +65,10 @@ class WalletListViewModel @ViewModelInject constructor(
             val getWalletsResult = getWallets()
             val wallets = getWalletsResult.rightValue ?: return@launch displayErrorState()
 
+            // TODO: Instead of showing placeholders, show the latest saved wallet value
             _wallets.postValue(placeholdersFor(wallets))
+
+            refreshPortfolioValue()
 
             val displayWallets = wallets.map { wallet ->
                 val refreshResult = refreshWalletValue(wallet)
