@@ -1,99 +1,89 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.*
+import me.juangoncalves.mentra.domain.repositories.CoinRepository
+import me.juangoncalves.mentra.domain.repositories.WalletRepository
+import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
+import me.juangoncalves.mentra.domain.usecases.RefreshPortfolioValueUseCase
 import me.juangoncalves.mentra.extensions.isLeft
-import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.ui.common.DisplayError
 
 // Error with the position of the wallet being modified
 typealias WalletManagementError = Pair<DisplayError, Int>
 
 class WalletListViewModel @ViewModelInject constructor(
-    private val getWallets: GetWalletsUseCase,
-    private val refreshWalletValue: RefreshWalletValueUseCase,
+    coinRepository: CoinRepository,
+    private val walletRepository: WalletRepository,
     private val getGradientCoinIcon: GetGradientCoinIconUseCase,
-    private val deleteWallet: DeleteWalletUseCase,
     private val refreshPortfolioValue: RefreshPortfolioValueUseCase
 ) : ViewModel() {
 
+    val wallets: LiveData<List<DisplayWallet>> = coinRepository.pricesOfCoinsInUse
+        .combine(walletRepository.wallets, ::mergeIntoDisplayWallets)
+        .asLiveData()
+
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
-    val wallets: LiveData<List<DisplayWallet>> get() = _wallets
     val generalError: LiveData<DisplayError> get() = _generalError
     val walletManagementError: LiveData<WalletManagementError> get() = _walletManagementError
 
     private val _shouldShowProgressBar: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _wallets: MutableLiveData<List<DisplayWallet>> = MutableLiveData(emptyList())
     private val _generalError: MutableLiveData<DisplayError> = MutableLiveData()
     private val _walletManagementError: MutableLiveData<WalletManagementError> = MutableLiveData()
 
     init {
-        refreshWallets()
+        viewModelScope.launch(Dispatchers.IO) {
+            walletRepository.wallets.collect { updatePrices() }
+        }
     }
 
-    fun walletCreated() = refreshWallets()
-
     fun deleteWalletSelected(walletPosition: Int) {
-        val displayWallet = _wallets.value?.get(walletPosition) ?: return
+        val displayWallet = wallets.value?.get(walletPosition) ?: return
         viewModelScope.launch(Dispatchers.IO) {
-            val result = deleteWallet(displayWallet.wallet)
+            val result = walletRepository.deleteWallet(displayWallet.wallet)
             if (result.isLeft()) {
                 val error = DisplayError(R.string.default_error) {
                     deleteWalletSelected(walletPosition)
                 }
                 _walletManagementError.postValue(Pair(error, walletPosition))
-            } else {
-                val currentWallets = wallets.value ?: emptyList()
-                val withoutRemoved = currentWallets.filter { it != displayWallet }
-                _wallets.postValue(withoutRemoved)
             }
         }
     }
 
-    private fun refreshWallets() {
+    private fun updatePrices() {
         viewModelScope.launch(Dispatchers.IO) {
             _shouldShowProgressBar.postValue(true)
+            val result = refreshPortfolioValue()
 
-            val getWalletsResult = getWallets()
-            val wallets = getWalletsResult.rightValue ?: return@launch displayErrorState()
-
-            // TODO: Instead of showing placeholders, show the latest saved wallet value
-            _wallets.postValue(placeholdersFor(wallets))
-
-            refreshPortfolioValue()
-
-            val displayWallets = wallets.map { wallet ->
-                val refreshResult = refreshWalletValue(wallet)
-                // TODO: Handle failure appropriately
-                val walletValue = refreshResult.rightValue?.value ?: -1.0
-                val coinPrice = walletValue / wallet.amount
-                val iconUrl = getGradientCoinIcon(wallet.coin)
-                DisplayWallet(wallet, iconUrl, coinPrice, walletValue)
+            if (result.isLeft()) {
+                val error = DisplayError(R.string.default_error, ::updatePrices)
+                _generalError.postValue(error)
             }
 
-            _wallets.postValue(displayWallets)
             _shouldShowProgressBar.postValue(false)
         }
     }
 
-    private fun displayErrorState() {
-        val error = DisplayError(R.string.default_error, ::refreshWallets)
-        _generalError.postValue(error)
-        _shouldShowProgressBar.postValue(false)
-    }
-
-    private fun placeholdersFor(wallets: List<Wallet>): List<DisplayWallet> {
-        return wallets.map { wallet ->
-            DisplayWallet(wallet, getGradientCoinIcon(wallet.coin), -1.0, -1.0)
-        }
+    private suspend fun mergeIntoDisplayWallets(
+        coinPrices: Map<Coin, Price>,
+        wallets: List<Wallet>
+    ): List<DisplayWallet> = wallets.map { wallet ->
+        val coinPrice = coinPrices[wallet.coin] ?: Price.None
+        val coinGradientIconUrl = getGradientCoinIcon(wallet.coin)
+        DisplayWallet(
+            wallet,
+            coinGradientIconUrl,
+            coinPrice.value,
+            coinPrice.value * wallet.amount
+        )
     }
 
 }

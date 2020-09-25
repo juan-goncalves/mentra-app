@@ -8,8 +8,6 @@ import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSourceImpl
 import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSourceImpl
-import me.juangoncalves.mentra.data.sources.portfolio.PortfolioLocalDataSource
-import me.juangoncalves.mentra.data.sources.portfolio.PortfolioLocalDataSourceImpl
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSourceImpl
 import javax.inject.Singleton
@@ -29,9 +27,5 @@ abstract class DataSourceModule {
     @Binds
     @Singleton
     abstract fun bindWalletLocalDataSource(impl: WalletLocalDataSourceImpl): WalletLocalDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindPortfolioLocalDataSource(impl: PortfolioLocalDataSourceImpl): PortfolioLocalDataSource
 
 }

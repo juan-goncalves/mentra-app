@@ -1,6 +1,5 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,10 +20,6 @@ import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 
 @AndroidEntryPoint
 class WalletListFragment : Fragment() {
-
-    companion object {
-        private const val CREATE_WALLET = 1001
-    }
 
     private val viewModel: WalletListViewModel by viewModels()
     private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
@@ -54,9 +49,8 @@ class WalletListFragment : Fragment() {
         }
 
         binding.addWalletButton.setOnClickListener {
-            // TODO: Refactor to VM to VM communication
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
-            startActivityForResult(intent, CREATE_WALLET)
+            startActivity(intent)
         }
 
         initObservers()
@@ -87,14 +81,6 @@ class WalletListFragment : Fragment() {
             onCancel = { walletAdapter.notifyItemChanged(position) },
             onConfirm = { viewModel.deleteWalletSelected(position) }
         ).show(parentFragmentManager, "delete_wallet")
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CREATE_WALLET && resultCode == RESULT_OK) {
-            viewModel.walletCreated()
-        }
     }
 
     override fun onDestroyView() {

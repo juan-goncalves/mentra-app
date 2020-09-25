@@ -1,8 +1,11 @@
 package me.juangoncalves.mentra.data.repositories
 
 import either.Either
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
+import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Coin
@@ -17,9 +20,15 @@ import javax.inject.Inject
 
 class WalletRepositoryImpl @Inject constructor(
     private val localDataSource: WalletLocalDataSource,
+    private val walletDao: WalletDao,
     private val walletMapper: WalletMapper,
     private val logger: Logger
 ) : WalletRepository {
+
+    private val _wallets: Flow<List<Wallet>> = walletDao.getWallets().map(walletMapper::map)
+
+    override val wallets: Flow<List<Wallet>>
+        get() = _wallets
 
     override suspend fun getWallets(): Either<Failure, List<Wallet>> = handleException {
         val models = localDataSource.getAll()

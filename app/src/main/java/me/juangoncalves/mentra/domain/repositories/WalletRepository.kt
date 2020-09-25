@@ -1,12 +1,15 @@
 package me.juangoncalves.mentra.domain.repositories
 
 import either.Either
+import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 
 interface WalletRepository {
+
+    val wallets: Flow<List<Wallet>>
 
     suspend fun getWallets(): Either<Failure, List<Wallet>>
 

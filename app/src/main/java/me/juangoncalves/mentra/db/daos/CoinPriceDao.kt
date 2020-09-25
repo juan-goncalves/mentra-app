@@ -4,10 +4,21 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.db.models.CoinPriceModel
 
 @Dao
 interface CoinPriceDao {
+
+    @Query(
+        """
+        SELECT * FROM CoinPrice p, Wallet w
+        WHERE p.coin_symbol = w.coin_symbol AND 
+              p.timestamp = (SELECT MAX(timestamp) FROM CoinPrice WHERE coin_symbol = p.coin_symbol)
+        GROUP BY p.coin_symbol
+    """
+    )
+    fun getActiveCoinPrices(): Flow<List<CoinPriceModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCoinPrice(price: CoinPriceModel)
