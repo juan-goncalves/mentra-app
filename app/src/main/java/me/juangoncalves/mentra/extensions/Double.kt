@@ -1,6 +1,9 @@
 package me.juangoncalves.mentra.extensions
 
+import me.juangoncalves.mentra.domain.models.Currency
+import me.juangoncalves.mentra.domain.models.Price
 import java.text.DecimalFormat
+import java.time.LocalDateTime
 
 fun Double.asCurrency(
     symbol: String = "",
@@ -32,3 +35,8 @@ fun Double.asCoinAmount(): String {
     format.minimumFractionDigits = format.maximumFractionDigits
     return format.format(this)
 }
+
+fun Double.toPrice(
+    currency: Currency = Currency.USD,
+    timestamp: LocalDateTime = LocalDateTime.now()
+): Price = Price(currency, this, timestamp)

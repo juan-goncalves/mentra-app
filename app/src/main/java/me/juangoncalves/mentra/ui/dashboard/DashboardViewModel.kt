@@ -9,12 +9,12 @@ import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.usecases.GetPortfolioValueUseCase
+import me.juangoncalves.mentra.domain.usecases.GetLatestPortfolioValue
 import me.juangoncalves.mentra.ui.common.DisplayError
 import me.juangoncalves.mentra.ui.common.Event
 
 class DashboardViewModel @ViewModelInject constructor(
-    private val getPortfolioValue: GetPortfolioValueUseCase
+    private val getLatestPortfolioValue: GetLatestPortfolioValue
 ) : ViewModel() {
 
     val portfolioValue: LiveData<Price> get() = _portfolioValue
@@ -49,7 +49,7 @@ class DashboardViewModel @ViewModelInject constructor(
     }
 
     private fun refreshPortfolioValue() = viewModelScope.launch(Dispatchers.IO) {
-        val result = getPortfolioValue()
+        val result = getLatestPortfolioValue()
         val value = result.fold(
             left = { Price.None },
             right = { it }
