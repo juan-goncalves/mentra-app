@@ -9,7 +9,7 @@ import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 
 interface CoinRepository {
-
+    
     /**
      * Latest available price per used coin.
      * A coin is considered to be in use if there's a wallet for it.

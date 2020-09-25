@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import either.Either
 import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,16 +13,17 @@ import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.CreateWalletUseCase
-import me.juangoncalves.mentra.domain.usecases.GetCoinsUseCase
+import me.juangoncalves.mentra.domain.repositories.CoinRepository
+import me.juangoncalves.mentra.domain.repositories.WalletRepository
+import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.ui.common.Event
 import java.util.*
 
 typealias WarningEvent = Event<Int>
 
 class WalletCreationViewModel @ViewModelInject constructor(
-    private val createWallet: CreateWalletUseCase,
-    private val getCoins: GetCoinsUseCase
+    private val coinRepository: CoinRepository,
+    private val walletRepository: WalletRepository
 ) : ViewModel() {
 
     val coins: LiveData<List<Coin>> get() = _coins
@@ -45,7 +45,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
     private fun fetchCoins() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = getCoins()
+            val result = coinRepository.getCoins()
             val coins: List<Coin> = result.fold(
                 left = { emptyList() },
                 right = { it }
@@ -88,8 +88,8 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val wallet = Wallet(coin, parsedAmount)
-            val result = createWallet(wallet)
-            if (result is Either.Left) {
+            val result = walletRepository.createWallet(wallet)
+            if (result.isLeft()) {
                 // TODO: Show error / retry
             } else {
                 _onSuccessfulSave.postValue(Unit)

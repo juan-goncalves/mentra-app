@@ -4,17 +4,18 @@ import either.Either
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
+import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.extensions.*
 import javax.inject.Inject
 
 class RefreshPortfolioValueUseCase @Inject constructor(
-    private val getWallets: GetWalletsUseCase,
+    private val walletRepository: WalletRepository,
     private val refreshWalletValue: RefreshWalletValueUseCase,
     private val portfolioRepository: PortfolioRepository
 ) {
 
     suspend operator fun invoke(): Either<Failure, Price> {
-        val getWalletsResult = getWallets()
+        val getWalletsResult = walletRepository.getWallets()
         val wallets = getWalletsResult.rightValue ?: return Left(getWalletsResult.requireLeft())
 
         val total = wallets.sumByDouble { wallet ->

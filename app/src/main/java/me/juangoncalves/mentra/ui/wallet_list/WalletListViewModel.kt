@@ -3,7 +3,7 @@ package me.juangoncalves.mentra.ui.wallet_list
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
@@ -41,7 +41,7 @@ class WalletListViewModel @ViewModelInject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            walletRepository.wallets.collect { updatePrices() }
+            walletRepository.wallets.collectLatest { updatePrices() }
         }
     }
 

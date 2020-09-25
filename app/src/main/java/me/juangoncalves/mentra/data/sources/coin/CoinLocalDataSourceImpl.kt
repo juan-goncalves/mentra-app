@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.data.sources.coin
 
+import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.db.daos.CoinDao
 import me.juangoncalves.mentra.db.daos.CoinPriceDao
@@ -50,6 +51,9 @@ class CoinLocalDataSourceImpl @Inject constructor(
             if (coin != null) coinMapper.map(coin) else null
         }
     }
+
+    override fun getActiveCoinPricesStream(): Flow<List<CoinPriceModel>> =
+        coinPriceDao.getActiveCoinPrices()
 
     @Throws(StorageException::class)
     private suspend fun <T> orStorageException(
