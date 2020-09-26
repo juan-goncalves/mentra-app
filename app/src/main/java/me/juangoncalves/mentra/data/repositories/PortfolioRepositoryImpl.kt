@@ -2,6 +2,8 @@ package me.juangoncalves.mentra.data.repositories
 
 import either.Either
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import me.juangoncalves.mentra.data.mapper.PortfolioValueMapper
 import me.juangoncalves.mentra.db.daos.PortfolioDao
@@ -29,13 +31,19 @@ class PortfolioRepositoryImpl @Inject constructor(
     override val portfolioDistribution: Flow<Map<Coin, Double>> get() = _portfolioDistribution
 
     private val _portfolioValue: Flow<Price> =
-        portfolioDao.getPortfolioValueStream().map(portfolioValueMapper::map)
+        portfolioDao.getPortfolioValueStream()
+            .catch { logger.error(TAG, "Exception getting portfolio value.\n$it") }
+            .filterNotNull()
+            .map(portfolioValueMapper::map)
 
     private val _portfolioValueHistory: Flow<List<Price>> =
-        portfolioDao.getPortfolioHistoricValuesStream().map(portfolioValueMapper::map)
+        portfolioDao.getPortfolioHistoricValuesStream()
+            .catch { logger.error(TAG, "Exception getting portfolio value history.\n$it") }
+            .map(portfolioValueMapper::map)
 
     private val _portfolioDistribution: Flow<Map<Coin, Double>> =
         _portfolioValue.onEachCalculateDistribution()
+            .catch { logger.error(TAG, "Exception calculating portfolio distribution.\n$it") }
 
 
     override suspend fun updatePortfolioValue(value: Price): Either<Failure, Unit> =

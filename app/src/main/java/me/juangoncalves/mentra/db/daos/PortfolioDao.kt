@@ -11,7 +11,7 @@ import me.juangoncalves.mentra.db.models.PortfolioValueModel
 interface PortfolioDao {
 
     @Query("SELECT * FROM PortfolioValue ORDER BY date DESC LIMIT 1")
-    fun getPortfolioValueStream(): Flow<PortfolioValueModel>
+    fun getPortfolioValueStream(): Flow<PortfolioValueModel?>
 
     @Query("SELECT * FROM PortfolioValue ORDER BY date ASC")
     fun getPortfolioHistoricValuesStream(): Flow<List<PortfolioValueModel>>
