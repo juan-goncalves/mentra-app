@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -17,6 +18,7 @@ import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
+import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
 
 @AndroidEntryPoint
 class WalletListFragment : Fragment() {
@@ -26,6 +28,18 @@ class WalletListFragment : Fragment() {
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setFragmentResultListener(DeleteWalletDialogFragment.REQUEST_CODE) { _, bundle ->
+            val wallet = bundle[DeleteWalletDialogFragment.WALLET_KEY]
+            val wasDeleted = bundle.getBoolean(DeleteWalletDialogFragment.DELETION_KEY, false)
+            if (wasDeleted) return@setFragmentResultListener
+
+            val position = walletAdapter.data.indexOfFirst { it.wallet == wallet }
+            if (position > -1) walletAdapter.notifyItemChanged(position)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,10 +91,9 @@ class WalletListFragment : Fragment() {
     }
 
     private fun onDeleteItemAtPosition(position: Int) {
-        DeleteWalletConfirmationDialogFragment(
-            onCancel = { walletAdapter.notifyItemChanged(position) },
-            onConfirm = { viewModel.deleteWalletSelected(position) }
-        ).show(parentFragmentManager, "delete_wallet")
+        DeleteWalletDialogFragment
+            .newInstance(walletAdapter.data[position].wallet)
+            .show(parentFragmentManager, "delete_wallet")
     }
 
     override fun onDestroyView() {

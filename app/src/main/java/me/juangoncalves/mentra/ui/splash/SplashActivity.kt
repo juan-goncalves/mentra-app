@@ -38,7 +38,7 @@ class SplashActivity : AppCompatActivity() {
         }
 
         viewModel.navigateToDashboard.observe(this) { event ->
-            event.getContent()?.let { launchDashboardActivity() }
+            event.content?.run { launchDashboardActivity() }
         }
     }
 
