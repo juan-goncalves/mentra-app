@@ -16,9 +16,9 @@ interface CoinPriceDao {
         WHERE p.coin_symbol = w.coin_symbol AND 
               p.timestamp = (SELECT MAX(timestamp) FROM CoinPrice WHERE coin_symbol = p.coin_symbol)
         GROUP BY p.coin_symbol
-    """
+        """
     )
-    fun getActiveCoinPrices(): Flow<List<CoinPriceModel>>
+    fun getActiveCoinPricesStream(): Flow<List<CoinPriceModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCoinPrice(price: CoinPriceModel)

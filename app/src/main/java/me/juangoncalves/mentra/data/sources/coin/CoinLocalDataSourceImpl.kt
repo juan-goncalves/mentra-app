@@ -53,7 +53,7 @@ class CoinLocalDataSourceImpl @Inject constructor(
     }
 
     override fun getActiveCoinPricesStream(): Flow<List<CoinPriceModel>> =
-        coinPriceDao.getActiveCoinPrices()
+        coinPriceDao.getActiveCoinPricesStream()
 
     @Throws(StorageException::class)
     private suspend fun <T> orStorageException(

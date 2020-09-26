@@ -37,7 +37,7 @@ class WalletRepositoryImplTest {
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
+        MockKAnnotations.init(this, relaxed = true)
         val walletMapper = WalletMapper(coinLocalDataSource)
         sut = WalletRepositoryImpl(walletLocalDataSource, walletMapper, loggerMock)
     }

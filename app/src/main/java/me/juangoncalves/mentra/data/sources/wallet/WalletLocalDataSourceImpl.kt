@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.data.sources.wallet
 
+import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.daos.WalletValueDao
 import me.juangoncalves.mentra.db.models.WalletModel
@@ -14,6 +15,8 @@ class WalletLocalDataSourceImpl @Inject constructor(
     private val walletDao: WalletDao,
     private val walletValueDao: WalletValueDao
 ) : WalletLocalDataSource {
+
+    override fun getWalletsStream(): Flow<List<WalletModel>> = walletDao.getWalletsStream()
 
     override suspend fun getAll(): List<WalletModel> {
         return orStorageException { walletDao.getAll() }

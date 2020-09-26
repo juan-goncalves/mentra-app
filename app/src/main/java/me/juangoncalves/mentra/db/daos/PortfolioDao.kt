@@ -11,18 +11,12 @@ import me.juangoncalves.mentra.db.models.PortfolioValueModel
 interface PortfolioDao {
 
     @Query("SELECT * FROM PortfolioValue ORDER BY date DESC LIMIT 1")
-    fun getPortfolioValue(): Flow<PortfolioValueModel>
+    fun getPortfolioValueStream(): Flow<PortfolioValueModel>
 
     @Query("SELECT * FROM PortfolioValue ORDER BY date ASC")
-    fun getPortfolioValueHistory(): Flow<List<PortfolioValueModel>>
-
-    @Query("SELECT * FROM PortfolioValue ORDER BY date DESC LIMIT 1")
-    suspend fun getLatestPortfolioValue(): PortfolioValueModel?
+    fun getPortfolioHistoricValuesStream(): Flow<List<PortfolioValueModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertValue(value: PortfolioValueModel)
-
-    @Query("SELECT * FROM PortfolioValue")
-    suspend fun getValueHistory(): List<PortfolioValueModel>
 
 }

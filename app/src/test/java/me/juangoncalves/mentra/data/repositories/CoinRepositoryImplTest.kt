@@ -28,7 +28,7 @@ class CoinRepositoryImplTest {
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
+        MockKAnnotations.init(this, relaxUnitFun = true, relaxed = true)
         coinRepository =
             CoinRepositoryImpl(remoteDataSource, localDataSource, CoinMapper(), loggerMock)
     }

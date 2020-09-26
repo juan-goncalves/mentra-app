@@ -13,7 +13,8 @@ class PortfolioValueMapper @Inject constructor() {
 
     suspend fun map(models: List<PortfolioValueModel>): List<Price> = models.map { map(it) }
 
-    suspend fun map(price: Price): PortfolioValueModel =
-        PortfolioValueModel(price.value, price.date.toLocalDate())
+    suspend fun map(price: Price): PortfolioValueModel = with(price) {
+        PortfolioValueModel(value, date.toLocalDate())
+    }
 
 }

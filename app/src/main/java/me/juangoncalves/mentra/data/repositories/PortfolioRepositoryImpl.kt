@@ -29,10 +29,10 @@ class PortfolioRepositoryImpl @Inject constructor(
     override val portfolioDistribution: Flow<Map<Coin, Double>> get() = _portfolioDistribution
 
     private val _portfolioValue: Flow<Price> =
-        portfolioDao.getPortfolioValue().map(portfolioValueMapper::map)
+        portfolioDao.getPortfolioValueStream().map(portfolioValueMapper::map)
 
     private val _portfolioValueHistory: Flow<List<Price>> =
-        portfolioDao.getPortfolioValueHistory().map(portfolioValueMapper::map)
+        portfolioDao.getPortfolioHistoricValuesStream().map(portfolioValueMapper::map)
 
     private val _portfolioDistribution: Flow<Map<Coin, Double>> =
         _portfolioValue.onEachCalculateDistribution()

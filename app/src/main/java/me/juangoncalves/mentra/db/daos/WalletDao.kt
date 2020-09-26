@@ -8,7 +8,7 @@ import me.juangoncalves.mentra.db.models.WalletModel
 interface WalletDao {
 
     @Query("SELECT * FROM Wallet")
-    fun getWallets(): Flow<List<WalletModel>>
+    fun getWalletsStream(): Flow<List<WalletModel>>
 
     @Query("SELECT * FROM Wallet")
     suspend fun getAll(): List<WalletModel>
