@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import me.juangoncalves.mentra.databinding.DeleteWalletConfirmationDialogFragmentBinding
+import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
 
@@ -32,7 +32,7 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
 
     private val viewModel: WalletDeletionViewModel by viewModels()
 
-    private var _binding: DeleteWalletConfirmationDialogFragmentBinding? = null
+    private var _binding: DeleteWalletDialogFragmentBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var wallet: Wallet
@@ -49,7 +49,7 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = DeleteWalletConfirmationDialogFragmentBinding.inflate(inflater, container, false)
+        _binding = DeleteWalletDialogFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
