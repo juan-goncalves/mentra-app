@@ -8,10 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import me.juangoncalves.mentra.db.AppDatabase
-import me.juangoncalves.mentra.db.daos.CoinDao
-import me.juangoncalves.mentra.db.daos.CoinPriceDao
-import me.juangoncalves.mentra.db.daos.WalletDao
-import me.juangoncalves.mentra.db.daos.WalletValueDao
+import me.juangoncalves.mentra.db.daos.*
 import javax.inject.Singleton
 
 @Module
@@ -37,5 +34,8 @@ object DatabaseModule {
 
     @Provides
     fun provideWalletValueDao(database: AppDatabase): WalletValueDao = database.walletValueDao()
+
+    @Provides
+    fun providePortfolioDao(database: AppDatabase): PortfolioDao = database.portfolioDao()
 
 }

@@ -1,9 +1,12 @@
 package me.juangoncalves.mentra.data.repositories
 
 import either.Either
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
+import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.domain.errors.*
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Currency
@@ -11,6 +14,7 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.extensions.elapsedMinutes
+import me.juangoncalves.mentra.extensions.toPrice
 import me.juangoncalves.mentra.log.Logger
 import javax.inject.Inject
 
@@ -20,6 +24,12 @@ class CoinRepositoryImpl @Inject constructor(
     private val coinMapper: CoinMapper,
     private val logger: Logger
 ) : CoinRepository {
+
+    override val pricesOfCoinsInUse: Flow<Map<Coin, Price>>
+        get() = _pricesOfCoinsInUse
+
+    private val _pricesOfCoinsInUse: Flow<Map<Coin, Price>> =
+        localDataSource.getActiveCoinPricesStream().associateByCoin()
 
     override suspend fun getCoins(): Either<Failure, List<Coin>> {
         val cachedCoins = try {
@@ -81,5 +91,18 @@ class CoinRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> =
+        map { prices ->
+            val coinPricesMap = hashMapOf<Coin, Price>()
+
+            prices.forEach { priceModel ->
+                val coin = localDataSource.findCoinBySymbol(priceModel.coinSymbol) ?: return@forEach
+                coinPricesMap[coin] =
+                    priceModel.valueInUSD.toPrice(timestamp = priceModel.timestamp)
+            }
+
+            coinPricesMap
+        }
 
 }

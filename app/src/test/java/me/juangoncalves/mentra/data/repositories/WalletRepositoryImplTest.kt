@@ -1,25 +1,27 @@
 package me.juangoncalves.mentra.data.repositories
 
 import either.Either
-import io.mockk.MockKAnnotations
-import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.db.models.WalletModel
+import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.extensions.leftValue
+import me.juangoncalves.mentra.extensions.requireLeft
+import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.log.Logger
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
+import org.hamcrest.Matchers.isA
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +37,7 @@ class WalletRepositoryImplTest {
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
+        MockKAnnotations.init(this, relaxed = true)
         val walletMapper = WalletMapper(coinLocalDataSource)
         sut = WalletRepositoryImpl(walletLocalDataSource, walletMapper, loggerMock)
     }
@@ -46,7 +48,7 @@ class WalletRepositoryImplTest {
         val btcWalletModel = WalletModel("BTC", 0.781, 1)
         val ethWalletModel = WalletModel("ETH", 1.25, 2)
         coEvery {
-            walletLocalDataSource.getStoredWallets()
+            walletLocalDataSource.getAll()
         } returns listOf(btcWalletModel, ethWalletModel)
         coEvery { coinLocalDataSource.findCoinBySymbol("BTC") } returns Bitcoin
         coEvery { coinLocalDataSource.findCoinBySymbol("ETH") } returns Ethereum
@@ -69,7 +71,7 @@ class WalletRepositoryImplTest {
     fun `getWallets returns a StorageFailure when a StorageException is thrown and logs it`() =
         runBlocking {
             // Arrange
-            coEvery { walletLocalDataSource.getStoredWallets() } throws StorageException()
+            coEvery { walletLocalDataSource.getAll() } throws StorageException()
 
             // act
             val result = sut.getWallets()
@@ -85,13 +87,16 @@ class WalletRepositoryImplTest {
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45)
+            val slot = slot<WalletModel>()
+            coEvery { walletLocalDataSource.save(capture(slot)) } just Runs
 
             // Act
             val result = sut.createWallet(wallet)
 
             // Assert
-            coVerify { walletLocalDataSource.storeWallet(wallet) }
-            assert(result is Right)
+            assertNotNull(result.rightValue)
+            assertEquals(Bitcoin.symbol, slot.captured.coinSymbol)
+            assertThat(slot.captured.amount, closeTo(0.45, 0.0001))
         }
 
     @Test
@@ -99,7 +104,7 @@ class WalletRepositoryImplTest {
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45)
-            coEvery { walletLocalDataSource.storeWallet(any()) } throws StorageException()
+            coEvery { walletLocalDataSource.save(any()) } throws StorageException()
 
             // Act
             val result = sut.createWallet(wallet)
@@ -114,7 +119,7 @@ class WalletRepositoryImplTest {
     fun `findWalletsByCoin uses the local data source to find the wallets by coin`() = runBlocking {
         // Arrange
         val walletModel = WalletModel("BTC", 0.781, 1)
-        coEvery { walletLocalDataSource.findWalletsByCoin(Bitcoin) } returns listOf(walletModel)
+        coEvery { walletLocalDataSource.findByCoin(Bitcoin) } returns listOf(walletModel)
         coEvery { coinLocalDataSource.findCoinBySymbol("BTC") } returns Bitcoin
 
         // Act
@@ -122,7 +127,7 @@ class WalletRepositoryImplTest {
 
         // Assert
         val data = (result as Right).value
-        coVerify { walletLocalDataSource.findWalletsByCoin(Bitcoin) }
+        coVerify { walletLocalDataSource.findByCoin(Bitcoin) }
         assertEquals(1, data.size)
     }
 
@@ -130,7 +135,7 @@ class WalletRepositoryImplTest {
     fun `findWalletsByCoin returns a StorageFailure when a StorageException is thrown and logs it`() =
         runBlocking {
             // Arrange
-            coEvery { walletLocalDataSource.findWalletsByCoin(any()) } throws StorageException()
+            coEvery { walletLocalDataSource.findByCoin(any()) } throws StorageException()
 
             // Act
             val result = sut.findWalletsByCoin(Ripple)
@@ -153,7 +158,7 @@ class WalletRepositoryImplTest {
 
             // Assert
             assertEquals(true, result is Right)
-            coVerify { walletLocalDataSource.updateWalletValue(wallet, newPrice) }
+            coVerify { walletLocalDataSource.updateValue(wallet, newPrice) }
         }
 
     @Test
@@ -163,7 +168,7 @@ class WalletRepositoryImplTest {
             val wallet = Wallet(Ripple, 20.781, 1)
             val newPrice = Price(Currency.USD, 1.34, LocalDateTime.now())
             coEvery {
-                walletLocalDataSource.updateWalletValue(any(), any())
+                walletLocalDataSource.updateValue(any(), any())
             } throws StorageException()
 
             // Act
@@ -173,6 +178,37 @@ class WalletRepositoryImplTest {
             val failure = (result as Left).value
             assertTrue(failure is StorageFailure)
             verify { loggerMock.error(any(), any()) }
+        }
+
+    @Test
+    fun `deleteWallet passes the id of the wallet to delete to the local data source`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 0.45, 15)
+            val slot = slot<WalletModel>()
+            coEvery { walletLocalDataSource.delete(capture(slot)) } just Runs
+
+            // Act
+            val result = sut.deleteWallet(wallet)
+
+            // Assert
+            assertNotNull(result.rightValue)
+            assertEquals(15, slot.captured.id)
+        }
+
+    @Test
+    fun `deleteWallet returns a failure when the local data source throws an exception`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 0.45, 15)
+            coEvery { walletLocalDataSource.delete(any()) } throws Exception()
+
+            // Act
+            val result = sut.deleteWallet(wallet)
+
+            // Assert
+            assertNotNull(result.leftValue)
+            assertThat(result.requireLeft(), isA(Failure::class.java))
         }
 
     /*

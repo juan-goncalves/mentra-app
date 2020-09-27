@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.data.sources.wallet
 
+import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.db.models.WalletValueModel
 import me.juangoncalves.mentra.domain.models.Coin
@@ -9,14 +10,18 @@ import me.juangoncalves.mentra.domain.models.Wallet
 
 interface WalletLocalDataSource {
 
-    suspend fun getStoredWallets(): List<WalletModel>
+    suspend fun getAll(): List<WalletModel>
 
-    suspend fun storeWallet(wallet: Wallet)
+    suspend fun save(wallet: WalletModel)
 
-    suspend fun findWalletsByCoin(coin: Coin): List<WalletModel>
+    suspend fun delete(wallet: WalletModel)
 
-    suspend fun updateWalletValue(wallet: Wallet, price: Price)
+    suspend fun findByCoin(coin: Coin): List<WalletModel>
 
-    suspend fun getWalletValueHistory(wallet: Wallet): List<WalletValueModel>
+    suspend fun updateValue(wallet: Wallet, price: Price)
+
+    suspend fun getValueHistory(wallet: Wallet): List<WalletValueModel>
+
+    fun getWalletsStream(): Flow<List<WalletModel>>
 
 }

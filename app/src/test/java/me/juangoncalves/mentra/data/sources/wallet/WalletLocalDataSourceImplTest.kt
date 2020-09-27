@@ -9,7 +9,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
-import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.daos.WalletValueDao
@@ -50,14 +49,14 @@ class WalletLocalDataSourceImplTest {
     }
 
     @Test
-    fun `getStoredWallets returns every stored wallet in the database`() = runBlocking {
+    fun `getAll returns every stored wallet in the database`() = runBlocking {
         // Arrange
         val btcWallet = WalletModel("BTC", 0.53)
         val ethWallet = WalletModel("ETH", 1.0)
         walletDao.insertAll(btcWallet, ethWallet)
 
         // Act
-        val result = sut.getStoredWallets()
+        val result = sut.getAll()
 
         // Assert
         val savedBtcWallet = result.find { it.coinSymbol == "BTC" }
@@ -70,7 +69,7 @@ class WalletLocalDataSourceImplTest {
     }
 
     @Test(expected = StorageException::class)
-    fun `getStoredWallets throws a StorageException when the database throws an exception`() =
+    fun `getAll throws a StorageException when the database throws an exception`() =
         runBlocking {
             // Arrange
             walletDao = mockk()
@@ -78,19 +77,19 @@ class WalletLocalDataSourceImplTest {
             initializeSut()
 
             // Act
-            sut.getStoredWallets()
+            sut.getAll()
 
             // Assert
             Unit
         }
 
     @Test
-    fun `storeWallet maps and inserts the received wallet into the database`() = runBlocking {
+    fun `save inserts the received wallet into the database`() = runBlocking {
         // Arrange
-        val wallet = Wallet(Bitcoin, 0.876)
+        val wallet = WalletModel("BTC", 0.876)
 
         // Act
-        sut.storeWallet(wallet)
+        sut.save(wallet)
 
         // Assert
         val storedWallets = walletDao.getAll()
@@ -101,23 +100,23 @@ class WalletLocalDataSourceImplTest {
     }
 
     @Test(expected = StorageException::class)
-    fun `storeWallet throws a StorageException when the database throws an exception`() =
+    fun `save throws a StorageException when the database throws an exception`() =
         runBlocking {
             // Arrange
-            val wallet = Wallet(Bitcoin, 0.876)
+            val wallet = WalletModel("BTC", 0.876)
             walletDao = mockk()
             coEvery { walletDao.insertAll(any()) } throws SQLiteException()
             initializeSut()
 
             // Act
-            sut.storeWallet(wallet)
+            sut.save(wallet)
 
             // Assert
             Unit
         }
 
     @Test
-    fun `findWalletsByCoin returns all the wallets that hold the specified coin`() =
+    fun `findByCoin returns all the wallets that hold the specified coin`() =
         runBlocking {
             // Arrange
             val btcWallet1 = WalletModel("BTC", 0.22)
@@ -126,7 +125,7 @@ class WalletLocalDataSourceImplTest {
             walletDao.insertAll(btcWallet1, ethWallet, btcWallet2)
 
             // Act
-            val result = sut.findWalletsByCoin(Bitcoin)
+            val result = sut.findByCoin(Bitcoin)
 
             // Assert
             assertEquals(2, result.size)
@@ -136,7 +135,7 @@ class WalletLocalDataSourceImplTest {
         }
 
     @Test(expected = StorageException::class)
-    fun `findWalletsByCoin throws a StorageException when the database throws an exception`() =
+    fun `findByCoin throws a StorageException when the database throws an exception`() =
         runBlocking {
             // Arrange
             walletDao = mockk()
@@ -144,14 +143,14 @@ class WalletLocalDataSourceImplTest {
             initializeSut()
 
             // Act
-            sut.findWalletsByCoin(Ripple)
+            sut.findByCoin(Ripple)
 
             // Assert
             Unit
         }
 
     @Test
-    fun `updateWalletValue inserts the wallet value into the database`() = runBlocking {
+    fun `updateValue inserts the wallet value into the database`() = runBlocking {
         // Arrange
         val model = WalletModel("BTC", 0.22, 1)
         walletDao.insertAll(model)
@@ -159,7 +158,7 @@ class WalletLocalDataSourceImplTest {
         val newValue = Price(Currency.USD, 1235.11, LocalDateTime.now())
 
         // Act
-        sut.updateWalletValue(wallet, newValue)
+        sut.updateValue(wallet, newValue)
 
         // Assert
         val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
@@ -168,7 +167,7 @@ class WalletLocalDataSourceImplTest {
     }
 
     @Test
-    fun `updateWalletValue replaces the wallet value of the day if it already exists`() =
+    fun `updateValue replaces the wallet value of the day if it already exists`() =
         runBlocking {
             // Arrange
             val model = WalletModel("BTC", 0.22, 1)
@@ -179,7 +178,7 @@ class WalletLocalDataSourceImplTest {
             val newValue = Price(Currency.USD, 432.11, repeatedDay.atStartOfDay())
 
             // Act
-            sut.updateWalletValue(wallet, newValue)
+            sut.updateValue(wallet, newValue)
 
             // Assert
             val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
@@ -188,7 +187,7 @@ class WalletLocalDataSourceImplTest {
         }
 
     @Test(expected = StorageException::class)
-    fun `updateWalletValue throws a StorageException when the database throws an exception`() =
+    fun `updateValue throws a StorageException when the database throws an exception`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 3.21, 1)
@@ -198,11 +197,24 @@ class WalletLocalDataSourceImplTest {
             initializeSut()
 
             // Act
-            sut.updateWalletValue(wallet, newValue)
+            sut.updateValue(wallet, newValue)
 
             // Assert
             Unit
         }
+
+    @Test
+    fun `delete removes the wallet from the database`() = runBlocking {
+        // Arrange
+        walletDao.insertAll(BTCWalletModel, ETHWalletModel, XRPWalletModel)
+
+        // Act
+        sut.delete(ETHWalletModel)
+
+        // Assert
+        val foundWallet = walletDao.getAll().find { it.coinSymbol == "ETH" }
+        assertNull(foundWallet)
+    }
 
     /*
         TODO: Test the `getWalletValueHistory` method
@@ -213,7 +225,7 @@ class WalletLocalDataSourceImplTest {
     */
 
     private fun initializeSut() {
-        sut = WalletLocalDataSourceImpl(walletDao, walletValueDao, WalletMapper(mockk()))
+        sut = WalletLocalDataSourceImpl(walletDao, walletValueDao)
     }
 
     private fun insertDefaultCoins() = runBlocking {

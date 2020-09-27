@@ -18,4 +18,6 @@ class WalletMapper @Inject constructor(
         return Wallet(coin, model.amount, model.id)
     }
 
+    suspend fun map(models: List<WalletModel>): List<Wallet> = models.map { map(it) }
+
 }

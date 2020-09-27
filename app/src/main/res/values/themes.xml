@@ -18,6 +18,10 @@
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/tundora</item>
 
+        <!-- Error color. -->
+        <item name="colorError">@color/torch_red</item>
+        <item name="colorOnError">@color/white</item>
+
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
@@ -29,6 +33,7 @@
         <item name="android:textColor">@color/tundora</item>
         <item name="android:textColorPrimary">@color/tundora</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="snackbarButtonStyle">@style/SnackbarButton</item>
     </style>
 
     <style name="Theme.Mentra.NoActionBar">
@@ -63,5 +68,20 @@
         <item name="cornerSizeTopLeft">16dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
+    <style name="BottomSheetOption">
+        <item name="android:padding">12dp</item>
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:drawableTint">?attr/colorOnSurface</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="SnackbarButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="android:backgroundTint">@android:color/transparent</item>
     </style>
 </resources>

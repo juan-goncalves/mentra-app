@@ -48,15 +48,15 @@ class DashboardActivity : FragmentActivity() {
         }
 
         viewModel.closeEvent.observe(this) { event ->
-            event.getContent()?.let { finish() }
+            event.content?.run { finish() }
         }
     }
 
     private fun loadStatsTab() {
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(
-                R.anim.fade_in, R.anim.fade_out,
-                R.anim.fade_in, R.anim.fade_out
+                R.animator.fade_in, R.animator.fade_out,
+                R.animator.fade_in, R.animator.fade_out
             )
             .showExistingOrCreate(
                 STATS_FRAGMENT_TAG,
@@ -73,8 +73,8 @@ class DashboardActivity : FragmentActivity() {
     private fun loadWalletsTab() {
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(
-                R.anim.fade_in, R.anim.fade_out,
-                R.anim.fade_in, R.anim.fade_out
+                R.animator.fade_in, R.animator.fade_out,
+                R.animator.fade_in, R.animator.fade_out
             )
             .showExistingOrCreate(
                 WALLETS_FRAGMENT_TAG,

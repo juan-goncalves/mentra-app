@@ -3,23 +3,18 @@ package me.juangoncalves.mentra.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import me.juangoncalves.mentra.db.daos.CoinDao
-import me.juangoncalves.mentra.db.daos.CoinPriceDao
-import me.juangoncalves.mentra.db.daos.WalletDao
-import me.juangoncalves.mentra.db.daos.WalletValueDao
-import me.juangoncalves.mentra.db.models.CoinModel
-import me.juangoncalves.mentra.db.models.CoinPriceModel
-import me.juangoncalves.mentra.db.models.WalletModel
-import me.juangoncalves.mentra.db.models.WalletValueModel
+import me.juangoncalves.mentra.db.daos.*
+import me.juangoncalves.mentra.db.models.*
 
 @Database(
     entities = [
         CoinModel::class,
         CoinPriceModel::class,
         WalletModel::class,
-        WalletValueModel::class
+        WalletValueModel::class,
+        PortfolioValueModel::class
     ],
-    version = 7,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -32,5 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletDao(): WalletDao
 
     abstract fun walletValueDao(): WalletValueDao
+
+    abstract fun portfolioDao(): PortfolioDao
 
 }

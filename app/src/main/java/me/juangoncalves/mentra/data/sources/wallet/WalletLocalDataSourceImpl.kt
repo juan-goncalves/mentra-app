@@ -1,6 +1,6 @@
 package me.juangoncalves.mentra.data.sources.wallet
 
-import me.juangoncalves.mentra.data.mapper.WalletMapper
+import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.daos.WalletValueDao
 import me.juangoncalves.mentra.db.models.WalletModel
@@ -13,36 +13,40 @@ import javax.inject.Inject
 
 class WalletLocalDataSourceImpl @Inject constructor(
     private val walletDao: WalletDao,
-    private val walletValueDao: WalletValueDao,
-    private val walletMapper: WalletMapper
+    private val walletValueDao: WalletValueDao
 ) : WalletLocalDataSource {
 
-    override suspend fun getStoredWallets(): List<WalletModel> {
+    override fun getWalletsStream(): Flow<List<WalletModel>> = walletDao.getWalletsStream()
+
+    override suspend fun getAll(): List<WalletModel> {
         return orStorageException { walletDao.getAll() }
     }
 
-    override suspend fun storeWallet(wallet: Wallet) {
-        val model = walletMapper.map(wallet)
+    override suspend fun save(wallet: WalletModel) {
         orStorageException("Exception when saving wallet.") {
-            walletDao.insertAll(model)
+            walletDao.insertAll(wallet)
         }
     }
 
-    override suspend fun findWalletsByCoin(coin: Coin): List<WalletModel> {
+    override suspend fun findByCoin(coin: Coin): List<WalletModel> {
         return orStorageException { walletDao.findByCoin(coin.symbol) }
     }
 
-    override suspend fun updateWalletValue(wallet: Wallet, price: Price) {
+    override suspend fun updateValue(wallet: Wallet, price: Price) {
         val model = WalletValueModel(wallet.id, price.value, price.date.toLocalDate())
         orStorageException("Exception when inserting wallet value.") {
             walletValueDao.insert(model)
         }
     }
 
-    override suspend fun getWalletValueHistory(wallet: Wallet): List<WalletValueModel> {
+    override suspend fun getValueHistory(wallet: Wallet): List<WalletValueModel> {
         return orStorageException("Exception while fetching the wallet value history.") {
             walletValueDao.getWalletValueHistory(wallet.id)
         }
+    }
+
+    override suspend fun delete(wallet: WalletModel) {
+        walletDao.delete(wallet)
     }
 
     @Throws(StorageException::class)

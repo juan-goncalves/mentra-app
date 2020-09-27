@@ -55,7 +55,7 @@ class StatsFragment : Fragment() {
             }
         }
 
-        viewModel.distributionChartData.observe(viewLifecycleOwner) { entries ->
+        viewModel.pieChartData.observe(viewLifecycleOwner) { entries ->
             binding.distributionPieChart.setPortions(entries)
         }
     }

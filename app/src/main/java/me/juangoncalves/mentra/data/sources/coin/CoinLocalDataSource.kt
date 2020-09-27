@@ -1,6 +1,8 @@
 package me.juangoncalves.mentra.data.sources.coin
 
+import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.db.models.CoinModel
+import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 
@@ -17,5 +19,7 @@ interface CoinLocalDataSource {
     suspend fun storeCoinPrice(coin: Coin, price: Price)
 
     suspend fun findCoinBySymbol(symbol: String): Coin?
+
+    fun getActiveCoinPricesStream(): Flow<List<CoinPriceModel>>
 
 }
