@@ -49,7 +49,8 @@ class StatsFragment : Fragment() {
             binding.valueLineChart.apply {
                 data = lineData
                 xAxis.valueFormatter = dateAxisFormatter
-                xAxis.labelCount = MathUtils.clamp(entries.size, 0, 5)
+                xAxis.setLabelCount(MathUtils.clamp(entries.size, 0, 5), true)
+                setVisibleXRangeMaximum(5f)
                 moveViewToX(entries.lastIndex.toFloat())
                 notifyDataSetChanged()
             }
@@ -62,6 +63,8 @@ class StatsFragment : Fragment() {
 
     private fun styleLineChart() = with(binding.valueLineChart) {
         setExtraOffsets(30f, 0f, 30f, 0f)
+        animateXY(250, 250)
+
         isHighlightPerTapEnabled = false
         isHighlightPerDragEnabled = false
         description.isEnabled = false
@@ -86,8 +89,6 @@ class StatsFragment : Fragment() {
             setDrawGridLines(false)
             setDrawAxisLine(false)
         }
-
-        animateXY(250, 250)
     }
 
     private fun LineDataSet.styled(): LineDataSet = apply {
