@@ -70,6 +70,13 @@ class StatsFragment : Fragment() {
         description.isEnabled = false
         isAutoScaleMinMaxEnabled = true
         legend.isEnabled = false
+        renderer = MentraLineChartRenderer(
+            context.getThemeColor(R.attr.lineChartValueBackgroundColor),
+            context.getThemeColor(R.attr.lineChartValueColor),
+            this,
+            animator,
+            viewPortHandler
+        )
 
         axisLeft.apply {
             isEnabled = false
