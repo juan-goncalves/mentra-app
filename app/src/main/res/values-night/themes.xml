@@ -22,6 +22,10 @@
         <item name="colorError">@color/torch_red</item>
         <item name="colorOnError">@color/white</item>
 
+        <!-- Line chart colors -->
+        <item name="lineChartValueBackgroundColor">@color/wild_strawberry</item>
+        <item name="lineChartValueColor">@color/white</item>
+
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
