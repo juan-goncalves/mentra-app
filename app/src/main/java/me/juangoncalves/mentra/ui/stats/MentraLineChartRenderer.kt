@@ -25,6 +25,7 @@ class MentraLineChartRenderer(
     private val backgroundPaint = Paint().apply {
         color = backgroundColor
         alpha = 180
+        isAntiAlias = true
     }
 
     override fun drawValue(c: Canvas?, valueText: String?, x: Float, y: Float, color: Int) {
@@ -39,7 +40,7 @@ class MentraLineChartRenderer(
             x - textWidth / 2 - PADDING,
             actualY + PADDING,
             x + textWidth / 2 + PADDING,
-            actualY - textHeight - PADDING,
+            actualY - textHeight - PADDING / 2,
             CORNER_RADIUS,
             CORNER_RADIUS,
             backgroundPaint
