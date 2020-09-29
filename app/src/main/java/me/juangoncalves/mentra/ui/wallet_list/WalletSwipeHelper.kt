@@ -14,19 +14,32 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.extensions.getThemeColor
+import java.lang.ref.WeakReference
 import kotlin.math.abs
 
-class SwipeToDeleteHelper(
-    context: Context,
-    private val onDelete: (Int) -> Unit
-) : ItemTouchHelper.Callback() {
+class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.Callback() {
 
+    interface Listener {
+        fun onDeleteWalletGesture(position: Int)
+        fun onEditWalletGesture(position: Int)
+    }
+
+    private val listener: WeakReference<Listener> = WeakReference(listener)
     private val deleteDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_trash)
+    private val editDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_edit)
     private val intrinsicWidth: Int = deleteDrawable?.intrinsicWidth ?: 0
     private val intrinsicHeight: Int = deleteDrawable?.intrinsicHeight ?: 0
     private val colorOnError: Int = context.getThemeColor(R.attr.colorOnError)
+    private val colorOnWarning: Int = context.getThemeColor(R.attr.colorOnWarning)
+
     private val errorPaint: Paint = Paint().apply {
         color = context.getThemeColor(R.attr.colorError)
+        isAntiAlias = true
+        setShadowLayer(8f, 0.0f, 0.0f, color)
+    }
+
+    private val warningPaint: Paint = Paint().apply {
+        color = context.getThemeColor(R.attr.colorWarning)
         isAntiAlias = true
         setShadowLayer(8f, 0.0f, 0.0f, color)
     }
@@ -34,7 +47,7 @@ class SwipeToDeleteHelper(
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
-    ): Int = makeMovementFlags(0, ItemTouchHelper.LEFT)
+    ): Int = makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
 
     override fun onMove(
         recyclerView: RecyclerView,
@@ -45,7 +58,12 @@ class SwipeToDeleteHelper(
     override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.2f
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        onDelete(viewHolder.adapterPosition)
+        when (direction) {
+            ItemTouchHelper.RIGHT ->
+                listener.get()?.onEditWalletGesture(viewHolder.adapterPosition)
+            ItemTouchHelper.LEFT ->
+                listener.get()?.onDeleteWalletGesture(viewHolder.adapterPosition)
+        }
     }
 
     override fun onChildDraw(
@@ -59,19 +77,20 @@ class SwipeToDeleteHelper(
     ) {
         val itemView = viewHolder.itemView
         val (scaledHeight, scaledWidth) = scaleDimensionsByCurrentSwipe(dX, recyclerView)
-        val rect = generateIconRect(itemView, scaledHeight, scaledWidth)
+        val rect = generateIconRect(itemView, dX, scaledHeight, scaledWidth)
 
         canvas.drawCircle(
             rect.centerX().toFloat(),
             rect.centerY().toFloat(),
             scaledWidth / 2f + scaledWidth * 0.4f,
-            errorPaint
+            if (dX > 0) warningPaint else errorPaint
         )
 
-        deleteDrawable?.apply {
+        val drawable = if (dX > 0) editDrawable else deleteDrawable
+        drawable?.apply {
             bounds = rect
             colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                colorOnError,
+                if (dX > 0) colorOnWarning else colorOnError,
                 BlendModeCompat.SRC_IN
             )
             draw(canvas)
@@ -94,25 +113,37 @@ class SwipeToDeleteHelper(
     private fun scaleDimensionsByCurrentSwipe(
         dX: Float,
         recyclerView: RecyclerView
-    ): Pair<Int, Int> {
+    ): Pair<Float, Float> {
         val swipePercentage = abs(dX / recyclerView.width)
         val sizePercentage = MathUtils.clamp(swipePercentage / 0.15f, 0f, 1f)
-        val scaledHeight = (intrinsicHeight * sizePercentage).toInt()
-        val scaledWidth = (intrinsicWidth * sizePercentage).toInt()
+        val scaledHeight = intrinsicHeight * sizePercentage
+        val scaledWidth = intrinsicWidth * sizePercentage
         return Pair(scaledHeight, scaledWidth)
     }
 
     private fun generateIconRect(
         itemView: View,
-        scaledHeight: Int,
-        scaledWidth: Int
+        dX: Float,
+        scaledHeight: Float,
+        scaledWidth: Float
     ): Rect {
         val margin = (itemView.height - scaledHeight) / 4
         val iconTop = itemView.top + (itemView.height - scaledHeight) / 2
-        val iconLeft = itemView.right - margin - scaledWidth
-        val iconRight = itemView.right - margin
         val iconBottom = iconTop + scaledHeight
-        return Rect(iconLeft, iconTop, iconRight, iconBottom)
+
+        val iconLeft = if (dX > 0) {
+            itemView.left + margin
+        } else {
+            itemView.right - margin - scaledWidth
+        }
+
+        val iconRight = if (dX > 0) {
+            itemView.left + margin + scaledWidth
+        } else {
+            itemView.right - margin
+        }
+
+        return Rect(iconLeft.toInt(), iconTop.toInt(), iconRight.toInt(), iconBottom.toInt())
     }
 
 }

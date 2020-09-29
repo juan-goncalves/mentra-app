@@ -21,7 +21,7 @@ import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
 
 @AndroidEntryPoint
-class WalletListFragment : Fragment() {
+class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     private val viewModel: WalletListViewModel by viewModels()
     private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
@@ -53,7 +53,7 @@ class WalletListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewManager = LinearLayoutManager(context)
-        val swipeHandler = SwipeToDeleteHelper(requireContext(), ::onDeleteItemAtPosition)
+        val swipeHandler = WalletSwipeHelper(requireContext(), this)
         val touchHelper = ItemTouchHelper(swipeHandler)
 
         binding.recyclerView.apply {
@@ -90,10 +90,14 @@ class WalletListFragment : Fragment() {
         }
     }
 
-    private fun onDeleteItemAtPosition(position: Int) {
+    override fun onDeleteWalletGesture(position: Int) {
         DeleteWalletDialogFragment
             .newInstance(walletAdapter.data[position].wallet)
             .show(parentFragmentManager, "delete_wallet")
+    }
+
+    override fun onEditWalletGesture(position: Int) {
+        
     }
 
     override fun onDestroyView() {
