@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -26,11 +27,11 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
 
     private val listener: WeakReference<Listener> = WeakReference(listener)
     private val deleteDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_trash)
+    private val deleteIconColor: Int = context.getThemeColor(R.attr.colorOnError)
     private val editDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_edit)
+    private val editIconColor: Int = context.getThemeColor(R.attr.colorOnWarning)
     private val intrinsicWidth: Int = deleteDrawable?.intrinsicWidth ?: 0
     private val intrinsicHeight: Int = deleteDrawable?.intrinsicHeight ?: 0
-    private val colorOnError: Int = context.getThemeColor(R.attr.colorOnError)
-    private val colorOnWarning: Int = context.getThemeColor(R.attr.colorOnWarning)
 
     private val errorPaint: Paint = Paint().apply {
         color = context.getThemeColor(R.attr.colorError)
@@ -75,22 +76,23 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        val itemView = viewHolder.itemView
-        val (scaledHeight, scaledWidth) = scaleDimensionsByCurrentSwipe(dX, recyclerView)
-        val rect = generateIconRect(itemView, dX, scaledHeight, scaledWidth)
+        val (rect, bubblePaint, iconDrawable, iconColor) = generateIconProperties(
+            recyclerView,
+            viewHolder.itemView,
+            dX
+        )
 
         canvas.drawCircle(
             rect.centerX().toFloat(),
             rect.centerY().toFloat(),
-            scaledWidth / 2f + scaledWidth * 0.4f,
-            if (dX > 0) warningPaint else errorPaint
+            rect.width() / 2f + rect.width() * 0.4f,
+            bubblePaint
         )
 
-        val drawable = if (dX > 0) editDrawable else deleteDrawable
-        drawable?.apply {
+        iconDrawable?.apply {
             bounds = rect
             colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                if (dX > 0) colorOnWarning else colorOnError,
+                iconColor,
                 BlendModeCompat.SRC_IN
             )
             draw(canvas)
@@ -107,6 +109,21 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
             dY,
             actionState,
             isCurrentlyActive
+        )
+    }
+
+    private fun generateIconProperties(
+        recyclerView: RecyclerView,
+        itemView: View,
+        dX: Float
+    ): IconProps {
+        val (scaledHeight, scaledWidth) = scaleDimensionsByCurrentSwipe(dX, recyclerView)
+
+        return IconProps(
+            generateIconRect(itemView, dX, scaledHeight, scaledWidth),
+            if (dX > 0) warningPaint else errorPaint,
+            if (dX > 0) editDrawable else deleteDrawable,
+            if (dX > 0) editIconColor else deleteIconColor
         )
     }
 
@@ -145,5 +162,12 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
 
         return Rect(iconLeft.toInt(), iconTop.toInt(), iconRight.toInt(), iconBottom.toInt())
     }
+
+    private data class IconProps(
+        val position: Rect,
+        val paint: Paint,
+        val iconDrawable: Drawable?,
+        @ColorInt val color: Int
+    )
 
 }
