@@ -18,6 +18,8 @@ interface WalletLocalDataSource {
 
     suspend fun findByCoin(coin: Coin): List<WalletModel>
 
+    suspend fun update(wallet: WalletModel, price: Price? = null)
+
     suspend fun updateValue(wallet: Wallet, price: Price)
 
     suspend fun getValueHistory(wallet: Wallet): List<WalletValueModel>

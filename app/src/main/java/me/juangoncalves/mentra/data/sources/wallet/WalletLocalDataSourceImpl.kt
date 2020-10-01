@@ -32,6 +32,14 @@ class WalletLocalDataSourceImpl @Inject constructor(
         return orStorageException { walletDao.findByCoin(coin.symbol) }
     }
 
+    override suspend fun update(wallet: WalletModel, price: Price?) = orStorageException {
+        walletDao.update(wallet)
+        if (price != null) {
+            val valueModel = WalletValueModel(wallet.id, price.value, price.date.toLocalDate())
+            walletValueDao.insert(valueModel)
+        }
+    }
+
     override suspend fun updateValue(wallet: Wallet, price: Price) {
         val model = WalletValueModel(wallet.id, price.value, price.date.toLocalDate())
         orStorageException("Exception when inserting wallet value.") {

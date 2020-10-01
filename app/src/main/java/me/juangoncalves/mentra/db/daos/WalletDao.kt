@@ -22,4 +22,7 @@ interface WalletDao {
     @Delete
     suspend fun delete(wallet: WalletModel)
 
+    @Update
+    suspend fun update(wallet: WalletModel)
+
 }
