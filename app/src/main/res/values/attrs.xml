@@ -5,4 +5,6 @@
 
     <attr name="colorWarning" format="reference|color" />
     <attr name="colorOnWarning" format="reference|color" />
+    <attr name="colorDisabled" format="reference|color" />
+    <attr name="colorOnDisabled" format="reference|color" />
 </resources>
