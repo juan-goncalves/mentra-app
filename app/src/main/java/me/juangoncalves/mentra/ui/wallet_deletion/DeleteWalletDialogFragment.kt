@@ -59,7 +59,7 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
 
     private fun initObservers() {
         viewModel.dismiss.observe(viewLifecycleOwner) { notification ->
-            notification.content?.run { dismiss() }
+            notification.use { dismiss() }
         }
 
         viewModel.onError.observe(viewLifecycleOwner) { error ->
