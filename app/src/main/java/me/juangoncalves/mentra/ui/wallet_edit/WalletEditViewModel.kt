@@ -57,8 +57,9 @@ class WalletEditViewModel @ViewModelInject constructor() : ViewModel() {
 
     @StringRes
     private fun validateAmountInput(text: CharSequence?): Int? {
-        val amountText = text?.toString() ?: return R.string.required_field
-        val amount = amountText.toDoubleOrNull() ?: return R.string.invalid_number
+        if (text.isNullOrEmpty()) return R.string.required_field
+
+        val amount = text.toString().toDoubleOrNull() ?: return R.string.invalid_number
 
         return if (amount <= 0) R.string.invalid_amount_warning else null
     }
