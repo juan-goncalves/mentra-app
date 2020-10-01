@@ -21,4 +21,6 @@
     <string name="edit_wallet">Edit wallet</string>
     <string name="amount_update_hint">Amount</string>
     <string name="save">Save</string>
+    <string name="invalid_number">Invalid value</string>
+    <string name="required_field">Required field</string>
 </resources>
