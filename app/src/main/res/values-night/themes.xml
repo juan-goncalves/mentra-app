@@ -26,6 +26,10 @@
         <item name="colorWarning">@color/lighting_yellow</item>
         <item name="colorOnWarning">@color/bronze</item>
 
+        <!-- Disabled color -->
+        <item name="colorDisabled">@color/gray</item>
+        <item name="colorOnDisabled">@color/white</item>
+
         <!-- Line chart colors -->
         <item name="lineChartValueBackgroundColor">@color/wild_strawberry</item>
         <item name="lineChartValueColor">@color/white</item>
