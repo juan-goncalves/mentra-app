@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -56,6 +57,9 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         binding.amountEditText.setText(wallet.amount.toString())
         binding.saveButton.setOnClickListener { viewModel.onEditSelected(wallet) }
         binding.cancelButton.setOnClickListener { viewModel.onCancelSelected() }
+        binding.amountEditText.doOnTextChanged { text, _, _, _ ->
+            viewModel.onAmountInputChanged(text)
+        }
     }
 
     private fun initObservers() {
@@ -65,6 +69,14 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
 
         viewModel.onError.observe(viewLifecycleOwner) { error ->
             createErrorSnackbar(error).show()
+        }
+
+        viewModel.amountInputValidation.observe(viewLifecycleOwner) { messageId ->
+            binding.amountInputLayout.error = if (messageId != null) getString(messageId) else null
+        }
+
+        viewModel.saveButtonEnabled.observe(viewLifecycleOwner) { enabled ->
+            binding.saveButton.isEnabled = enabled
         }
     }
 
