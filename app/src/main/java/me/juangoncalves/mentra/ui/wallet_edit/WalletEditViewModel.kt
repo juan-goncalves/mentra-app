@@ -1,7 +1,6 @@
 package me.juangoncalves.mentra.ui.wallet_edit
 
 import android.os.Bundle
-import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -48,20 +47,18 @@ class WalletEditViewModel @ViewModelInject constructor() : ViewModel() {
     }
 
     fun amountInputChanged(text: CharSequence?) {
-        val validationMessage = validateAmountInput(text)
-        _amountInputValidation.value = validationMessage
-        _saveButtonEnabled.value = validationMessage == null
-        _estimatedValue.value =
-            (text.toString().toDoubleOrNull() ?: 0.0) * _displayWallet.currentCoinPrice
+        val (validationMessageId, parsedAmount) = validateAndParseAmountInput(text)
+        _amountInputValidation.value = validationMessageId
+        _saveButtonEnabled.value = validationMessageId == null
+        _estimatedValue.value = parsedAmount * _displayWallet.currentCoinPrice
     }
 
-    @StringRes
-    private fun validateAmountInput(text: CharSequence?): Int? {
-        if (text.isNullOrEmpty()) return R.string.required_field
+    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Int?, Double> {
+        if (text.isNullOrEmpty()) return R.string.required_field to 0.0
 
-        val amount = text.toString().toDoubleOrNull() ?: return R.string.invalid_number
+        val amount = text.toString().toDoubleOrNull() ?: return R.string.invalid_number to 0.0
 
-        return if (amount <= 0) R.string.invalid_amount_warning else null
+        return if (amount <= 0) R.string.invalid_amount_warning to 0.0 else null to amount
     }
 
 }
