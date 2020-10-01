@@ -14,18 +14,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
+import me.juangoncalves.mentra.ui.common.BundleKeys
+import me.juangoncalves.mentra.ui.common.RequestKeys
 
 @AndroidEntryPoint
 class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
-        const val REQUEST_CODE = "req_delete_wallet"
-        const val WALLET_KEY = "wallet_arg_key"
-        const val DELETION_KEY = "wallet_deleted_key"
-
         fun newInstance(wallet: Wallet): DeleteWalletDialogFragment {
             val fragment = DeleteWalletDialogFragment()
-            fragment.arguments = bundleOf(WALLET_KEY to wallet)
+            fragment.arguments = bundleOf(BundleKeys.Wallet to wallet)
             return fragment
         }
     }
@@ -40,7 +38,7 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        wallet = arguments?.getSerializable(WALLET_KEY) as? Wallet
+        wallet = arguments?.getSerializable(BundleKeys.Wallet) as? Wallet
             ?: error("You must provide the wallet to delete")
     }
 
@@ -72,10 +70,10 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         setFragmentResult(
-            REQUEST_CODE,
+            RequestKeys.WalletDeletion,
             bundleOf(
-                WALLET_KEY to wallet,
-                DELETION_KEY to viewModel.deletedWallet
+                BundleKeys.Wallet to wallet,
+                BundleKeys.WalletDeletionResult to viewModel.deletedWallet
             )
         )
     }
