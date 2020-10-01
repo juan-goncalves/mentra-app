@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="16dp"
@@ -22,7 +23,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="24dp"
         android:hint="@string/amount_update_hint"
         app:boxCornerRadiusBottomEnd="16dp"
         app:boxCornerRadiusBottomStart="16dp"
@@ -51,6 +52,24 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/priceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:drawablePadding="2dp"
+        android:drawableTint="?android:attr/textColor"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="16sp"
+        app:drawableStartCompat="@drawable/ic_approx"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="@+id/amountInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/amountInputLayout"
+        app:layout_constraintWidth_max="wrap"
+        app:layout_constraintWidth_percent="0.85"
+        tools:text="$143,582.34" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
@@ -61,7 +80,7 @@
         android:text="@string/save"
         android:textColor="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/amountInputLayout" />
+        app:layout_constraintTop_toBottomOf="@id/priceTextView" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/cancelButton"

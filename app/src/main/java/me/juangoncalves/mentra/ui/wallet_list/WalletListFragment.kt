@@ -101,7 +101,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     override fun onEditWalletGesture(position: Int) {
         EditWalletDialogFragment
-            .newInstance(walletAdapter.data[position].wallet)
+            .newInstance(walletAdapter.data[position])
             .show(parentFragmentManager, "delete_wallet")
     }
 

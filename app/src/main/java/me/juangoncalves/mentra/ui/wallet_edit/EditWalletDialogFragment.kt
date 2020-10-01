@@ -13,16 +13,17 @@ import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.EditWalletDialogFragmentBinding
-import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
+import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
 
 @AndroidEntryPoint
 class EditWalletDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
-        fun newInstance(wallet: Wallet): EditWalletDialogFragment {
+        fun newInstance(wallet: DisplayWallet): EditWalletDialogFragment {
             val fragment = EditWalletDialogFragment()
             fragment.arguments = bundleOf(BundleKeys.Wallet to wallet)
             return fragment
@@ -34,13 +35,9 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
     private var _binding: EditWalletDialogFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var wallet: Wallet
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        wallet = arguments?.getSerializable(BundleKeys.Wallet) as? Wallet
-            ?: error("You must provide the wallet to edit")
+        viewModel.initialize(arguments)
     }
 
     override fun onCreateView(
@@ -54,11 +51,11 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initObservers()
-        binding.amountEditText.setText(wallet.amount.toString())
-        binding.saveButton.setOnClickListener { viewModel.onEditSelected(wallet) }
-        binding.cancelButton.setOnClickListener { viewModel.onCancelSelected() }
+        binding.amountEditText.setText(viewModel.wallet.amount.toString())
+        binding.saveButton.setOnClickListener { viewModel.saveSelected() }
+        binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
         binding.amountEditText.doOnTextChanged { text, _, _, _ ->
-            viewModel.onAmountInputChanged(text)
+            viewModel.amountInputChanged(text)
         }
     }
 
@@ -78,6 +75,10 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         viewModel.saveButtonEnabled.observe(viewLifecycleOwner) { enabled ->
             binding.saveButton.isEnabled = enabled
         }
+
+        viewModel.estimatedValue.observe(viewLifecycleOwner) { value ->
+            binding.priceTextView.text = value.asCurrency(symbol = "$")
+        }
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -85,7 +86,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         setFragmentResult(
             RequestKeys.WalletEdit,
             bundleOf(
-                BundleKeys.Wallet to wallet,
+                BundleKeys.Wallet to viewModel.wallet,
                 BundleKeys.WalletEditResult to viewModel.savedUpdates
             )
         )
