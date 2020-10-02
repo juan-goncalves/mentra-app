@@ -59,7 +59,7 @@ class WalletCreationActivity : AppCompatActivity() {
         }
 
         viewModel.warning.observe(this) { event ->
-            event.content?.let { messageId ->
+            event.use { messageId ->
                 Snackbar.make(binding.root, messageId, Snackbar.LENGTH_SHORT)
                     .setBackgroundTint(getColor(R.color.lighting_yellow))
                     .show()

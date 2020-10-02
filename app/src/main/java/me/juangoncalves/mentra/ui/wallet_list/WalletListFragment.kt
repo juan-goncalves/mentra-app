@@ -17,11 +17,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
+import me.juangoncalves.mentra.ui.common.BundleKeys
+import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
+import me.juangoncalves.mentra.ui.wallet_edit.EditWalletDialogFragment
 
 @AndroidEntryPoint
-class WalletListFragment : Fragment() {
+class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     private val viewModel: WalletListViewModel by viewModels()
     private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
@@ -31,13 +34,13 @@ class WalletListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFragmentResultListener(DeleteWalletDialogFragment.REQUEST_CODE) { _, bundle ->
-            val wallet = bundle[DeleteWalletDialogFragment.WALLET_KEY]
-            val wasDeleted = bundle.getBoolean(DeleteWalletDialogFragment.DELETION_KEY, false)
-            if (wasDeleted) return@setFragmentResultListener
 
-            val position = walletAdapter.data.indexOfFirst { it.wallet == wallet }
-            if (position > -1) walletAdapter.notifyItemChanged(position)
+        setFragmentResultListener(RequestKeys.WalletDeletion) { _, bundle ->
+            processWalletActionResult(bundle, BundleKeys.WalletDeletionResult)
+        }
+
+        setFragmentResultListener(RequestKeys.WalletEdit) { _, bundle ->
+            processWalletActionResult(bundle, BundleKeys.WalletEditResult)
         }
     }
 
@@ -53,7 +56,7 @@ class WalletListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewManager = LinearLayoutManager(context)
-        val swipeHandler = SwipeToDeleteHelper(requireContext(), ::onDeleteItemAtPosition)
+        val swipeHandler = WalletSwipeHelper(requireContext(), this)
         val touchHelper = ItemTouchHelper(swipeHandler)
 
         binding.recyclerView.apply {
@@ -90,15 +93,37 @@ class WalletListFragment : Fragment() {
         }
     }
 
-    private fun onDeleteItemAtPosition(position: Int) {
+    override fun onDeleteWalletGesture(position: Int) {
         DeleteWalletDialogFragment
             .newInstance(walletAdapter.data[position].wallet)
+            .show(parentFragmentManager, "delete_wallet")
+    }
+
+    override fun onEditWalletGesture(position: Int) {
+        EditWalletDialogFragment
+            .newInstance(walletAdapter.data[position])
             .show(parentFragmentManager, "delete_wallet")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    /**
+     * Resets the recycler view item swipe position if the action was cancelled.
+     *
+     * For example: when the user swipes to the left to delete a wallet and then
+     * he dismisses the dialog, we have to reset the item back to its original
+     * state (e.g hide the delete bubble).
+     */
+    private fun processWalletActionResult(bundle: Bundle, resultKey: String) {
+        val wallet = bundle[BundleKeys.Wallet]
+        val wasModified = bundle.getBoolean(resultKey, false)
+        if (wasModified) return
+
+        val position = walletAdapter.data.indexOfFirst { it.wallet == wallet }
+        if (position > -1) walletAdapter.notifyItemChanged(position)
     }
 
     private inner class DismissCallback(

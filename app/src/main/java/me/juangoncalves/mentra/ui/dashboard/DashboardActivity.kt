@@ -48,7 +48,7 @@ class DashboardActivity : FragmentActivity() {
         }
 
         viewModel.closeEvent.observe(this) { event ->
-            event.content?.run { finish() }
+            event.use { finish() }
         }
     }
 

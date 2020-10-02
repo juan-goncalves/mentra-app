@@ -54,6 +54,13 @@ class WalletRepositoryImpl @Inject constructor(
             Either.Right(wallets)
         }
 
+    override suspend fun updateWallet(wallet: Wallet, price: Price?): Either<Failure, Unit> =
+        handleException {
+            val model = walletMapper.map(wallet)
+            localDataSource.update(model, price)
+            Either.Right(Unit)
+        }
+
     override suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<Failure, Unit> =
         handleException {
             localDataSource.updateValue(wallet, price)
