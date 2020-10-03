@@ -31,6 +31,25 @@
             motion:layout_constraintTop_toTopOf="@id/headerBackground" />
 
         <Constraint
+            android:id="@id/portfolioChangeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="1"
+            motion:layout_constraintEnd_toEndOf="@id/portfolioValueTextView"
+            motion:layout_constraintStart_toStartOf="@id/portfolioValueTextView"
+            motion:layout_constraintTop_toBottomOf="@id/portfolioValueTextView" />
+
+        <Constraint
+            android:id="@id/portfolioChangeImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1"
+            motion:layout_constraintBottom_toBottomOf="@id/portfolioChangeTextView"
+            motion:layout_constraintStart_toEndOf="@id/portfolioChangeTextView"
+            motion:layout_constraintTop_toTopOf="@id/portfolioChangeTextView" />
+
+        <Constraint
             android:id="@id/navButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,6 +99,25 @@
             motion:layout_constraintBottom_toBottomOf="@id/headerBackground"
             motion:layout_constraintEnd_toEndOf="@id/headerBackground"
             motion:layout_constraintStart_toStartOf="@id/headerBackground" />
+
+        <Constraint
+            android:id="@id/portfolioChangeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:alpha="0"
+            motion:layout_constraintEnd_toEndOf="@id/portfolioValueTextView"
+            motion:layout_constraintStart_toStartOf="@id/portfolioValueTextView"
+            motion:layout_constraintTop_toBottomOf="@id/portfolioValueTextView" />
+
+        <Constraint
+            android:id="@id/portfolioChangeImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            motion:layout_constraintBottom_toBottomOf="@id/portfolioChangeTextView"
+            motion:layout_constraintStart_toEndOf="@id/portfolioChangeTextView"
+            motion:layout_constraintTop_toTopOf="@id/portfolioChangeTextView" />
 
         <Constraint
             android:id="@id/navButton"
