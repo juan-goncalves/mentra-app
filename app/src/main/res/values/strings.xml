@@ -23,4 +23,5 @@
     <string name="save">Save</string>
     <string name="invalid_number">Invalid value</string>
     <string name="required_field">Required field</string>
+    <string name="last_day_change">%1$s %2$s (%3$s)</string>
 </resources>
