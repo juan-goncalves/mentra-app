@@ -36,6 +36,13 @@ fun Double.asCoinAmount(): String {
     return format.format(this)
 }
 
+fun Double.asPercentage(): String {
+    val format = DecimalFormat()
+    format.maximumFractionDigits = 1
+    format.minimumFractionDigits = format.maximumFractionDigits
+    return format.format(this * 100) + "%"
+}
+
 fun Double.toPrice(
     currency: Currency = Currency.USD,
     timestamp: LocalDateTime = LocalDateTime.now()
