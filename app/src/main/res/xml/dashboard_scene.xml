@@ -57,6 +57,7 @@
             android:layout_marginTop="30dp"
             android:layout_marginEnd="12dp"
             android:alpha="0.80"
+            android:rotation="0"
             motion:layout_constraintEnd_toEndOf="@id/headerBackground"
             motion:layout_constraintTop_toTopOf="@id/headerBackground" />
     </ConstraintSet>
@@ -109,6 +110,7 @@
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="6dp"
             android:alpha="0.80"
+            android:rotation="90"
             motion:layout_constraintBottom_toBottomOf="@id/headerBackground"
             motion:layout_constraintEnd_toEndOf="@id/headerBackground" />
     </ConstraintSet>
