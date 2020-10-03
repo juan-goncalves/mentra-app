@@ -73,6 +73,16 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ProgressBar
+        android:id="@+id/coinsProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fadingEdgeLayout"
+        app:layout_constraintEnd_toEndOf="@id/fadingEdgeLayout"
+        app:layout_constraintStart_toStartOf="@id/fadingEdgeLayout"
+        app:layout_constraintTop_toTopOf="@id/fadingEdgeLayout" />
+
     <com.bosphere.fadingedgelayout.FadingEdgeLayout
         android:id="@+id/fadingEdgeLayout"
         android:layout_width="0dp"

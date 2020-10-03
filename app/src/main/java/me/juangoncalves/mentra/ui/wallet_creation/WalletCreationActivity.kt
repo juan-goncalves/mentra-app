@@ -10,6 +10,8 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
+import me.juangoncalves.mentra.extensions.animateVisibility
+import me.juangoncalves.mentra.extensions.createErrorSnackbar
 
 @AndroidEntryPoint
 class WalletCreationActivity : AppCompatActivity() {
@@ -64,6 +66,14 @@ class WalletCreationActivity : AppCompatActivity() {
                     .setBackgroundTint(getColor(R.color.lighting_yellow))
                     .show()
             }
+        }
+
+        viewModel.shouldShowCoinLoadIndicator.observe(this) { shouldShow ->
+            binding.coinsProgressBar.animateVisibility(shouldShow)
+        }
+
+        viewModel.error.observe(this) { error ->
+            createErrorSnackbar(error, binding.root, Snackbar.LENGTH_INDEFINITE).show()
         }
 
         viewModel.onSuccessfulSave.observe(this) {
