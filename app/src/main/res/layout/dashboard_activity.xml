@@ -36,6 +36,42 @@
         android:textStyle="bold"
         tools:text="$ 23.456,00" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/portfolioChangeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/portfolioValueTextView"
+        app:layout_constraintStart_toStartOf="@id/portfolioValueTextView"
+        app:layout_constraintTop_toBottomOf="@id/portfolioValueTextView"
+        tools:text="+ $ 170.25 (22.1%)" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/portfolioChangeImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/portfolioChangeTextView"
+        app:layout_constraintStart_toEndOf="@id/portfolioChangeTextView"
+        app:layout_constraintTop_toTopOf="@id/portfolioChangeTextView"
+        tools:srcCompat="@drawable/ic_arrow_up_20" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/headerTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:letterSpacing="0.1"
+        android:text="Portfolio"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/settingsButton"
+        app:layout_constraintEnd_toEndOf="@id/headerBackground"
+        app:layout_constraintStart_toStartOf="@id/headerBackground"
+        app:layout_constraintTop_toTopOf="@id/settingsButton"
+        app:textAllCaps="true" />
+
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/settingsButton"
         android:layout_width="wrap_content"
