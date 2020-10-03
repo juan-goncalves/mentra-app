@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="16sp"
+        android:tooltipText="@string/last_day_change_tooltip"
         tools:text="+ $ 170.25 (22.1%)" />
 
     <androidx.appcompat.widget.AppCompatImageView
