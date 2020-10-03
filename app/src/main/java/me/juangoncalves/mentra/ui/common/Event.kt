@@ -14,6 +14,13 @@ open class Event<out T>(private val _content: T) {
             }
         }
 
+    /**
+     * Runs the received function if the event's content has not been consumed.
+     */
+    fun use(fn: (T) -> Unit) {
+        content?.run(fn)
+    }
+
 }
 
 class Notification : Event<Unit>(Unit)

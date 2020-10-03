@@ -23,4 +23,6 @@ interface WalletRepository {
 
     suspend fun getWalletValueHistory(wallet: Wallet): Either<Failure, List<Price>>
 
+    suspend fun updateWallet(wallet: Wallet, price: Price? = null): Either<Failure, Unit>
+
 }
