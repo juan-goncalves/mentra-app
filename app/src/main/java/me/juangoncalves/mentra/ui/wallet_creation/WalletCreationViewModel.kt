@@ -1,21 +1,26 @@
 package me.juangoncalves.mentra.ui.wallet_creation
 
+import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.domain.errors.Failure
+import me.juangoncalves.mentra.domain.errors.InternetConnectionFailure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
+import me.juangoncalves.mentra.extensions.Left
+import me.juangoncalves.mentra.extensions.Right
 import me.juangoncalves.mentra.extensions.isLeft
+import me.juangoncalves.mentra.ui.common.DisplayError
 import me.juangoncalves.mentra.ui.common.Event
 import java.util.*
 
@@ -30,11 +35,15 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val shouldScrollToStart: LiveData<Boolean> get() = _shouldScrollToStart
     val warning: LiveData<WarningEvent> get() = _warning
     val onSuccessfulSave: LiveData<Unit> get() = _onSuccessfulSave
+    val error: LiveData<DisplayError> get() = _error
+    val shouldShowCoinLoadIndicator: LiveData<Boolean> get() = _shouldShowCoinLoadIndicator
 
     private val _coins: MutableLiveData<List<Coin>> = MutableLiveData(emptyList())
     private val _shouldScrollToStart: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _warning: MutableLiveData<WarningEvent> = MutableLiveData()
     private val _onSuccessfulSave: MutableLiveData<Unit> = MutableLiveData()
+    private val _error: MutableLiveData<DisplayError> = MutableLiveData()
+    private val _shouldShowCoinLoadIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private var unfilteredCoins: List<Coin> = emptyList()
     private var filterJob: Job? = null
@@ -45,14 +54,20 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
     private fun fetchCoins() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = coinRepository.getCoins()
-            val coins: List<Coin> = result.fold(
-                left = { emptyList() },
-                right = { it }
-            )
+            _shouldShowCoinLoadIndicator.postValue(true)
 
-            _coins.postValue(coins)
-            unfilteredCoins = coins
+            when (val result = coinRepository.getCoins()) {
+                is Left -> {
+                    val error = DisplayError(failureToMessageId(result.value), ::fetchCoins)
+                    _error.postValue(error)
+                }
+                is Right -> {
+                    _coins.postValue(result.value)
+                    unfilteredCoins = result.value
+                }
+            }
+
+            _shouldShowCoinLoadIndicator.postValue(false)
         }
     }
 
@@ -106,4 +121,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
                 match.name.length - query.length
             }
         }
+
+    @StringRes
+    private fun failureToMessageId(failure: Failure): Int {
+        return when (failure) {
+            is InternetConnectionFailure -> R.string.connection_error
+            else -> R.string.default_error
+        }
+    }
+
 }
