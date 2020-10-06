@@ -11,9 +11,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
-import me.juangoncalves.mentra.domain.repositories.WalletRepository
-import me.juangoncalves.mentra.extensions.rightValue
+import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioDistributionStream
+import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistoryStream
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 import kotlin.collections.component1
@@ -24,17 +23,16 @@ import kotlin.collections.set
 typealias TimeChartData = Pair<List<Entry>, Map<Int, LocalDate>>
 
 class StatsViewModel @ViewModelInject constructor(
-    portfolioRepository: PortfolioRepository,
-    private val walletRepository: WalletRepository
+    getPortfolioValueHistory: GetPortfolioValueHistoryStream,
+    getPortfolioDistribution: GetPortfolioDistributionStream
 ) : ViewModel() {
 
-    val valueChartData: LiveData<TimeChartData> = portfolioRepository.portfolioValueHistory
+    val valueChartData: LiveData<TimeChartData> = getPortfolioValueHistory()
         .toTimeChartData()
         .flowOn(Dispatchers.Default)
         .asLiveData()
 
-    val pieChartData: LiveData<Array<PiePortion>> = portfolioRepository.portfolioValue
-        .onEachCalculateDistribution()
+    val pieChartData: LiveData<Array<PiePortion>> = getPortfolioDistribution()
         .toPiePortions()
         .flowOn(Dispatchers.Default)
         .asLiveData()
@@ -52,20 +50,6 @@ class StatsViewModel @ViewModelInject constructor(
         coinPercentages.entries.map { (coin, value) ->
             PiePortion(value, coin.symbol)
         }.toTypedArray()
-    }
-
-    private fun <T> Flow<T>.onEachCalculateDistribution(): Flow<Map<Coin, Double>> = map {
-        val wallets = walletRepository.getWallets().rightValue ?: emptyList()
-
-        val amountPerCoin = hashMapOf<Coin, Double>()
-        wallets.forEach { wallet ->
-            val price = walletRepository.getWalletValueHistory(wallet).rightValue?.firstOrNull()
-            val value = price?.value ?: 0.0
-            amountPerCoin[wallet.coin] = amountPerCoin.getOrDefault(wallet.coin, 0.0) + value
-        }
-
-        val total = amountPerCoin.values.sum()
-        amountPerCoin.mapValues { (_, value) -> value / total }
     }
 
 }
