@@ -1,17 +1,18 @@
-package me.juangoncalves.mentra.domain.usecases
+package me.juangoncalves.mentra.domain.usecases.portfolio
 
 import either.Either
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
+import me.juangoncalves.mentra.domain.usecases.wallet.RefreshWalletValueUseCase
 import me.juangoncalves.mentra.extensions.*
 import javax.inject.Inject
 
 class RefreshPortfolioValueUseCase @Inject constructor(
     private val walletRepository: WalletRepository,
-    private val refreshWalletValue: RefreshWalletValueUseCase,
-    private val portfolioRepository: PortfolioRepository
+    private val portfolioRepository: PortfolioRepository,
+    private val refreshWalletValue: RefreshWalletValueUseCase
 ) {
 
     suspend operator fun invoke(): Either<Failure, Price> {

@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.domain.usecases
+package me.juangoncalves.mentra.domain.usecases.coin
 
 import either.Either
 import io.mockk.MockKAnnotations
@@ -28,7 +28,10 @@ class GetCoinPriceUseCaseTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        getCoinPrice = GetCoinPriceUseCase(coinRepositoryMock)
+        getCoinPrice =
+            GetCoinPriceUseCase(
+                coinRepositoryMock
+            )
     }
 
     @Test

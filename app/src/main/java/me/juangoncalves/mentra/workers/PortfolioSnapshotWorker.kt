@@ -5,7 +5,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import me.juangoncalves.mentra.domain.usecases.RefreshPortfolioValueUseCase
+import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
 import me.juangoncalves.mentra.extensions.isLeft
 
 

@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.domain.usecases
+package me.juangoncalves.mentra.domain.usecases.wallet
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -32,7 +32,11 @@ class RefreshWalletValueUseCaseTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = RefreshWalletValueUseCase(coinRepositoryMock, walletRepositoryMock)
+        sut =
+            RefreshWalletValueUseCase(
+                coinRepositoryMock,
+                walletRepositoryMock
+            )
     }
 
     @Test

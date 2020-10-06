@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.domain.usecases
+package me.juangoncalves.mentra.domain.usecases.wallet
 
 import either.Either
 import me.juangoncalves.mentra.domain.errors.Failure

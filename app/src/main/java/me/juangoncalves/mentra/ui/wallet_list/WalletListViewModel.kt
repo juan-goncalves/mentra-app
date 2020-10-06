@@ -12,8 +12,8 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
-import me.juangoncalves.mentra.domain.usecases.GetGradientCoinIconUseCase
-import me.juangoncalves.mentra.domain.usecases.RefreshPortfolioValueUseCase
+import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIconUseCase
+import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
 import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.ui.common.DisplayError
 

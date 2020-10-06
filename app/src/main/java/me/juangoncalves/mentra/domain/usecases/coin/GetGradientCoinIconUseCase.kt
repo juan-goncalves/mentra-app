@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.domain.usecases
+package me.juangoncalves.mentra.domain.usecases.coin
 
 import me.juangoncalves.mentra.domain.models.Coin
 import java.util.*
