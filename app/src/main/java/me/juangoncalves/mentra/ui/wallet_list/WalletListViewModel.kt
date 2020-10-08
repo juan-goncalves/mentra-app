@@ -45,19 +45,6 @@ class WalletListViewModel @ViewModelInject constructor(
         }
     }
 
-    fun deleteWalletSelected(walletPosition: Int) {
-        val displayWallet = wallets.value?.get(walletPosition) ?: return
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = walletRepository.deleteWallet(displayWallet.wallet)
-            if (result.isLeft()) {
-                val error = DisplayError(R.string.default_error) {
-                    deleteWalletSelected(walletPosition)
-                }
-                _walletManagementError.postValue(Pair(error, walletPosition))
-            }
-        }
-    }
-
     private fun updatePrices() {
         viewModelScope.launch(Dispatchers.IO) {
             _shouldShowProgressBar.postValue(true)
@@ -72,6 +59,7 @@ class WalletListViewModel @ViewModelInject constructor(
         }
     }
 
+    @Suppress("RedundantSuspendModifier")
     private suspend fun mergeIntoDisplayWallets(
         coinPrices: Map<Coin, Price>,
         wallets: List<Wallet>

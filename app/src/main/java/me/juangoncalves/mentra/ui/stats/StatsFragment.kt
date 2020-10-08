@@ -36,8 +36,19 @@ class StatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        styleLineChart()
         initObservers()
+        styleLineChart()
+
+        binding.statsRefreshLayout.setColorSchemeColors(
+            requireContext().getThemeColor(R.attr.colorSecondary),
+            requireContext().getThemeColor(R.attr.colorSecondaryVariant),
+            requireContext().getThemeColor(R.attr.colorPrimary),
+            requireContext().getThemeColor(R.attr.colorPrimaryDark)
+        )
+
+        binding.statsRefreshLayout.setOnRefreshListener {
+            viewModel.refreshSelected()
+        }
     }
 
     private fun initObservers() {
@@ -58,6 +69,10 @@ class StatsFragment : Fragment() {
 
         viewModel.pieChartData.observe(viewLifecycleOwner) { entries ->
             binding.distributionPieChart.setPortions(entries)
+        }
+
+        viewModel.shouldShowRefreshIndicator.observe(viewLifecycleOwner) { shouldShow ->
+            binding.statsRefreshLayout.isRefreshing = shouldShow
         }
     }
 

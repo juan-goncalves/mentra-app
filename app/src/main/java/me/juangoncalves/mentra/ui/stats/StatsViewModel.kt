@@ -1,18 +1,19 @@
 package me.juangoncalves.mentra.ui.stats
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioDistributionStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistoryStream
+import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
+import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 import kotlin.collections.component1
@@ -24,7 +25,8 @@ typealias TimeChartData = Pair<List<Entry>, Map<Int, LocalDate>>
 
 class StatsViewModel @ViewModelInject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
-    getPortfolioDistribution: GetPortfolioDistributionStream
+    getPortfolioDistribution: GetPortfolioDistributionStream,
+    private val refreshPortfolioValue: RefreshPortfolioValueUseCase
 ) : ViewModel() {
 
     val valueChartData: LiveData<TimeChartData> = getPortfolioValueHistory()
@@ -36,6 +38,23 @@ class StatsViewModel @ViewModelInject constructor(
         .toPiePortions()
         .flowOn(Dispatchers.Default)
         .asLiveData()
+
+    val shouldShowRefreshIndicator: LiveData<Boolean> get() = _shouldShowRefreshIndicator
+
+    private val _shouldShowRefreshIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    fun refreshSelected() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _shouldShowRefreshIndicator.postValue(true)
+            val result = refreshPortfolioValue()
+
+            if (result.isLeft()) {
+                // TODO: Show error
+            }
+
+            _shouldShowRefreshIndicator.postValue(false)
+        }
+    }
 
     private fun Flow<List<Price>>.toTimeChartData() = map { prices ->
         val indexToDate = hashMapOf<Int, LocalDate>()
