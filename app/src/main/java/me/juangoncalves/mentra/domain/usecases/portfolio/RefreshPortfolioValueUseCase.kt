@@ -5,6 +5,7 @@ import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
+import me.juangoncalves.mentra.domain.usecases.VoidUseCase
 import me.juangoncalves.mentra.domain.usecases.wallet.RefreshWalletValueUseCase
 import me.juangoncalves.mentra.extensions.*
 import javax.inject.Inject
@@ -13,9 +14,9 @@ class RefreshPortfolioValueUseCase @Inject constructor(
     private val walletRepository: WalletRepository,
     private val portfolioRepository: PortfolioRepository,
     private val refreshWalletValue: RefreshWalletValueUseCase
-) {
+) : VoidUseCase<Price> {
 
-    suspend operator fun invoke(): Either<Failure, Price> {
+    override suspend operator fun invoke(): Either<Failure, Price> {
         val getWalletsResult = walletRepository.getWallets()
         val wallets = getWalletsResult.rightValue ?: return Left(getWalletsResult.requireLeft())
 
