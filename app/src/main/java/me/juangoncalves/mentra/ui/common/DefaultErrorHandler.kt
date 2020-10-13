@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.ui.common
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineDispatcher
@@ -10,8 +11,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.domain.errors.Failure
+import me.juangoncalves.mentra.domain.errors.InternetConnectionFailure
 import me.juangoncalves.mentra.domain.usecases.UseCase
 import me.juangoncalves.mentra.extensions.isLeft
+import me.juangoncalves.mentra.extensions.requireLeft
 import me.juangoncalves.mentra.extensions.requireRight
 
 interface DefaultErrorHandler {
@@ -53,6 +57,14 @@ class DefaultErrorHandlerImpl : DefaultErrorHandler {
         }
     }
 
+    @StringRes
+    private fun Failure.toStringResource(): Int {
+        return when (this) {
+            is InternetConnectionFailure -> R.string.connection_error
+            else -> R.string.default_error
+        }
+    }
+
     override fun dispose() {
         _retryChannel.close()
     }
@@ -85,7 +97,7 @@ class DefaultErrorHandlerImpl : DefaultErrorHandler {
 
                 val result = useCase(params)
                 if (result.isLeft()) {
-                    val error = DisplayError(me.juangoncalves.mentra.R.string.default_error) {
+                    val error = DisplayError(result.requireLeft().toStringResource()) {
                         run(params)
                     }
                     _defaultErrorStream.postValue(error)
@@ -98,4 +110,8 @@ class DefaultErrorHandlerImpl : DefaultErrorHandler {
         }
     }
 
+}
+
+fun <R> DefaultErrorHandlerImpl.UseCaseExecutor<Unit, R>.run() {
+    run(Unit)
 }
