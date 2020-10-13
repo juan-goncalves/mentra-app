@@ -14,6 +14,7 @@ import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistor
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
 import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
 import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
+import me.juangoncalves.mentra.ui.common.run
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 import kotlin.collections.component1
@@ -51,7 +52,7 @@ class StatsViewModel @ViewModelInject constructor(
             .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
-            .run(Unit)
+            .run()
     }
 
     private fun Flow<List<Price>>.toTimeChartData() = map { prices ->

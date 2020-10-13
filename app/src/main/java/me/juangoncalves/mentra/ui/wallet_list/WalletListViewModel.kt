@@ -16,6 +16,7 @@ import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUs
 import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
 import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
 import me.juangoncalves.mentra.ui.common.DisplayError
+import me.juangoncalves.mentra.ui.common.run
 
 // Error with the position of the wallet being modified
 typealias WalletManagementError = Pair<DisplayError, Int>
@@ -50,7 +51,7 @@ class WalletListViewModel @ViewModelInject constructor(
             .afterInvoke { _shouldShowProgressBar.postValue(false) }
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
-            .run(Unit)
+            .run()
     }
 
     @Suppress("RedundantSuspendModifier")
