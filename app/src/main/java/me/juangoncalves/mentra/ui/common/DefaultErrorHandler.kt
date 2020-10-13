@@ -78,9 +78,7 @@ class DefaultErrorHandlerImpl : DefaultErrorHandler {
 
         fun run(params: P) {
             val safeScope = _scope
-            require(safeScope != null) {
-                "A coroutine scope must be specified using the `inScope` method to run this use case"
-            }
+                ?: error("A coroutine scope must be specified using the `inScope` method to run this use case")
 
             safeScope.launch(_dispatcher) {
                 _before?.invoke()
