@@ -15,13 +15,21 @@ fun Context.getThemeColor(@AttrRes attrRes: Int): Int {
 }
 
 
-fun Context.createErrorSnackbar(error: DisplayError, anchor: View, duration: Int): Snackbar {
+fun Context.createErrorSnackbar(
+    error: DisplayError,
+    view: View,
+    duration: Int = Snackbar.LENGTH_INDEFINITE,
+    anchor: View? = null
+): Snackbar {
     val errorColor = getThemeColor(R.attr.colorError)
     val onErrorColor = getThemeColor(R.attr.colorOnError)
 
-    return Snackbar.make(anchor, error.messageId, duration)
+    return Snackbar.make(view, error.messageId, duration)
         .setBackgroundTint(errorColor)
         .setTextColor(onErrorColor)
         .setAction(R.string.retry) { error.retryAction() }
         .setActionTextColor(onErrorColor)
+        .apply {
+            if (anchor != null) anchorView = anchor
+        }
 }
