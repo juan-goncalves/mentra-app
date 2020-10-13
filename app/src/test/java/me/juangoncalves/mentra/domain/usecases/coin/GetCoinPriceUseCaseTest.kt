@@ -28,10 +28,7 @@ class GetCoinPriceUseCaseTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        getCoinPrice =
-            GetCoinPriceUseCase(
-                coinRepositoryMock
-            )
+        getCoinPrice = GetCoinPriceUseCase(coinRepositoryMock)
     }
 
     @Test
@@ -62,4 +59,5 @@ class GetCoinPriceUseCaseTest {
         assertTrue(result.value is PriceNotFound)
         assertEquals((result.value as PriceNotFound).coin, Ethereum)
     }
+
 }

@@ -6,15 +6,14 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
+import me.juangoncalves.mentra.domain.usecases.UseCase
 import javax.inject.Inject
 
 class GetCoinPriceUseCase @Inject constructor(
     private val coinRepository: CoinRepository
-) {
+) : UseCase<Coin, Price> {
 
-    suspend operator fun invoke(
-        coin: Coin,
-        currency: Currency = Currency.USD
-    ): Either<Failure, Price> = coinRepository.getCoinPrice(coin, currency)
+    override suspend operator fun invoke(params: Coin): Either<Failure, Price> =
+        coinRepository.getCoinPrice(params, Currency.USD)
 
 }
