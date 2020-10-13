@@ -1,6 +1,5 @@
 package me.juangoncalves.mentra.ui.wallet_creation
 
-import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,38 +10,33 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.domain.errors.Failure
-import me.juangoncalves.mentra.domain.errors.InternetConnectionFailure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.repositories.CoinRepository
-import me.juangoncalves.mentra.domain.repositories.WalletRepository
-import me.juangoncalves.mentra.extensions.Left
-import me.juangoncalves.mentra.extensions.Right
-import me.juangoncalves.mentra.extensions.isLeft
-import me.juangoncalves.mentra.ui.common.DisplayError
+import me.juangoncalves.mentra.domain.usecases.coin.GetCoins
+import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
 import me.juangoncalves.mentra.ui.common.Event
+import me.juangoncalves.mentra.ui.common.run
 import java.util.*
 
 typealias WarningEvent = Event<Int>
 
 class WalletCreationViewModel @ViewModelInject constructor(
-    private val coinRepository: CoinRepository,
-    private val walletRepository: WalletRepository
-) : ViewModel() {
+    private val _getCoins: GetCoins,
+    private val _createWallet: CreateWallet
+) : ViewModel(), DefaultErrorHandler by DefaultErrorHandlerImpl() {
 
     val coins: LiveData<List<Coin>> get() = _coins
     val shouldScrollToStart: LiveData<Boolean> get() = _shouldScrollToStart
     val warning: LiveData<WarningEvent> get() = _warning
     val onSuccessfulSave: LiveData<Unit> get() = _onSuccessfulSave
-    val error: LiveData<DisplayError> get() = _error
     val shouldShowCoinLoadIndicator: LiveData<Boolean> get() = _shouldShowCoinLoadIndicator
 
     private val _coins: MutableLiveData<List<Coin>> = MutableLiveData(emptyList())
     private val _shouldScrollToStart: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _warning: MutableLiveData<WarningEvent> = MutableLiveData()
     private val _onSuccessfulSave: MutableLiveData<Unit> = MutableLiveData()
-    private val _error: MutableLiveData<DisplayError> = MutableLiveData()
     private val _shouldShowCoinLoadIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private var unfilteredCoins: List<Coin> = emptyList()
@@ -53,22 +47,16 @@ class WalletCreationViewModel @ViewModelInject constructor(
     }
 
     private fun fetchCoins() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _shouldShowCoinLoadIndicator.postValue(true)
-
-            when (val result = coinRepository.getCoins()) {
-                is Left -> {
-                    val error = DisplayError(failureToMessageId(result.value), ::fetchCoins)
-                    _error.postValue(error)
-                }
-                is Right -> {
-                    _coins.postValue(result.value)
-                    unfilteredCoins = result.value
-                }
+        _getCoins.prepare()
+            .withDispatcher(Dispatchers.IO)
+            .inScope(viewModelScope)
+            .beforeInvoke { _shouldShowCoinLoadIndicator.postValue(true) }
+            .afterInvoke { _shouldShowCoinLoadIndicator.postValue(false) }
+            .onSuccess { coins ->
+                _coins.postValue(coins)
+                unfilteredCoins = coins
             }
-
-            _shouldShowCoinLoadIndicator.postValue(false)
-        }
+            .run()
     }
 
     fun submitQuery(query: String) {
@@ -101,15 +89,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
             return
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val wallet = Wallet(coin, parsedAmount)
-            val result = walletRepository.createWallet(wallet)
-            if (result.isLeft()) {
-                // TODO: Show error / retry
-            } else {
-                _onSuccessfulSave.postValue(Unit)
-            }
-        }
+        val wallet = Wallet(coin, parsedAmount)
+
+        _createWallet.prepare()
+            .withDispatcher(Dispatchers.IO)
+            .inScope(viewModelScope)
+            .onSuccess { _onSuccessfulSave.postValue(Unit) }
+            .run(wallet)
     }
 
     private suspend fun filterCoinsByName(query: String): List<Coin> =
@@ -121,13 +107,5 @@ class WalletCreationViewModel @ViewModelInject constructor(
                 match.name.length - query.length
             }
         }
-
-    @StringRes
-    private fun failureToMessageId(failure: Failure): Int {
-        return when (failure) {
-            is InternetConnectionFailure -> R.string.connection_error
-            else -> R.string.default_error
-        }
-    }
 
 }
