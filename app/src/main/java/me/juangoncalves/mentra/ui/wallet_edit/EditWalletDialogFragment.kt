@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.EditWalletDialogFragmentBinding
 import me.juangoncalves.mentra.extensions.asCurrency
-import me.juangoncalves.mentra.extensions.createErrorSnackbar
+import me.juangoncalves.mentra.extensions.showSnackbarOnDefaultErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
@@ -30,7 +30,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private val viewModel: WalletEditViewModel by viewModels()
+    private val viewModel: EditWalletViewModel by viewModels()
 
     private var _binding: EditWalletDialogFragmentBinding? = null
     private val binding get() = _binding!!
@@ -60,12 +60,10 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun initObservers() {
+        showSnackbarOnDefaultErrors(viewModel, binding.root)
+
         viewModel.dismiss.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
-        }
-
-        viewModel.onError.observe(viewLifecycleOwner) { error ->
-            createErrorSnackbar(error).show()
         }
 
         viewModel.amountInputValidation.observe(viewLifecycleOwner) { messageId ->
