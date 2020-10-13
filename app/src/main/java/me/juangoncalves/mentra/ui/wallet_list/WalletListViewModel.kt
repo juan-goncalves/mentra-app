@@ -1,10 +1,7 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -16,7 +13,8 @@ import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIconUseCase
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandlingViewModel
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
 import me.juangoncalves.mentra.ui.common.DisplayError
 
 // Error with the position of the wallet being modified
@@ -27,7 +25,7 @@ class WalletListViewModel @ViewModelInject constructor(
     private val walletRepository: WalletRepository,
     private val getGradientCoinIcon: GetGradientCoinIconUseCase,
     private val refreshPortfolioValue: RefreshPortfolioValueUseCase
-) : DefaultErrorHandlingViewModel() {
+) : ViewModel(), DefaultErrorHandler by DefaultErrorHandlerImpl() {
 
     val wallets: LiveData<List<DisplayWallet>> = coinRepository.pricesOfCoinsInUse
         .combine(walletRepository.wallets, ::mergeIntoDisplayWallets)
@@ -51,6 +49,7 @@ class WalletListViewModel @ViewModelInject constructor(
             .beforeInvoke { _shouldShowProgressBar.postValue(true) }
             .afterInvoke { _shouldShowProgressBar.postValue(false) }
             .withDispatcher(Dispatchers.IO)
+            .inScope(viewModelScope)
             .run(Unit)
     }
 

@@ -2,9 +2,8 @@ package me.juangoncalves.mentra.ui.common
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -15,19 +14,32 @@ import me.juangoncalves.mentra.domain.usecases.UseCase
 import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.requireRight
 
+interface DefaultErrorHandler {
 
-abstract class DefaultErrorHandlingViewModel : ViewModel() {
+    val defaultErrorStream: LiveData<DisplayError>
 
-    val defaultErrorStream: LiveData<DisplayError> get() = _defaultErrorStream
+    fun errorSnackbarDismissed()
+
+    fun <T> Flow<T>.showRetrySnackbarOnError(): Flow<T>
+
+    fun <P, R> UseCase<P, R>.prepare(): DefaultErrorHandlerImpl.UseCaseExecutor<P, R>
+
+    fun dispose()
+
+}
+
+class DefaultErrorHandlerImpl : DefaultErrorHandler {
+
+    override val defaultErrorStream: LiveData<DisplayError> get() = _defaultErrorStream
 
     private val _defaultErrorStream: MutableLiveData<DisplayError> = MutableLiveData()
     private val _retryChannel = Channel<Boolean>(1)
 
-    fun errorSnackbarDismissed() {
+    override fun errorSnackbarDismissed() {
         _retryChannel.offer(false)
     }
 
-    protected fun <T> Flow<T>.showRetrySnackbarOnError(): Flow<T> {
+    override fun <T> Flow<T>.showRetrySnackbarOnError(): Flow<T> {
         return retryWhen { cause, _ ->
             _defaultErrorStream.postValue(cause.toDisplayError())
             _retryChannel.receive()
@@ -41,18 +53,18 @@ abstract class DefaultErrorHandlingViewModel : ViewModel() {
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    override fun dispose() {
         _retryChannel.close()
     }
 
-    fun <P, R> UseCase<P, R>.prepare(): UseCaseExecutor<P, R> = UseCaseExecutor(this)
+    override fun <P, R> UseCase<P, R>.prepare(): UseCaseExecutor<P, R> = UseCaseExecutor(this)
 
     inner class UseCaseExecutor<P, R>(val useCase: UseCase<P, R>) {
         private var _before: (suspend () -> Unit)? = null
         private var _after: (suspend () -> Unit)? = null
         private var _success: (suspend (R) -> Unit)? = null
         private var _dispatcher: CoroutineDispatcher = Dispatchers.Main
+        private var _scope: CoroutineScope? = null
 
         fun beforeInvoke(func: (suspend () -> Unit)?) = apply { _before = func }
 
@@ -60,10 +72,17 @@ abstract class DefaultErrorHandlingViewModel : ViewModel() {
 
         fun withDispatcher(dispatcher: CoroutineDispatcher) = apply { _dispatcher = dispatcher }
 
+        fun inScope(scope: CoroutineScope) = apply { _scope = scope }
+
         fun onSuccess(func: (suspend (R) -> Unit)) = apply { _success = func }
 
         fun run(params: P) {
-            viewModelScope.launch(_dispatcher) {
+            val safeScope = _scope
+            require(safeScope != null) {
+                "A coroutine scope must be specified using the `inScope` method to run this use case"
+            }
+
+            safeScope.launch(_dispatcher) {
                 _before?.invoke()
 
                 val result = useCase(params)
@@ -82,4 +101,3 @@ abstract class DefaultErrorHandlingViewModel : ViewModel() {
     }
 
 }
-

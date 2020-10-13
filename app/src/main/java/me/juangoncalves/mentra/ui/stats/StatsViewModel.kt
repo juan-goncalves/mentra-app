@@ -1,9 +1,7 @@
 package me.juangoncalves.mentra.ui.stats
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +12,8 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioDistributionStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistoryStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandlingViewModel
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 import kotlin.collections.component1
@@ -28,7 +27,7 @@ class StatsViewModel @ViewModelInject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
     private val refreshPortfolioValue: RefreshPortfolioValueUseCase
-) : DefaultErrorHandlingViewModel() {
+) : ViewModel(), DefaultErrorHandler by DefaultErrorHandlerImpl() {
 
     val valueChartData: LiveData<TimeChartData> = getPortfolioValueHistory()
         .toTimeChartData()
@@ -51,6 +50,7 @@ class StatsViewModel @ViewModelInject constructor(
             .beforeInvoke { _shouldShowRefreshIndicator.postValue(true) }
             .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
             .withDispatcher(Dispatchers.IO)
+            .inScope(viewModelScope)
             .run(Unit)
     }
 
@@ -69,4 +69,8 @@ class StatsViewModel @ViewModelInject constructor(
         }.toTypedArray()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        dispose()
+    }
 }

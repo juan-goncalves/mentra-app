@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandlingViewModel
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
 import me.juangoncalves.mentra.ui.common.DisplayError
 
 fun Fragment.createErrorSnackbar(
@@ -27,7 +27,7 @@ fun Fragment.createErrorSnackbar(
 }
 
 fun Fragment.showSnackbarOnDefaultErrors(
-    viewModel: DefaultErrorHandlingViewModel,
+    viewModel: DefaultErrorHandler,
     anchor: View? = null
 ) {
     viewModel.defaultErrorStream.observe(viewLifecycleOwner) { error ->
