@@ -11,12 +11,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
+import me.juangoncalves.mentra.extensions.onDismissed
+import me.juangoncalves.mentra.extensions.showSnackbarOnDefaultErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
@@ -74,6 +74,8 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
     }
 
     private fun initObservers() {
+        showSnackbarOnDefaultErrors(viewModel, binding.addWalletButton)
+
         viewModel.shouldShowProgressBar.observe(viewLifecycleOwner) { shouldShow ->
             binding.progressBar.animateVisibility(shouldShow)
         }
@@ -82,13 +84,9 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             walletAdapter.data = wallets
         }
 
-        viewModel.generalError.observe(viewLifecycleOwner) { error ->
-            createErrorSnackbar(error, binding.addWalletButton).show()
-        }
-
         viewModel.walletManagementError.observe(viewLifecycleOwner) { (error, position) ->
             createErrorSnackbar(error, binding.addWalletButton)
-                .addCallback(DismissCallback(position))
+                .onDismissed { walletAdapter.notifyItemChanged(position) }
                 .show()
         }
     }
@@ -124,18 +122,6 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
         val position = walletAdapter.data.indexOfFirst { it.wallet == wallet }
         if (position > -1) walletAdapter.notifyItemChanged(position)
-    }
-
-    private inner class DismissCallback(
-        val itemPosition: Int
-    ) : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-
-        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-            super.onDismissed(transientBottomBar, event)
-            if (event != DISMISS_EVENT_ACTION) walletAdapter.notifyItemChanged(itemPosition)
-            transientBottomBar?.removeCallback(this)
-        }
-
     }
 
 }

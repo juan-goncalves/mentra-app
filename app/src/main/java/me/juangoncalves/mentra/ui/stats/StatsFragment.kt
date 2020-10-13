@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
 import me.juangoncalves.mentra.extensions.getThemeColor
+import me.juangoncalves.mentra.extensions.showSnackbarOnDefaultErrors
 
 
 @AndroidEntryPoint
@@ -52,6 +53,8 @@ class StatsFragment : Fragment() {
     }
 
     private fun initObservers() {
+        showSnackbarOnDefaultErrors(viewModel)
+
         viewModel.valueChartData.observe(viewLifecycleOwner) { (entries, indicesToDates) ->
             val dateAxisFormatter = DateAxisFormatter(indicesToDates)
             val dataSet = LineDataSet(entries, "value").styled()

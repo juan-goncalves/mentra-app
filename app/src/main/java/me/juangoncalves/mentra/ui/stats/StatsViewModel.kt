@@ -1,19 +1,20 @@
 package me.juangoncalves.mentra.ui.stats
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioDistributionStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistoryStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
-import me.juangoncalves.mentra.extensions.isLeft
+import me.juangoncalves.mentra.ui.common.DefaultErrorHandlingViewModel
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
 import kotlin.collections.component1
@@ -27,15 +28,17 @@ class StatsViewModel @ViewModelInject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
     private val refreshPortfolioValue: RefreshPortfolioValueUseCase
-) : ViewModel() {
+) : DefaultErrorHandlingViewModel() {
 
     val valueChartData: LiveData<TimeChartData> = getPortfolioValueHistory()
         .toTimeChartData()
+        .showRetrySnackbarOnError()
         .flowOn(Dispatchers.Default)
         .asLiveData()
 
     val pieChartData: LiveData<Array<PiePortion>> = getPortfolioDistribution()
         .toPiePortions()
+        .showRetrySnackbarOnError()
         .flowOn(Dispatchers.Default)
         .asLiveData()
 
@@ -44,16 +47,11 @@ class StatsViewModel @ViewModelInject constructor(
     private val _shouldShowRefreshIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun refreshSelected() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _shouldShowRefreshIndicator.postValue(true)
-            val result = refreshPortfolioValue()
-
-            if (result.isLeft()) {
-                // TODO: Show error
-            }
-
-            _shouldShowRefreshIndicator.postValue(false)
-        }
+        refreshPortfolioValue.prepare()
+            .beforeInvoke { _shouldShowRefreshIndicator.postValue(true) }
+            .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
+            .withDispatcher(Dispatchers.IO)
+            .run(Unit)
     }
 
     private fun Flow<List<Price>>.toTimeChartData() = map { prices ->
