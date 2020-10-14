@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.EditWalletDialogFragmentBinding
 import me.juangoncalves.mentra.extensions.asCurrency
-import me.juangoncalves.mentra.extensions.showSnackbarOnDefaultErrors
+import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
@@ -60,7 +60,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun initObservers() {
-        showSnackbarOnDefaultErrors(viewModel, binding.root)
+        showSnackbarOnFleetingErrors(viewModel, binding.root)
 
         viewModel.dismiss.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }

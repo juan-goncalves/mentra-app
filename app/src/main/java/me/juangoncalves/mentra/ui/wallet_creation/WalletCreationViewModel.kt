@@ -14,10 +14,7 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
-import me.juangoncalves.mentra.ui.common.Event
-import me.juangoncalves.mentra.ui.common.run
+import me.juangoncalves.mentra.ui.common.*
 import java.util.*
 
 typealias WarningEvent = Event<Int>
@@ -25,7 +22,7 @@ typealias WarningEvent = Event<Int>
 class WalletCreationViewModel @ViewModelInject constructor(
     private val _getCoins: GetCoins,
     private val _createWallet: CreateWallet
-) : ViewModel(), DefaultErrorHandler by DefaultErrorHandlerImpl() {
+) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val coins: LiveData<List<Coin>> get() = _coins
     val shouldScrollToStart: LiveData<Boolean> get() = _shouldScrollToStart
@@ -47,7 +44,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     }
 
     private fun fetchCoins() {
-        _getCoins.prepare()
+        _getCoins.executor()
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
             .beforeInvoke { _shouldShowCoinLoadIndicator.postValue(true) }
@@ -56,6 +53,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
                 _coins.postValue(coins)
                 unfilteredCoins = coins
             }
+            .onFailurePublishFleetingError()
             .run()
     }
 
@@ -91,10 +89,11 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
         val wallet = Wallet(coin, parsedAmount)
 
-        _createWallet.prepare()
+        _createWallet.executor()
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
             .onSuccess { _onSuccessfulSave.postValue(Unit) }
+            .onFailurePublishFleetingError()
             .run(wallet)
     }
 

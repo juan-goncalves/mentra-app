@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
-import me.juangoncalves.mentra.extensions.showSnackbarOnDefaultErrors
+import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 
 @AndroidEntryPoint
 class WalletCreationActivity : AppCompatActivity() {
@@ -52,7 +52,7 @@ class WalletCreationActivity : AppCompatActivity() {
     }
 
     private fun initObservers() {
-        showSnackbarOnDefaultErrors(viewModel, binding.root)
+        showSnackbarOnFleetingErrors(viewModel, binding.root)
 
         viewModel.coins.observe(this) { coins ->
             coinAdapter.submitList(coins)

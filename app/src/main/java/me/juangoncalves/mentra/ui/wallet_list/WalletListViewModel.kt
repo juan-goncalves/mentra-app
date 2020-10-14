@@ -13,10 +13,7 @@ import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIconUseCase
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
-import me.juangoncalves.mentra.ui.common.DisplayError
-import me.juangoncalves.mentra.ui.common.run
+import me.juangoncalves.mentra.ui.common.*
 
 // Error with the position of the wallet being modified
 typealias WalletManagementError = Pair<DisplayError, Int>
@@ -26,11 +23,11 @@ class WalletListViewModel @ViewModelInject constructor(
     private val walletRepository: WalletRepository,
     private val getGradientCoinIcon: GetGradientCoinIconUseCase,
     private val refreshPortfolioValue: RefreshPortfolioValueUseCase
-) : ViewModel(), DefaultErrorHandler by DefaultErrorHandlerImpl() {
+) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val wallets: LiveData<List<DisplayWallet>> = coinRepository.pricesOfCoinsInUse
         .combine(walletRepository.wallets, ::mergeIntoDisplayWallets)
-        .showRetrySnackbarOnError()
+        .onFailurePublishFleetingError()
         .asLiveData()
 
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
@@ -46,11 +43,12 @@ class WalletListViewModel @ViewModelInject constructor(
     }
 
     private fun updatePrices() {
-        refreshPortfolioValue.prepare()
-            .beforeInvoke { _shouldShowProgressBar.postValue(true) }
-            .afterInvoke { _shouldShowProgressBar.postValue(false) }
+        refreshPortfolioValue.executor()
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
+            .beforeInvoke { _shouldShowProgressBar.postValue(true) }
+            .afterInvoke { _shouldShowProgressBar.postValue(false) }
+            .onFailurePublishFleetingError()
             .run()
     }
 

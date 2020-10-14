@@ -4,8 +4,8 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
 import me.juangoncalves.mentra.ui.common.DisplayError
+import me.juangoncalves.mentra.ui.common.FleetingErrorPublisher
 
 fun Fragment.createErrorSnackbar(
     error: DisplayError,
@@ -13,13 +13,15 @@ fun Fragment.createErrorSnackbar(
     duration: Int = Snackbar.LENGTH_INDEFINITE
 ): Snackbar = with(requireContext()) { createErrorSnackbar(error, requireView(), duration, anchor) }
 
-fun Fragment.showSnackbarOnDefaultErrors(
-    viewModel: DefaultErrorHandler,
+fun Fragment.showSnackbarOnFleetingErrors(
+    fleetingErrorPublisher: FleetingErrorPublisher,
     anchor: View? = null
 ) {
-    viewModel.defaultErrorStream.observe(viewLifecycleOwner) { error ->
-        createErrorSnackbar(error, anchor)
-            .onDismissed { viewModel.errorSnackbarDismissed() }
-            .show()
+    fleetingErrorPublisher.fleetingErrorStream.observe(viewLifecycleOwner) { errorEvent ->
+        errorEvent.use { error ->
+            createErrorSnackbar(error, anchor)
+                .onDismissed { fleetingErrorPublisher.fleetingErrorDismissed() }
+                .show()
+        }
     }
 }

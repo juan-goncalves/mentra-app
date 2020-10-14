@@ -13,7 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.extensions.showSnackbarOnDefaultErrors
+import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 
@@ -58,7 +58,7 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun initObservers() {
-        showSnackbarOnDefaultErrors(viewModel, binding.root)
+        showSnackbarOnFleetingErrors(viewModel, binding.root)
 
         viewModel.dismiss.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }

@@ -10,15 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
-import me.juangoncalves.mentra.ui.common.BundleKeys
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
-import me.juangoncalves.mentra.ui.common.Notification
+import me.juangoncalves.mentra.ui.common.*
 import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
 
 class EditWalletViewModel @ViewModelInject constructor(
     private val updateWallet: UpdateWallet
-) : ViewModel(), DefaultErrorHandler by DefaultErrorHandlerImpl() {
+) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val dismiss: LiveData<Notification> get() = _dismiss
     val saveButtonEnabled: LiveData<Boolean> get() = _saveButtonEnabled
@@ -47,13 +44,14 @@ class EditWalletViewModel @ViewModelInject constructor(
         val updatedAmount = _updatedAmount ?: return
         val updatedWallet = _displayWallet.wallet.copy(amount = updatedAmount)
 
-        updateWallet.prepare()
+        updateWallet.executor()
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
             .onSuccess {
                 _savedUpdates = true
                 _dismiss.postValue(Notification())
             }
+            .onFailurePublishFleetingError()
             .run(updatedWallet)
     }
 

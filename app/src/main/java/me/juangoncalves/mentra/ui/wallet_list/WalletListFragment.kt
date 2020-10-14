@@ -16,7 +16,7 @@ import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
 import me.juangoncalves.mentra.extensions.onDismissed
-import me.juangoncalves.mentra.extensions.showSnackbarOnDefaultErrors
+import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
@@ -74,7 +74,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
     }
 
     private fun initObservers() {
-        showSnackbarOnDefaultErrors(viewModel, binding.addWalletButton)
+        showSnackbarOnFleetingErrors(viewModel, binding.addWalletButton)
 
         viewModel.shouldShowProgressBar.observe(viewLifecycleOwner) { shouldShow ->
             binding.progressBar.animateVisibility(shouldShow)

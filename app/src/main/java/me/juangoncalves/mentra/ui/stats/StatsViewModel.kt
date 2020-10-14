@@ -12,8 +12,9 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioDistributionStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistoryStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandler
-import me.juangoncalves.mentra.ui.common.DefaultErrorHandlerImpl
+import me.juangoncalves.mentra.ui.common.FleetingErrorPublisher
+import me.juangoncalves.mentra.ui.common.FleetingErrorPublisherImpl
+import me.juangoncalves.mentra.ui.common.executor
 import me.juangoncalves.mentra.ui.common.run
 import me.juangoncalves.pie.PiePortion
 import java.time.LocalDate
@@ -28,17 +29,17 @@ class StatsViewModel @ViewModelInject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
     private val refreshPortfolioValue: RefreshPortfolioValueUseCase
-) : ViewModel(), DefaultErrorHandler by DefaultErrorHandlerImpl() {
+) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val valueChartData: LiveData<TimeChartData> = getPortfolioValueHistory()
         .toTimeChartData()
-        .showRetrySnackbarOnError()
+        .onFailurePublishFleetingError()
         .flowOn(Dispatchers.Default)
         .asLiveData()
 
     val pieChartData: LiveData<Array<PiePortion>> = getPortfolioDistribution()
         .toPiePortions()
-        .showRetrySnackbarOnError()
+        .onFailurePublishFleetingError()
         .flowOn(Dispatchers.Default)
         .asLiveData()
 
@@ -47,11 +48,12 @@ class StatsViewModel @ViewModelInject constructor(
     private val _shouldShowRefreshIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun refreshSelected() {
-        refreshPortfolioValue.prepare()
-            .beforeInvoke { _shouldShowRefreshIndicator.postValue(true) }
-            .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
+        refreshPortfolioValue.executor()
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
+            .beforeInvoke { _shouldShowRefreshIndicator.postValue(true) }
+            .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
+            .onFailurePublishFleetingError()
             .run()
     }
 
