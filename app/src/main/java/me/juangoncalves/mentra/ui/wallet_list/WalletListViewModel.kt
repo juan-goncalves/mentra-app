@@ -11,8 +11,9 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
-import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIconUseCase
+import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIcon
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
+import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.ui.common.*
 
 // Error with the position of the wallet being modified
@@ -21,7 +22,7 @@ typealias WalletManagementError = Pair<DisplayError, Int>
 class WalletListViewModel @ViewModelInject constructor(
     coinRepository: CoinRepository,
     private val walletRepository: WalletRepository,
-    private val getGradientCoinIcon: GetGradientCoinIconUseCase,
+    private val getGradientCoinIcon: GetGradientCoinIcon,
     private val refreshPortfolioValue: RefreshPortfolioValueUseCase
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
@@ -58,7 +59,8 @@ class WalletListViewModel @ViewModelInject constructor(
         wallets: List<Wallet>
     ): List<DisplayWallet> = wallets.map { wallet ->
         val coinPrice = coinPrices[wallet.coin] ?: Price.None
-        val coinGradientIconUrl = getGradientCoinIcon(wallet.coin)
+        val params = GetGradientCoinIcon.Params(wallet.coin)
+        val coinGradientIconUrl = getGradientCoinIcon(params).rightValue ?: ""
 
         DisplayWallet(
             wallet,
