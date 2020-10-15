@@ -22,18 +22,18 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
 
-class RefreshWalletValueUseCaseTest {
+class RefreshWalletValueTest {
 
     @MockK private lateinit var coinRepositoryMock: CoinRepository
     @MockK private lateinit var walletRepositoryMock: WalletRepository
 
-    private lateinit var sut: RefreshWalletValueUseCase
+    private lateinit var sut: RefreshWalletValue
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         sut =
-            RefreshWalletValueUseCase(
+            RefreshWalletValue(
                 coinRepositoryMock,
                 walletRepositoryMock
             )

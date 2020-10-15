@@ -19,16 +19,16 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
 
-class GetCoinPriceUseCaseTest {
+class GetCoinPriceTest {
 
     @MockK lateinit var coinRepositoryMock: CoinRepository
 
-    private lateinit var getCoinPrice: GetCoinPriceUseCase
+    private lateinit var getCoinPrice: GetCoinPrice
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        getCoinPrice = GetCoinPriceUseCase(coinRepositoryMock)
+        getCoinPrice = GetCoinPrice(coinRepositoryMock)
     }
 
     @Test

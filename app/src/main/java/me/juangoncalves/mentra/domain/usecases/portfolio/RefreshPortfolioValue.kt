@@ -6,14 +6,14 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.domain.usecases.VoidUseCase
-import me.juangoncalves.mentra.domain.usecases.wallet.RefreshWalletValueUseCase
+import me.juangoncalves.mentra.domain.usecases.wallet.RefreshWalletValue
 import me.juangoncalves.mentra.extensions.*
 import javax.inject.Inject
 
-class RefreshPortfolioValueUseCase @Inject constructor(
+class RefreshPortfolioValue @Inject constructor(
     private val walletRepository: WalletRepository,
     private val portfolioRepository: PortfolioRepository,
-    private val refreshWalletValue: RefreshWalletValueUseCase
+    private val refreshWalletValue: RefreshWalletValue
 ) : VoidUseCase<Price> {
 
     override suspend operator fun invoke(): Either<Failure, Price> {

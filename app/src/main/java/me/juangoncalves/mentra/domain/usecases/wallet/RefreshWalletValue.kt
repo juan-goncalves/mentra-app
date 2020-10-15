@@ -11,7 +11,7 @@ import me.juangoncalves.mentra.extensions.requireLeft
 import me.juangoncalves.mentra.extensions.rightValue
 import javax.inject.Inject
 
-class RefreshWalletValueUseCase @Inject constructor(
+class RefreshWalletValue @Inject constructor(
     private val coinRepository: CoinRepository,
     private val walletRepository: WalletRepository
 ) {

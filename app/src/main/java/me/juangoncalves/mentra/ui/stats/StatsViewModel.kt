@@ -11,7 +11,7 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioDistributionStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistoryStream
-import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
+import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.ui.common.FleetingErrorPublisher
 import me.juangoncalves.mentra.ui.common.FleetingErrorPublisherImpl
 import me.juangoncalves.mentra.ui.common.executor
@@ -28,7 +28,7 @@ typealias TimeChartData = Pair<List<Entry>, Map<Int, LocalDate>>
 class StatsViewModel @ViewModelInject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
-    private val refreshPortfolioValue: RefreshPortfolioValueUseCase
+    private val refreshPortfolioValue: RefreshPortfolioValue
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val valueChartData: LiveData<TimeChartData> = getPortfolioValueHistory()
@@ -76,4 +76,5 @@ class StatsViewModel @ViewModelInject constructor(
         super.onCleared()
         dispose()
     }
+
 }

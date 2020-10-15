@@ -12,7 +12,7 @@ import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIcon
-import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValueUseCase
+import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.ui.common.*
 
@@ -23,7 +23,7 @@ class WalletListViewModel @ViewModelInject constructor(
     coinRepository: CoinRepository,
     private val walletRepository: WalletRepository,
     private val getGradientCoinIcon: GetGradientCoinIcon,
-    private val refreshPortfolioValue: RefreshPortfolioValueUseCase
+    private val refreshPortfolioValue: RefreshPortfolioValue
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val wallets: LiveData<List<DisplayWallet>> = coinRepository.pricesOfCoinsInUse
