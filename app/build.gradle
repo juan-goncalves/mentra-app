@@ -100,10 +100,9 @@ dependencies {
     testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     testImplementation "androidx.room:room-testing:$room_version"
     testImplementation "org.robolectric:robolectric:4.3"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.0-M1"
 
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.work:work-testing:$work_version"
-
-    debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 }

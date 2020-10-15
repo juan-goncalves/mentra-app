@@ -3,7 +3,6 @@ package me.juangoncalves.mentra
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.*
-import com.facebook.stetho.Stetho
 import dagger.hilt.android.HiltAndroidApp
 import me.juangoncalves.mentra.ui.common.WindowLayoutCallbacks
 import me.juangoncalves.mentra.workers.PortfolioSnapshotWorker
@@ -18,7 +17,6 @@ class MentraApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        Stetho.initializeWithDefaults(this)
         registerActivityLifecycleCallbacks(WindowLayoutCallbacks())
         schedulePortfolioSnapshots()
     }
