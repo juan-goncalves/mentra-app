@@ -11,9 +11,7 @@ fun AppCompatActivity.showSnackbarOnFleetingErrors(
 ) {
     fleetingErrorPublisher.fleetingErrorStream.observe(this) { errorEvent ->
         errorEvent.use { error ->
-            createErrorSnackbar(error, view)
-                .onDismissed { fleetingErrorPublisher.fleetingErrorDismissed() }
-                .show()
+            createErrorSnackbar(error, view).show()
         }
     }
 }

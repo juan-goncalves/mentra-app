@@ -33,13 +33,11 @@ class StatsViewModel @ViewModelInject constructor(
 
     val valueChartData: LiveData<TimeChartData> = getPortfolioValueHistory()
         .toTimeChartData()
-        .onFailurePublishFleetingError()
         .flowOn(Dispatchers.Default)
         .asLiveData()
 
     val pieChartData: LiveData<Array<PiePortion>> = getPortfolioDistribution()
         .toPiePortions()
-        .onFailurePublishFleetingError()
         .flowOn(Dispatchers.Default)
         .asLiveData()
 
@@ -70,11 +68,6 @@ class StatsViewModel @ViewModelInject constructor(
         coinPercentages.entries.map { (coin, value) ->
             PiePortion(value, coin.symbol)
         }.toTypedArray()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        dispose()
     }
 
 }

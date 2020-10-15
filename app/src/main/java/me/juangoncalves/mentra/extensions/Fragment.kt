@@ -19,9 +19,7 @@ fun Fragment.showSnackbarOnFleetingErrors(
 ) {
     fleetingErrorPublisher.fleetingErrorStream.observe(viewLifecycleOwner) { errorEvent ->
         errorEvent.use { error ->
-            createErrorSnackbar(error, anchor)
-                .onDismissed { fleetingErrorPublisher.fleetingErrorDismissed() }
-                .show()
+            createErrorSnackbar(error, anchor).show()
         }
     }
 }

@@ -28,7 +28,6 @@ class WalletListViewModel @ViewModelInject constructor(
 
     val wallets: LiveData<List<DisplayWallet>> = coinRepository.pricesOfCoinsInUse
         .combine(walletRepository.wallets, ::mergeIntoDisplayWallets)
-        .onFailurePublishFleetingError()
         .asLiveData()
 
     val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar

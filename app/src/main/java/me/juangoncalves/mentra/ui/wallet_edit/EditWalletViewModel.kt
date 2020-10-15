@@ -75,8 +75,4 @@ class EditWalletViewModel @ViewModelInject constructor(
         return if (amount <= 0) R.string.invalid_amount_warning to 0.0 else null to amount
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        dispose()
-    }
 }

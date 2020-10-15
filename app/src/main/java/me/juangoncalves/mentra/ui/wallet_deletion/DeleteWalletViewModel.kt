@@ -39,9 +39,4 @@ class DeleteWalletViewModel @ViewModelInject constructor(
         _dismiss.postValue(Notification())
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        dispose()
-    }
-
 }
