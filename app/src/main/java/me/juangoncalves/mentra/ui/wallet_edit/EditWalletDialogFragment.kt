@@ -51,7 +51,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initObservers()
-        binding.amountEditText.setText(viewModel.wallet.amount.toString())
+        binding.amountEditText.setText(viewModel.displayWallet.wallet.amount.toString())
         binding.saveButton.setOnClickListener { viewModel.saveSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
         binding.amountEditText.doOnTextChanged { text, _, _, _ ->
@@ -62,19 +62,19 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
     private fun initObservers() {
         showSnackbarOnFleetingErrors(viewModel, binding.root)
 
-        viewModel.dismiss.observe(viewLifecycleOwner) { notification ->
+        viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }
 
-        viewModel.amountInputValidation.observe(viewLifecycleOwner) { messageId ->
+        viewModel.amountInputValidationStream.observe(viewLifecycleOwner) { messageId ->
             binding.amountInputLayout.error = if (messageId != null) getString(messageId) else null
         }
 
-        viewModel.saveButtonEnabled.observe(viewLifecycleOwner) { enabled ->
+        viewModel.saveButtonStateStream.observe(viewLifecycleOwner) { enabled ->
             binding.saveButton.isEnabled = enabled
         }
 
-        viewModel.estimatedValue.observe(viewLifecycleOwner) { value ->
+        viewModel.estimatedValueStream.observe(viewLifecycleOwner) { value ->
             binding.priceTextView.text = value.asCurrency(symbol = "$")
         }
     }
@@ -84,7 +84,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         setFragmentResult(
             RequestKeys.WalletEdit,
             bundleOf(
-                BundleKeys.Wallet to viewModel.wallet,
+                BundleKeys.Wallet to viewModel.displayWallet,
                 BundleKeys.WalletEditResult to viewModel.savedUpdates
             )
         )
