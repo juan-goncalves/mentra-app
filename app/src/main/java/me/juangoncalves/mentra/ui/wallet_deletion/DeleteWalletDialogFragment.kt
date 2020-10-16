@@ -12,16 +12,16 @@ import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
-import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
+import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
 
 @AndroidEntryPoint
 class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
-        fun newInstance(wallet: Wallet): DeleteWalletDialogFragment {
+        fun newInstance(wallet: DisplayWallet): DeleteWalletDialogFragment {
             val fragment = DeleteWalletDialogFragment()
             fragment.arguments = bundleOf(BundleKeys.Wallet to wallet)
             return fragment
@@ -33,13 +33,9 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
     private var _binding: DeleteWalletDialogFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var wallet: Wallet
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        wallet = arguments?.getSerializable(BundleKeys.Wallet) as? Wallet
-            ?: error("You must provide the wallet to delete")
+        viewModel.initialize(arguments)
     }
 
     override fun onCreateView(
@@ -53,14 +49,14 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initObservers()
-        binding.deleteButton.setOnClickListener { viewModel.onDeleteSelected(wallet) }
-        binding.cancelButton.setOnClickListener { viewModel.onCancelSelected() }
+        binding.deleteButton.setOnClickListener { viewModel.deleteSelected() }
+        binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
     }
 
     private fun initObservers() {
         showSnackbarOnFleetingErrors(viewModel, binding.root)
 
-        viewModel.dismiss.observe(viewLifecycleOwner) { notification ->
+        viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }
     }
@@ -70,8 +66,8 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
         setFragmentResult(
             RequestKeys.WalletDeletion,
             bundleOf(
-                BundleKeys.Wallet to wallet,
-                BundleKeys.WalletDeletionResult to viewModel.deletedWallet
+                BundleKeys.Wallet to viewModel.displayWallet.wallet,
+                BundleKeys.WalletDeletionResult to viewModel.walletWasDeleted
             )
         )
     }

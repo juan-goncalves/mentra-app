@@ -93,7 +93,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     override fun onDeleteWalletGesture(position: Int) {
         DeleteWalletDialogFragment
-            .newInstance(walletAdapter.data[position].wallet)
+            .newInstance(walletAdapter.data[position])
             .show(parentFragmentManager, "delete_wallet")
     }
 

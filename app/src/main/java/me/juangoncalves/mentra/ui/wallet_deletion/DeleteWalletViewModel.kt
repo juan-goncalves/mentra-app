@@ -1,42 +1,51 @@
 package me.juangoncalves.mentra.ui.wallet_deletion
 
+import android.os.Bundle
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import me.juangoncalves.mentra.domain.models.Wallet
+import kotlinx.coroutines.CoroutineDispatcher
+import me.juangoncalves.mentra.di.IoDispatcher
 import me.juangoncalves.mentra.domain.usecases.wallet.DeleteWallet
-import me.juangoncalves.mentra.ui.common.FleetingErrorPublisher
-import me.juangoncalves.mentra.ui.common.FleetingErrorPublisherImpl
-import me.juangoncalves.mentra.ui.common.Notification
-import me.juangoncalves.mentra.ui.common.executor
+import me.juangoncalves.mentra.ui.common.*
+import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
 
 class DeleteWalletViewModel @ViewModelInject constructor(
-    private val _deleteWallet: DeleteWallet
+    private val deleteWallet: DeleteWallet,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
-    val dismiss: LiveData<Notification> get() = _dismiss
-    val deletedWallet: Boolean get() = _deletedWallet
+    val dismissStream: LiveData<Notification> get() = _dismissStream
 
-    private val _dismiss: MutableLiveData<Notification> = MutableLiveData()
-    private var _deletedWallet: Boolean = false
+    var walletWasDeleted: Boolean = false
+        private set
 
-    fun onDeleteSelected(wallet: Wallet) {
-        _deleteWallet.executor()
-            .withDispatcher(Dispatchers.IO)
-            .inScope(viewModelScope)
-            .onSuccess {
-                _deletedWallet = true
-                _dismiss.postValue(Notification())
-            }
-            .onFailurePublishFleetingError()
-            .run(wallet)
+    lateinit var displayWallet: DisplayWallet
+        private set
+
+    private val _dismissStream: MutableLiveData<Notification> = MutableLiveData()
+
+    fun initialize(args: Bundle?) {
+        displayWallet = args?.getSerializable(BundleKeys.Wallet) as? DisplayWallet
+            ?: error("You must provide the wallet to delete")
     }
 
-    fun onCancelSelected() {
-        _dismiss.postValue(Notification())
+    fun deleteSelected() {
+        deleteWallet.executor()
+            .withDispatcher(ioDispatcher)
+            .inScope(viewModelScope)
+            .onSuccess {
+                walletWasDeleted = true
+                _dismissStream.postValue(Notification())
+            }
+            .onFailurePublishFleetingError()
+            .run(displayWallet.wallet)
+    }
+
+    fun cancelSelected() {
+        _dismissStream.postValue(Notification())
     }
 
 }
