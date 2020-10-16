@@ -1,12 +1,15 @@
 package me.juangoncalves.mentra.data.repositories
 
 import either.Either
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data.mapper.PortfolioValueMapper
 import me.juangoncalves.mentra.db.daos.PortfolioDao
+import me.juangoncalves.mentra.di.IoDispatcher
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Price
@@ -17,6 +20,7 @@ import me.juangoncalves.mentra.log.Logger
 import javax.inject.Inject
 
 class PortfolioRepositoryImpl @Inject constructor(
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val portfolioDao: PortfolioDao,
     private val portfolioValueMapper: PortfolioValueMapper,
     private val logger: Logger
@@ -37,9 +41,11 @@ class PortfolioRepositoryImpl @Inject constructor(
             .map(portfolioValueMapper::map)
 
     override suspend fun updatePortfolioValue(value: Price): Either<Failure, Unit> =
-        handleException {
-            val model = portfolioValueMapper.map(value)
-            portfolioDao.insertValue(model)
+        withContext(ioDispatcher) {
+            handleException {
+                val model = portfolioValueMapper.map(value)
+                portfolioDao.insertValue(model)
+            }
         }
 
     private suspend fun <R> handleException(source: suspend () -> R): Either<Failure, R> {

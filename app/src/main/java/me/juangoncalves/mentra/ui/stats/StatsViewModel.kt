@@ -47,7 +47,6 @@ class StatsViewModel @ViewModelInject constructor(
 
     fun refreshSelected() {
         refreshPortfolioValue.executor()
-            .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
             .beforeInvoke { _shouldShowRefreshIndicator.postValue(true) }
             .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
