@@ -116,11 +116,11 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
      * state (e.g hide the delete bubble).
      */
     private fun processWalletActionResult(bundle: Bundle, resultKey: String) {
-        val wallet = bundle[BundleKeys.Wallet]
+        val wallet = bundle[BundleKeys.Wallet] as? DisplayWallet
         val wasModified = bundle.getBoolean(resultKey, false)
         if (wasModified) return
 
-        val position = walletAdapter.data.indexOfFirst { it.wallet == wallet }
+        val position = walletAdapter.data.indexOfFirst { it == wallet }
         if (position > -1) walletAdapter.notifyItemChanged(position)
     }
 

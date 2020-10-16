@@ -66,7 +66,7 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
         setFragmentResult(
             RequestKeys.WalletDeletion,
             bundleOf(
-                BundleKeys.Wallet to viewModel.displayWallet.wallet,
+                BundleKeys.Wallet to viewModel.displayWallet,
                 BundleKeys.WalletDeletionResult to viewModel.walletWasDeleted
             )
         )
