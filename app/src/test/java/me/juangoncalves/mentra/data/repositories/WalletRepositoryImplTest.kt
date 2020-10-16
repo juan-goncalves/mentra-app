@@ -3,6 +3,7 @@ package me.juangoncalves.mentra.data.repositories
 import either.Either
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.WalletMapper
@@ -24,10 +25,14 @@ import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.isA
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
 
+@ExperimentalCoroutinesApi
 class WalletRepositoryImplTest {
+
+    @get:Rule val mainCoroutineRule = MainCoroutineRule()
 
     @MockK lateinit var walletLocalDataSource: WalletLocalDataSource
     @MockK lateinit var coinLocalDataSource: CoinLocalDataSource
@@ -39,7 +44,13 @@ class WalletRepositoryImplTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
         val walletMapper = WalletMapper(coinLocalDataSource)
-        sut = WalletRepositoryImpl(walletLocalDataSource, walletMapper, loggerMock)
+        sut = WalletRepositoryImpl(
+            mainCoroutineRule.dispatcher,
+            mainCoroutineRule.dispatcher,
+            walletLocalDataSource,
+            walletMapper,
+            loggerMock
+        )
     }
 
     @Test
