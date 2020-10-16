@@ -21,6 +21,7 @@
         <!-- Error color. -->
         <item name="colorError">@color/torch_red</item>
         <item name="colorOnError">@color/white</item>
+        <item name="errorIconTint">@color/dark_tan</item>
 
         <!-- Warning color -->
         <item name="colorWarning">@color/lighting_yellow</item>
