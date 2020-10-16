@@ -27,7 +27,7 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
 
     private val listener: WeakReference<Listener> = WeakReference(listener)
     private val deleteDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_trash)
-    private val deleteIconColor: Int = context.getThemeColor(R.attr.colorOnError)
+    private val deleteIconColor: Int = context.getThemeColor(R.attr.errorIconTint)
     private val editDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_edit)
     private val editIconColor: Int = context.getThemeColor(R.attr.colorOnWarning)
     private val intrinsicWidth: Int = deleteDrawable?.intrinsicWidth ?: 0
