@@ -6,15 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineDispatcher
-import me.juangoncalves.mentra.di.IoDispatcher
 import me.juangoncalves.mentra.domain.usecases.wallet.DeleteWallet
 import me.juangoncalves.mentra.ui.common.*
 import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
 
 class DeleteWalletViewModel @ViewModelInject constructor(
-    private val deleteWallet: DeleteWallet,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val deleteWallet: DeleteWallet
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val dismissStream: LiveData<Notification> get() = _dismissStream
@@ -34,7 +31,6 @@ class DeleteWalletViewModel @ViewModelInject constructor(
 
     fun deleteSelected() {
         deleteWallet.executor()
-            .withDispatcher(ioDispatcher)
             .inScope(viewModelScope)
             .onSuccess {
                 walletWasDeleted = true

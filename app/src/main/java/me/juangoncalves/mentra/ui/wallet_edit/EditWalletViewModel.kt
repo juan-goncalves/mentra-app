@@ -6,16 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineDispatcher
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.di.IoDispatcher
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.ui.common.*
 import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
 
 class EditWalletViewModel @ViewModelInject constructor(
-    private val updateWallet: UpdateWallet,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val updateWallet: UpdateWallet
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val dismissStream: LiveData<Notification> get() = _dismiss
@@ -48,7 +45,6 @@ class EditWalletViewModel @ViewModelInject constructor(
         val updatedWallet = displayWallet.wallet.copy(amount = updatedAmount)
 
         updateWallet.executor()
-            .withDispatcher(ioDispatcher)
             .inScope(viewModelScope)
             .onSuccess {
                 savedUpdates = true

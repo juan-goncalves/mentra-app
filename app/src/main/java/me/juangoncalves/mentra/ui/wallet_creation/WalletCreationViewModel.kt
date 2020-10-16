@@ -89,13 +89,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
         val wallet = Wallet(coin, parsedAmount)
 
         _createWallet.executor()
-            .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
             .onSuccess { _onSuccessfulSave.postValue(Unit) }
             .onFailurePublishFleetingError()
             .run(wallet)
     }
 
+    // TODO: Move into use case that receives the default dispatcher by DI?
     private suspend fun filterCoinsByName(query: String): List<Coin> =
         withContext(Dispatchers.Default) {
             return@withContext unfilteredCoins.filter { coin ->

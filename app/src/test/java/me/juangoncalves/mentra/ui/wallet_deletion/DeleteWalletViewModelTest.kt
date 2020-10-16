@@ -42,7 +42,7 @@ class DeleteWalletViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
-        sut = DeleteWalletViewModel(deleteWalletMock, mainCoroutineRule.dispatcher)
+        sut = DeleteWalletViewModel(deleteWalletMock)
         sut.dismissStream.observeForever(dismissObserver)
         sut.fleetingErrorStream.observeForever(fleetingErrorObserver)
     }

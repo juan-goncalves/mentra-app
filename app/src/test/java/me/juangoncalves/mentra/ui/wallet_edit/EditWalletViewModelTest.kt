@@ -45,7 +45,7 @@ class EditWalletViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
-        sut = EditWalletViewModel(updateWalletMock, mainCoroutineRule.dispatcher)
+        sut = EditWalletViewModel(updateWalletMock)
         sut.estimatedValueStream.observeForever(estimateObserver)
         sut.amountInputValidationStream.observeForever(inputWarningObserver)
         sut.saveButtonStateStream.observeForever(saveButtonStateObserver)
