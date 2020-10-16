@@ -8,9 +8,12 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.*
+import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.ui.common.BundleKeys
+import me.juangoncalves.mentra.ui.common.DisplayError
+import me.juangoncalves.mentra.ui.common.Event
 import me.juangoncalves.mentra.ui.common.Notification
 import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
 import org.hamcrest.MatcherAssert.assertThat
@@ -35,6 +38,7 @@ class EditWalletViewModelTest {
     @MockK lateinit var inputWarningObserver: Observer<Int?>
     @MockK lateinit var saveButtonStateObserver: Observer<Boolean>
     @MockK lateinit var dismissObserver: Observer<Notification>
+    @MockK lateinit var fleetingErrorObserver: Observer<Event<DisplayError>>
 
     private lateinit var sut: EditWalletViewModel
 
@@ -46,6 +50,7 @@ class EditWalletViewModelTest {
         sut.amountInputValidationStream.observeForever(inputWarningObserver)
         sut.saveButtonStateStream.observeForever(saveButtonStateObserver)
         sut.dismissStream.observeForever(dismissObserver)
+        sut.fleetingErrorStream.observeForever(fleetingErrorObserver)
     }
 
     @Test(expected = IllegalStateException::class)
@@ -271,6 +276,19 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 1) { dismissObserver.onChanged(any()) }
+    }
+
+    @Test
+    fun `fleetingErrorStream emits an error when the wallet update fails`() {
+        // Arrange
+        initSutWithFakeWallet()
+        coEvery { updateWalletMock.invoke(any()) } returns Left(StorageFailure())
+
+        // Act
+        sut.saveSelected()
+
+        // Assert
+        verify(exactly = 1) { fleetingErrorObserver.onChanged(any()) }
     }
 
     private val fakeWallet = DisplayWallet(
