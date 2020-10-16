@@ -3,7 +3,8 @@ package me.juangoncalves.mentra.data.repositories
 import either.Either
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
@@ -15,10 +16,14 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.log.Logger
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
 
+@ExperimentalCoroutinesApi
 class CoinRepositoryImplTest {
+
+    @get:Rule val mainCoroutineRule = MainCoroutineRule()
 
     @MockK lateinit var loggerMock: Logger
     @MockK lateinit var localDataSource: CoinLocalDataSource
@@ -29,13 +34,18 @@ class CoinRepositoryImplTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true, relaxed = true)
-        coinRepository =
-            CoinRepositoryImpl(remoteDataSource, localDataSource, CoinMapper(), loggerMock)
+        coinRepository = CoinRepositoryImpl(
+            remoteDataSource,
+            localDataSource,
+            CoinMapper(),
+            loggerMock,
+            mainCoroutineRule.dispatcher
+        )
     }
 
     @Test
     fun `getCoins fetches and caches the coins from the network when the local storage is empty`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             val coins = listOf(Bitcoin, Ethereum, Ripple)
             coEvery { remoteDataSource.fetchCoins() } returns coins
@@ -52,7 +62,7 @@ class CoinRepositoryImplTest {
         }
 
     @Test
-    fun `getCoins returns the cached coins when the cache is populated`() = runBlocking {
+    fun `getCoins returns the cached coins when the cache is populated`() = runBlockingTest {
         // Arrange
         val models = listOf(BitcoinModel, RippleModel, EthereumModel)
         coEvery { localDataSource.getStoredCoins() } returns models
@@ -69,7 +79,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoins returns a ServerFailure when the remote data source throws a ServerException`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             coEvery { remoteDataSource.fetchCoins() } throws ServerException()
             coEvery { localDataSource.getStoredCoins() } returns emptyList()
@@ -84,7 +94,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoins should return a InternetConnectionFailure if there's no internet connection while trying to fetch coins`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             coEvery { remoteDataSource.fetchCoins() } throws InternetConnectionException()
             coEvery { localDataSource.getStoredCoins() } returns emptyList()
@@ -99,7 +109,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoins tries to fetch coins from the network when a StorageException is thrown and logs the situation`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             coEvery { remoteDataSource.fetchCoins() } returns listOf(Bitcoin, Ethereum)
             coEvery { localDataSource.getStoredCoins() } throws StorageException()
@@ -115,7 +125,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoins returns the network fetched coins when a StorageException is thrown while caching them`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             coEvery { remoteDataSource.fetchCoins() } returns listOf(Bitcoin)
             coEvery { localDataSource.getStoredCoins() } returns emptyList()
@@ -132,7 +142,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoinPrice fetches and caches the coin price from the remote data source when there isn't a cached value`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             val price = Price(USD, 9532.472, LocalDateTime.now())
             coEvery { localDataSource.getLastCoinPrice(Bitcoin) } throws PriceCacheMissException()
@@ -151,7 +161,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoinPrice returns the cached coin price if it was obtained less than 5 minutes ago`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             val price = Price(USD, 321.98, LocalDateTime.now().minusMinutes(2))
             coEvery { localDataSource.getLastCoinPrice(Bitcoin) } returns price
@@ -168,7 +178,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoinPrice fetches the coin price if the cached one is more than 5 minutes old`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             val localPrice = Price(USD, 321.98, LocalDateTime.now().minusHours(1))
             val remotePrice = Price(USD, 500.32, LocalDateTime.now())
@@ -188,7 +198,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoinPrice returns a FetchPriceError with the most recent stored coin price when a ServerException is thrown`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             val localPrice = Price(EUR, 0.123, LocalDateTime.now().minusHours(2))
             coEvery { remoteDataSource.fetchCoinPrice(Ripple) } throws ServerException()
@@ -205,7 +215,7 @@ class CoinRepositoryImplTest {
 
     @Test
     fun `getCoinPrice returns a FetchPriceError without a price when a ServerException is thrown and there isn't a stored coin price`() =
-        runBlocking {
+        runBlockingTest {
             // Arrange
             coEvery { remoteDataSource.fetchCoinPrice(Ripple) } throws ServerException()
             coEvery { localDataSource.getLastCoinPrice(Ripple) } throws PriceCacheMissException()
@@ -217,4 +227,5 @@ class CoinRepositoryImplTest {
             val failure = (result as Left).value as FetchPriceFailure
             assertNull(failure.storedPrice)
         }
+
 }

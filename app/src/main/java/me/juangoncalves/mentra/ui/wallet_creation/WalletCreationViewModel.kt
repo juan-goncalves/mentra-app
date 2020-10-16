@@ -45,7 +45,6 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
     private fun fetchCoins() {
         _getCoins.executor()
-            .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
             .beforeInvoke { _shouldShowCoinLoadIndicator.postValue(true) }
             .afterInvoke { _shouldShowCoinLoadIndicator.postValue(false) }
