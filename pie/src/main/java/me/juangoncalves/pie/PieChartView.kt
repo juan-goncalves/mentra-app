@@ -1,4 +1,4 @@
-package me.juangoncalves.pie.labeled
+package me.juangoncalves.pie
 
 import android.content.Context
 import android.graphics.*
@@ -8,23 +8,21 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
-import me.juangoncalves.pie.PiePortion
-import me.juangoncalves.pie.R
 import me.juangoncalves.pie.extensions.closeTo
 import me.juangoncalves.pie.extensions.toRadians
-import me.juangoncalves.pie.unlabeled.PiePortionValidator
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
 
-class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
-    private val textHorizontalMargin = 8f * resources.displayMetrics.density
+    var colors: IntArray? = null
 
     private val viewContainer = RectF()
     private val pieChartContainer = RectF()
+
     private val defaultPaint = generatePiecePaint(Color.CYAN, Color.GRAY)
     private val linePaint = Paint().apply {
         style = Paint.Style.FILL
@@ -32,7 +30,6 @@ class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, at
         strokeWidth = 4f
         isAntiAlias = true
     }
-
     private val textPaint = TextPaint().apply {
         isAntiAlias = true
         color = Color.WHITE
@@ -44,7 +41,13 @@ class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, at
     private var paintsForPortions: Map<PiePortion, Paint> = emptyMap()
     private val portionValidator = PiePortionValidator()
 
-    var colors: IntArray? = null
+    private val textHorizontalMargin = 8f * resources.displayMetrics.density
+    private val usableWidth get() = width - paddingHorizontal
+    private val usableHeight get() = height - paddingVertical
+    private val paddingHorizontal get() = paddingStart + paddingEnd
+    private val paddingVertical get() = paddingTop + paddingBottom
+    private val pieDiameter get() = pieChartContainer.width() - paddingEnd - paddingStart
+    private val pieRadius get() = pieDiameter / 2f
 
     fun setPortions(portions: Array<PiePortion>) {
         portionValidator.validatePortions(portions)
@@ -75,18 +78,6 @@ class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, at
         return piecePaintMap
     }
 
-    data class PortionDrawData(
-        val portion: PiePortion,
-        val arcPaint: Paint?,
-        val startAngle: Double,
-        val sweepAngle: Double,
-        val textLineStartPoint: PointF,
-        val textLineMiddlePoint: PointF,
-        val textLineEndPoint: PointF,
-        val textLayoutPosition: PointF,
-        val textLayout: StaticLayout
-    )
-
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -103,12 +94,63 @@ class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, at
                 textLayout
             ) = portionData
 
-            if (portion.percentage >= PORTION_THRESHOLD) {
+            if (portion.percentage >= PortionThreshold) {
                 drawPortionArc(canvas, startAngle, sweepAngle, arcPaint)
                 drawTextLine(canvas, textLineStartPoint, textLineMiddlePoint, textLineEndPoint)
                 drawText(canvas, textLayoutPosition, textLayout)
             }
         }
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        val desiredWidth = DefaultPieDiameter + paddingStart + paddingEnd
+        val desiredHeight = DefaultPieDiameter + paddingTop + paddingBottom
+        val width: Int
+        width = when (widthMode) {
+            MeasureSpec.EXACTLY -> widthSize
+            MeasureSpec.AT_MOST -> desiredWidth.coerceAtMost(widthSize)
+            MeasureSpec.UNSPECIFIED -> desiredWidth
+            else -> desiredWidth
+        }
+        val height: Int
+        height = when (heightMode) {
+            MeasureSpec.EXACTLY -> heightSize
+            MeasureSpec.AT_MOST -> desiredHeight.coerceAtMost(heightSize)
+            MeasureSpec.UNSPECIFIED -> desiredHeight
+            else -> desiredHeight
+        }
+        setMeasuredDimension(width, height)
+    }
+
+    override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight)
+
+        viewContainer.left = paddingStart.toFloat()
+        viewContainer.right = width - paddingEnd.toFloat()
+        viewContainer.top = paddingTop.toFloat()
+        viewContainer.bottom = height - paddingBottom.toFloat()
+
+        val diameter = min(usableWidth, usableHeight) * PieSizePercentage
+        val radius = diameter / 2f
+
+        pieChartContainer.left = 0f
+        pieChartContainer.right = diameter
+
+        val verticalCenter = diameter / 2
+        pieChartContainer.top = verticalCenter - radius
+        pieChartContainer.bottom = verticalCenter + radius
+
+        pieChartContainer.offsetTo(
+            viewContainer.centerX() - radius,
+            viewContainer.centerY() - radius
+        )
+
+        portionsDrawData = calculatePieDrawData(piePortions)
     }
 
     private fun drawPortionArc(
@@ -167,120 +209,6 @@ class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, at
         )
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-        val desiredWidth = PIE_DIAMETER + paddingStart + paddingEnd
-        val desiredHeight = PIE_DIAMETER + paddingTop + paddingBottom
-        val width: Int
-        width = when (widthMode) {
-            MeasureSpec.EXACTLY -> widthSize
-            MeasureSpec.AT_MOST -> desiredWidth.coerceAtMost(widthSize)
-            MeasureSpec.UNSPECIFIED -> desiredWidth
-            else -> desiredWidth
-        }
-        val height: Int
-        height = when (heightMode) {
-            MeasureSpec.EXACTLY -> heightSize
-            MeasureSpec.AT_MOST -> desiredHeight.coerceAtMost(heightSize)
-            MeasureSpec.UNSPECIFIED -> desiredHeight
-            else -> desiredHeight
-        }
-        setMeasuredDimension(width, height)
-    }
-
-    override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
-        super.onSizeChanged(width, height, oldWidth, oldHeight)
-
-        viewContainer.left = paddingStart.toFloat()
-        viewContainer.right = width - paddingEnd.toFloat()
-        viewContainer.top = paddingTop.toFloat()
-        viewContainer.bottom = height - paddingBottom.toFloat()
-
-        val diameter = min(usableWidth, usableHeight) * PieSizePercentage
-        val radius = diameter / 2f
-
-        pieChartContainer.left = 0f
-        pieChartContainer.right = diameter
-
-        val verticalCenter = diameter / 2
-        pieChartContainer.top = verticalCenter - radius
-        pieChartContainer.bottom = verticalCenter + radius
-
-        pieChartContainer.offsetTo(
-            viewContainer.centerX() - radius,
-            viewContainer.centerY() - radius
-        )
-
-        portionsDrawData = calculatePieDrawData(piePortions)
-    }
-
-    private fun calculatePieDrawData(portions: Array<PiePortion>): Array<PortionDrawData> {
-        val result = arrayListOf<PortionDrawData>()
-        var currStartAngle = 30.0
-
-        portions.forEach { portion ->
-            val usedSweepAngle = 360 * portion.percentage
-
-            val padding = if (portion.percentage closeTo 1.0) 0 else 8
-            val startAngle = currStartAngle + padding
-            val sweepAngle = usedSweepAngle - padding
-
-            val (tStart, tMiddle, tEnd) = calculateTextLineBreakPoints(startAngle, sweepAngle)
-
-            val isInLeftHalf = tStart.x < pieChartContainer.centerX()
-            val textHorizontalSpace = textHorizontalMargin * if (isInLeftHalf) -1 else 1
-
-            val textLayoutMaxWidth = when {
-                isInLeftHalf -> tEnd.x - viewContainer.left
-                else -> viewContainer.right - tEnd.x
-            }.toInt()
-
-            val textLayoutAlignment = when {
-                isInLeftHalf -> Layout.Alignment.ALIGN_OPPOSITE
-                else -> Layout.Alignment.ALIGN_NORMAL
-            }
-
-            val textLayout = StaticLayout.Builder
-                .obtain(portion.text, 0, portion.text.length, textPaint, textLayoutMaxWidth)
-                .setAlignment(textLayoutAlignment)
-                .setMaxLines(1)
-                .build()
-
-            val halfCompensation = if (isInLeftHalf) textLayout.width else 0
-            val textLayoutX = tEnd.x + textHorizontalSpace - halfCompensation
-            val textLayoutPosition = PointF(textLayoutX, tEnd.y - textLayout.height / 2)
-
-            result += PortionDrawData(
-                portion = portion,
-                arcPaint = paintsForPortions[portion],
-                startAngle = startAngle,
-                sweepAngle = sweepAngle,
-                textLineStartPoint = tStart,
-                textLineMiddlePoint = tMiddle,
-                textLineEndPoint = tEnd,
-                textLayoutPosition = textLayoutPosition,
-                textLayout = textLayout
-            )
-
-            currStartAngle += usedSweepAngle
-        }
-
-        return result.toTypedArray()
-    }
-
-    private val usableWidth get() = width - paddingHorizontal
-    private val usableHeight get() = height - paddingVertical
-
-    private val paddingHorizontal get() = paddingStart + paddingEnd
-    private val paddingVertical get() = paddingTop + paddingBottom
-
-    private val pieDiameter get() = pieChartContainer.width() - paddingEnd - paddingStart
-    private val pieRadius get() = pieDiameter / 2f
-
     /**
      * Create a Paint object with the style for the Pie portions, using a
      * gradient between the received colors.
@@ -304,6 +232,38 @@ class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, at
         }
     }
 
+    private fun calculatePieDrawData(portions: Array<PiePortion>): Array<PortionDrawData> {
+        val result = arrayListOf<PortionDrawData>()
+        var currStartAngle = 30.0
+
+        portions.forEach { portion ->
+            val usedSweepAngle = 360 * portion.percentage
+
+            val padding = if (portion.percentage closeTo 1.0) 0 else 8
+            val startAngle = currStartAngle + padding
+            val sweepAngle = usedSweepAngle - padding
+
+            val (tStart, tMiddle, tEnd) = calculateTextLineBreakPoints(startAngle, sweepAngle)
+            val (textLayout, textLayoutPosition) = textLayoutForPortion(tStart, tEnd, portion)
+
+            result += PortionDrawData(
+                portion = portion,
+                arcPaint = paintsForPortions[portion],
+                startAngle = startAngle,
+                sweepAngle = sweepAngle,
+                textLineStartPoint = tStart,
+                textLineMiddlePoint = tMiddle,
+                textLineEndPoint = tEnd,
+                textLayoutPosition = textLayoutPosition,
+                textLayout = textLayout
+            )
+
+            currStartAngle += usedSweepAngle
+        }
+
+        return result.toTypedArray()
+    }
+
     private fun calculateTextLineBreakPoints(
         startAngle: Double,
         sweepAngle: Double
@@ -320,20 +280,52 @@ class PieChartViewV2(context: Context?, attrs: AttributeSet?) : View(context, at
         val middle = PointF(sx.toFloat(), sy.toFloat())
 
         val ex = pieRadius * 0.4f * if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
-        val endPoint = PointF(middle.x + ex, middle.y)
+        val end = PointF(middle.x + ex, middle.y)
 
-        return Triple(arcCenter, middle, endPoint)
+        return Triple(arcCenter, middle, end)
     }
 
+    private fun textLayoutForPortion(
+        tStart: PointF,
+        tEnd: PointF,
+        portion: PiePortion
+    ): Pair<StaticLayout, PointF> {
+        val isInLeftHalf = tStart.x < pieChartContainer.centerX()
+        val textHorizontalSpace = textHorizontalMargin * if (isInLeftHalf) -1 else 1
+
+        val textLayoutMaxWidth = when {
+            isInLeftHalf -> tEnd.x - viewContainer.left
+            else -> viewContainer.right - tEnd.x
+        }.toInt()
+
+        val textLayoutAlignment = when {
+            isInLeftHalf -> Layout.Alignment.ALIGN_OPPOSITE
+            else -> Layout.Alignment.ALIGN_NORMAL
+        }
+
+        val textLayout = StaticLayout.Builder
+            .obtain(portion.text, 0, portion.text.length, textPaint, textLayoutMaxWidth)
+            .setAlignment(textLayoutAlignment)
+            .setMaxLines(1)
+            .build()
+
+        val halfCompensation = if (isInLeftHalf) textLayout.width else 0
+        val textLayoutX = tEnd.x + textHorizontalSpace - halfCompensation
+        val textLayoutPosition = PointF(textLayoutX, tEnd.y - textLayout.height / 2)
+        return Pair(textLayout, textLayoutPosition)
+    }
+
+
     companion object {
-        private const val PIE_RADIUS = 230
-        private const val PIE_DIAMETER = PIE_RADIUS * 2
-        const val PORTION_THRESHOLD = 0.01
+        private const val DefaultPieRadius = 230
+        private const val DefaultPieDiameter = DefaultPieRadius * 2
+        private const val PortionStrokeWidth = 16f
 
         // Amount of space to take to draw the pie chart, leaving the rest to display the labels
-        const val PieSizePercentage = 0.70f
+        private const val PieSizePercentage = 0.70f
 
-        const val PortionStrokeWidth = 16f
+        // Minimum portion size
+        internal const val PortionThreshold = 0.01
     }
 
 }
