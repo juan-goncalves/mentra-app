@@ -1,6 +1,7 @@
 package me.juangoncalves.pie.extensions
 
 import java.text.DecimalFormat
+import kotlin.math.abs
 
 internal fun Double.asPercentage(): String {
     val format = DecimalFormat()
@@ -8,3 +9,5 @@ internal fun Double.asPercentage(): String {
     format.maximumFractionDigits = 2
     return format.format(this * 100) + "%"
 }
+
+internal infix fun Double.closeTo(other: Double): Boolean = abs(this - other) <= 0.001
