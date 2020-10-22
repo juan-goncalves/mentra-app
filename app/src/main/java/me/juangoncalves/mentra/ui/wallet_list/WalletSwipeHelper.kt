@@ -18,6 +18,9 @@ import me.juangoncalves.mentra.extensions.getThemeColor
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 
+class WalletTouchHelper(context: Context, listener: WalletSwipeHelper.Listener) :
+    ItemTouchHelper(WalletSwipeHelper(context, listener))
+
 class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.Callback() {
 
     interface Listener {
