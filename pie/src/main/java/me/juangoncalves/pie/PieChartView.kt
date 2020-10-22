@@ -304,8 +304,8 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     ): Triple<PointF, PointF, PointF> {
         val endAngle = startAngle + sweepAngle
         val middleAngle = ((startAngle + endAngle) / 2).toRadians()
-        val rx = pieChartContainer.centerX() + (pieRadius + ArcStrokeWidth / 1.2) * cos(middleAngle)
-        val ry = pieChartContainer.centerY() + (pieRadius + ArcStrokeWidth / 1.2) * sin(middleAngle)
+        val rx = pieChartContainer.centerX() + pieRadius * cos(middleAngle)
+        val ry = pieChartContainer.centerY() + pieRadius * sin(middleAngle)
         val arcCenter = PointF(rx.toFloat(), ry.toFloat())
 
         val textLineLength = pieRadius * 0.3
