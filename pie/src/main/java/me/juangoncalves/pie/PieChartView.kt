@@ -8,6 +8,7 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.core.content.res.ResourcesCompat
 import me.juangoncalves.pie.extensions.closeTo
 import me.juangoncalves.pie.extensions.toRadians
 import java.util.*
@@ -16,7 +17,7 @@ import kotlin.math.min
 import kotlin.math.sin
 
 
-class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     var colors: IntArray? = null
 
@@ -30,6 +31,7 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
         strokeWidth = 4f
         isAntiAlias = true
     }
+
     private val textPaint = TextPaint().apply {
         isAntiAlias = true
         color = Color.WHITE
@@ -48,6 +50,38 @@ class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attr
     private val paddingVertical get() = paddingTop + paddingBottom
     private val pieDiameter get() = pieChartContainer.width() - paddingEnd - paddingStart
     private val pieRadius get() = pieDiameter / 2f
+
+    init {
+        processAttributes(context, attrs)
+    }
+
+    private fun processAttributes(context: Context, attrs: AttributeSet?) {
+        with(context.obtainStyledAttributes(attrs, R.styleable.PieChartView)) {
+            linePaint.color = getColor(
+                R.styleable.PieChartView_pie_text_line_color,
+                ResourcesCompat.getColor(context.resources, R.color.black, context.theme)
+            )
+
+            textPaint.color = getColor(
+                R.styleable.PieChartView_pie_label_text_color,
+                ResourcesCompat.getColor(context.resources, R.color.black, context.theme)
+            )
+
+            textPaint.textSize = getDimension(
+                R.styleable.PieChartView_pie_label_text_size,
+                14 * resources.displayMetrics.density
+            )
+
+            val colorArrayId = getResourceId(
+                R.styleable.PieChartView_pie_colors,
+                R.array.defaultPieColorPairs
+            )
+
+            colors = resources.getIntArray(colorArrayId)
+
+            recycle()
+        }
+    }
 
     fun setPortions(portions: Array<PiePortion>) {
         portionValidator.validatePortions(portions)
