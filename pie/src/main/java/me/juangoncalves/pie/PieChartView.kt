@@ -222,7 +222,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         canvas.drawCircle(
             textLineStartPoint.x,
             textLineStartPoint.y,
-            PortionStrokeWidth / 3,
+            ArcStrokeWidth / 3,
             linePaint
         )
 
@@ -251,7 +251,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         return Paint().apply {
             style = Paint.Style.STROKE
             color = colorFrom
-            strokeWidth = PortionStrokeWidth
+            strokeWidth = ArcStrokeWidth
             isAntiAlias = true
             strokeCap = Paint.Cap.ROUND
             shader = LinearGradient(
@@ -304,8 +304,8 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     ): Triple<PointF, PointF, PointF> {
         val endAngle = startAngle + sweepAngle
         val middleAngle = ((startAngle + endAngle) / 2).toRadians()
-        val rx = pieChartContainer.centerX() + (pieRadius + PortionStrokeWidth) * cos(middleAngle)
-        val ry = pieChartContainer.centerY() + (pieRadius + PortionStrokeWidth) * sin(middleAngle)
+        val rx = pieChartContainer.centerX() + (pieRadius + ArcStrokeWidth / 1.2) * cos(middleAngle)
+        val ry = pieChartContainer.centerY() + (pieRadius + ArcStrokeWidth / 1.2) * sin(middleAngle)
         val arcCenter = PointF(rx.toFloat(), ry.toFloat())
 
         val textLineLength = pieRadius * 0.3
@@ -353,7 +353,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     companion object {
         private const val DefaultPieRadius = 230
         private const val DefaultPieDiameter = DefaultPieRadius * 2
-        private const val PortionStrokeWidth = 16f
+        private const val ArcStrokeWidth = 16f
 
         // Amount of space to take to draw the pie chart, leaving the rest to display the labels
         private const val PieSizePercentage = 0.70f
