@@ -12,10 +12,10 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
-import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
 import me.juangoncalves.mentra.extensions.onDismissed
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
+import me.juangoncalves.mentra.extensions.styleByTheme
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
@@ -55,6 +55,10 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.refreshLayout.styleByTheme().setOnRefreshListener {
+            viewModel.refreshSelected()
+        }
+
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = walletAdapter
@@ -66,15 +70,15 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
             startActivity(intent)
         }
-        
+
         initObservers()
     }
 
     private fun initObservers() {
         showSnackbarOnFleetingErrors(viewModel, binding.addWalletButton)
 
-        viewModel.shouldShowProgressBar.observe(viewLifecycleOwner) { shouldShow ->
-            binding.progressBar.animateVisibility(shouldShow)
+        viewModel.shouldShowRefreshIndicator.observe(viewLifecycleOwner) { shouldShow ->
+            binding.refreshLayout.isRefreshing = shouldShow
         }
 
         viewModel.wallets.observe(viewLifecycleOwner) { wallets ->

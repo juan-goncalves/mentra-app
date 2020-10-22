@@ -3,9 +3,7 @@ package me.juangoncalves.mentra.ui.wallet_list
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
@@ -21,7 +19,7 @@ typealias WalletManagementError = Pair<DisplayError, Int>
 
 class WalletListViewModel @ViewModelInject constructor(
     coinRepository: CoinRepository,
-    private val walletRepository: WalletRepository,
+    walletRepository: WalletRepository,
     private val getGradientCoinIcon: GetGradientCoinIcon,
     private val refreshPortfolioValue: RefreshPortfolioValue
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
@@ -30,24 +28,19 @@ class WalletListViewModel @ViewModelInject constructor(
         .combine(walletRepository.wallets, ::mergeIntoDisplayWallets)
         .asLiveData()
 
-    val shouldShowProgressBar: LiveData<Boolean> get() = _shouldShowProgressBar
     val walletManagementError: LiveData<WalletManagementError> get() = _walletManagementError
+    val shouldShowRefreshIndicator: LiveData<Boolean> get() = _shouldShowRefreshIndicator
 
-    private val _shouldShowProgressBar: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _walletManagementError: MutableLiveData<WalletManagementError> = MutableLiveData()
+    private val _shouldShowRefreshIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            walletRepository.wallets.collectLatest { updatePrices() }
-        }
-    }
 
-    private fun updatePrices() {
+    fun refreshSelected() {
         refreshPortfolioValue.executor()
             .withDispatcher(Dispatchers.IO)
             .inScope(viewModelScope)
-            .beforeInvoke { _shouldShowProgressBar.postValue(true) }
-            .afterInvoke { _shouldShowProgressBar.postValue(false) }
+            .beforeInvoke { _shouldShowRefreshIndicator.postValue(true) }
+            .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
             .onFailurePublishFleetingError()
             .run()
     }
