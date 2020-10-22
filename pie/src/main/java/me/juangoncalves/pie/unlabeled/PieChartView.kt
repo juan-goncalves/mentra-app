@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.ColorInt
 import me.juangoncalves.pie.PiePortion
 import me.juangoncalves.pie.R
+import me.juangoncalves.pie.extensions.closeTo
 import java.util.*
 
 internal class PieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
@@ -55,7 +56,8 @@ internal class PieChartView(context: Context?, attrs: AttributeSet?) : View(cont
         val portionPositions = arrayListOf<PiePortionPosition>()
         portions.forEach { portion ->
             val sweepAngle = 360 * portion.percentage
-            portionPositions += PiePortionPosition(startAngle + 8, sweepAngle - 8)
+            val padding = if (portion.percentage closeTo 1.0) 0 else 8
+            portionPositions += PiePortionPosition(startAngle + padding, sweepAngle - padding)
             startAngle += sweepAngle
         }
         return portionPositions.toTypedArray()
