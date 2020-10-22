@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
@@ -55,13 +54,11 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewManager = LinearLayoutManager(context)
-        val swipeHandler = WalletSwipeHelper(requireContext(), this)
-        val touchHelper = ItemTouchHelper(swipeHandler)
 
         binding.recyclerView.apply {
-            layoutManager = viewManager
+            layoutManager = LinearLayoutManager(context)
             adapter = walletAdapter
+            val touchHelper = WalletTouchHelper(requireContext(), this@WalletListFragment)
             touchHelper.attachToRecyclerView(this)
         }
 
@@ -69,7 +66,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
             startActivity(intent)
         }
-
+        
         initObservers()
     }
 
