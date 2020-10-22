@@ -11,3 +11,5 @@ internal fun Double.asPercentage(): String {
 }
 
 internal infix fun Double.closeTo(other: Double): Boolean = abs(this - other) <= 0.001
+
+internal fun Double.toRadians(): Double = this * Math.PI / 180
