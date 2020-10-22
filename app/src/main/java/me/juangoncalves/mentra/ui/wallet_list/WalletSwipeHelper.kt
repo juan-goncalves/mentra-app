@@ -7,7 +7,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.math.MathUtils
@@ -18,6 +18,9 @@ import me.juangoncalves.mentra.extensions.getThemeColor
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 
+class WalletTouchHelper(context: Context, listener: WalletSwipeHelper.Listener) :
+    ItemTouchHelper(WalletSwipeHelper(context, listener))
+
 class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.Callback() {
 
     interface Listener {
@@ -26,9 +29,9 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
     }
 
     private val listener: WeakReference<Listener> = WeakReference(listener)
-    private val deleteDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_trash)
+    private val deleteDrawable: Drawable? = getDrawable(context, R.drawable.ic_trash)
     private val deleteIconColor: Int = context.getThemeColor(R.attr.errorIconTint)
-    private val editDrawable: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_edit)
+    private val editDrawable: Drawable? = getDrawable(context, R.drawable.ic_edit)
     private val editIconColor: Int = context.getThemeColor(R.attr.colorOnWarning)
     private val intrinsicWidth: Int = deleteDrawable?.intrinsicWidth ?: 0
     private val intrinsicHeight: Int = deleteDrawable?.intrinsicHeight ?: 0

@@ -9,14 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
-import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.createErrorSnackbar
 import me.juangoncalves.mentra.extensions.onDismissed
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
+import me.juangoncalves.mentra.extensions.styleByTheme
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
@@ -55,13 +54,15 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewManager = LinearLayoutManager(context)
-        val swipeHandler = WalletSwipeHelper(requireContext(), this)
-        val touchHelper = ItemTouchHelper(swipeHandler)
+
+        binding.refreshLayout.styleByTheme().setOnRefreshListener {
+            viewModel.refreshSelected()
+        }
 
         binding.recyclerView.apply {
-            layoutManager = viewManager
+            layoutManager = LinearLayoutManager(context)
             adapter = walletAdapter
+            val touchHelper = WalletTouchHelper(requireContext(), this@WalletListFragment)
             touchHelper.attachToRecyclerView(this)
         }
 
@@ -76,8 +77,8 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
     private fun initObservers() {
         showSnackbarOnFleetingErrors(viewModel, binding.addWalletButton)
 
-        viewModel.shouldShowProgressBar.observe(viewLifecycleOwner) { shouldShow ->
-            binding.progressBar.animateVisibility(shouldShow)
+        viewModel.shouldShowRefreshIndicator.observe(viewLifecycleOwner) { shouldShow ->
+            binding.refreshLayout.isRefreshing = shouldShow
         }
 
         viewModel.wallets.observe(viewLifecycleOwner) { wallets ->
