@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.math.MathUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,6 +17,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
 import me.juangoncalves.mentra.extensions.getThemeColor
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
+import me.juangoncalves.mentra.extensions.styleByTheme
 
 
 @AndroidEntryPoint
@@ -37,19 +39,13 @@ class StatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initObservers()
         styleLineChart()
 
-        binding.statsRefreshLayout.setColorSchemeColors(
-            requireContext().getThemeColor(R.attr.colorSecondary),
-            requireContext().getThemeColor(R.attr.colorSecondaryVariant),
-            requireContext().getThemeColor(R.attr.colorPrimary),
-            requireContext().getThemeColor(R.attr.colorPrimaryDark)
-        )
-
-        binding.statsRefreshLayout.setOnRefreshListener {
+        binding.statsRefreshLayout.styleByTheme().setOnRefreshListener {
             viewModel.refreshSelected()
         }
+
+        initObservers()
     }
 
     private fun initObservers() {
@@ -120,7 +116,7 @@ class StatsFragment : Fragment() {
         val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
         mode = LineDataSet.Mode.HORIZONTAL_BEZIER
         color = colorPrimary
-        fillDrawable = requireContext().getDrawable(R.drawable.line_chart_background)
+        fillDrawable = getDrawable(requireContext(), R.drawable.line_chart_background)
         valueTextColor = requireContext().getThemeColor(R.attr.colorOnSurface)
         lineWidth = 3f
         circleRadius = 5f
