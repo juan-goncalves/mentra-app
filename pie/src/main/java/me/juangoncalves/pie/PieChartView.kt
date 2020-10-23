@@ -151,22 +151,28 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-        val desiredWidth = DefaultPieDiameter + paddingStart + paddingEnd
-        val desiredHeight = DefaultPieDiameter + paddingTop + paddingBottom
-        val width: Int
-        width = when (widthMode) {
+
+        val sampleText = "NANO (99.9%)"
+        val defaultLabelWidth = textPaint.measureText(sampleText)
+        val horizontalLabelsSpace = (defaultLabelWidth + DefaultTextLineLength).toInt() * 2
+        val verticalLabelSpace = DefaultTextLineLength.toInt() * 2
+        val desiredWidth = DefaultPieDiameter + paddingStart + paddingEnd + horizontalLabelsSpace
+        val desiredHeight = DefaultPieDiameter + paddingTop + paddingBottom + verticalLabelSpace
+
+        val width = when (widthMode) {
             MeasureSpec.EXACTLY -> widthSize
             MeasureSpec.AT_MOST -> desiredWidth.coerceAtMost(widthSize)
             MeasureSpec.UNSPECIFIED -> desiredWidth
             else -> desiredWidth
         }
-        val height: Int
-        height = when (heightMode) {
+
+        val height = when (heightMode) {
             MeasureSpec.EXACTLY -> heightSize
             MeasureSpec.AT_MOST -> desiredHeight.coerceAtMost(heightSize)
             MeasureSpec.UNSPECIFIED -> desiredHeight
             else -> desiredHeight
         }
+
         setMeasuredDimension(width, height)
     }
 
@@ -402,12 +408,19 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         private const val DefaultPieRadius = 230
         private const val DefaultPieDiameter = DefaultPieRadius * 2
         private const val ArcStrokeWidth = 16f
+        private const val DefaultTextLineLength = DefaultPieRadius * 0.3
 
         // Amount of space to take to draw the pie chart, leaving the rest to display the labels
         private const val PieSizePercentage = 0.70f
 
         // Minimum portion size
         internal const val PortionThreshold = 0.01
+
+        private val PreviewPortions = arrayOf(
+            PiePortion(0.70, "BTC"),
+            PiePortion(0.20, "ETH"),
+            PiePortion(0.10, "NANO")
+        )
     }
 
 }
