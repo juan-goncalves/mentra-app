@@ -13,10 +13,14 @@ import me.juangoncalves.mentra.domain.models.Coin
 
 class CoinAdapter : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
 
-    private val differ: AsyncListDiffer<Coin> = AsyncListDiffer(this, CoinItemCallback())
+    var data: List<Coin>
+        get() = differ.currentList
+        set(value) = differ.submitList(value)
 
     var selectedCoin: Coin? = null
         private set
+
+    private val differ: AsyncListDiffer<Coin> = AsyncListDiffer(this, CoinItemCallback())
 
     override fun getItemCount() = differ.currentList.size
 
@@ -52,8 +56,6 @@ class CoinAdapter : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
             }
         }
     }
-
-    fun submitList(data: List<Coin>) = differ.submitList(data)
 
     inner class ViewHolder(val binding: CoinRecommendationItemBinding) :
         RecyclerView.ViewHolder(binding.root)
