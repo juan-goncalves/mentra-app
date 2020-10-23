@@ -26,7 +26,7 @@ import me.juangoncalves.mentra.ui.wallet_edit.EditWalletDialogFragment
 class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     private val viewModel: WalletListViewModel by viewModels()
-    private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
+    private val walletAdapter: WalletAdapter = WalletAdapter()
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
