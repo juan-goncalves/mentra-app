@@ -60,6 +60,11 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     init {
         processAttributes(context, attrs)
+
+        // Add some sample portions to display the chart in the XML previews
+        if (isInEditMode) {
+            setPortions(PreviewPortions)
+        }
     }
 
     private fun processAttributes(context: Context, attrs: AttributeSet?) {
