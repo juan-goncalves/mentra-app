@@ -36,7 +36,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     private val linePaint = Paint().apply {
         style = Paint.Style.FILL
         color = Color.WHITE
-        strokeWidth = 4f
+        strokeWidth = 3f
         isAntiAlias = true
     }
     private val textPaint = TextPaint().apply {
@@ -242,7 +242,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         canvas.drawCircle(
             textLineStartPoint.x,
             textLineStartPoint.y,
-            ArcStrokeWidth / 3,
+            ArcStrokeWidth / 4,
             linePaint
         )
 
