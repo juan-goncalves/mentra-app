@@ -1,5 +1,7 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
+import android.animation.Animator
+import android.animation.AnimatorInflater
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -52,6 +54,25 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
         return binding.root
     }
 
+    /** Initialize the observers after the enter transition ended to prevent stuttering */
+    override fun onCreateAnimator(transit: Int, enter: Boolean, nextAnim: Int): Animator? {
+        val animator = AnimatorInflater.loadAnimator(activity, nextAnim)
+
+        val listener = object : Animator.AnimatorListener {
+            override fun onAnimationEnd(p0: Animator?) {
+                initObservers()
+                animator.removeListener(this)
+            }
+
+            override fun onAnimationStart(p0: Animator?) {}
+            override fun onAnimationCancel(p0: Animator?) {}
+            override fun onAnimationRepeat(p0: Animator?) {}
+        }
+
+        animator.addListener(listener)
+        return animator
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -70,8 +91,6 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
             startActivity(intent)
         }
-
-        initObservers()
     }
 
     private fun initObservers() {

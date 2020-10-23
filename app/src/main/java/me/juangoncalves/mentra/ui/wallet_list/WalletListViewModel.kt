@@ -2,8 +2,11 @@ package me.juangoncalves.mentra.ui.wallet_list
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.withContext
+import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
@@ -20,6 +23,7 @@ typealias WalletManagementError = Pair<DisplayError, Int>
 class WalletListViewModel @ViewModelInject constructor(
     coinRepository: CoinRepository,
     walletRepository: WalletRepository,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val getGradientCoinIcon: GetGradientCoinIcon,
     private val refreshPortfolioValue: RefreshPortfolioValue
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
@@ -45,21 +49,22 @@ class WalletListViewModel @ViewModelInject constructor(
             .run()
     }
 
-    @Suppress("RedundantSuspendModifier")
     private suspend fun mergeIntoDisplayWallets(
         coinPrices: Map<Coin, Price>,
         wallets: List<Wallet>
     ): List<DisplayWallet> = wallets.map { wallet ->
-        val coinPrice = coinPrices[wallet.coin] ?: Price.None
-        val params = GetGradientCoinIcon.Params(wallet.coin)
-        val coinGradientIconUrl = getGradientCoinIcon(params).rightValue ?: ""
+        withContext(defaultDispatcher) {
+            val coinPrice = coinPrices[wallet.coin] ?: Price.None
+            val params = GetGradientCoinIcon.Params(wallet.coin)
+            val coinGradientIconUrl = getGradientCoinIcon(params).rightValue ?: ""
 
-        DisplayWallet(
-            wallet,
-            coinGradientIconUrl,
-            coinPrice.value,
-            coinPrice.value * wallet.amount
-        )
+            DisplayWallet(
+                wallet,
+                coinGradientIconUrl,
+                coinPrice.value,
+                coinPrice.value * wallet.amount
+            )
+        }
     }
 
 }
