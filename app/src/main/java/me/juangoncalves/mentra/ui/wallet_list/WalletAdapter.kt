@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.ui.wallet_list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,16 +11,15 @@ import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
 import me.juangoncalves.mentra.extensions.asCurrency
 
-class WalletAdapter(data: List<DisplayWallet>) : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
+class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 
-    var data: List<DisplayWallet> = data
-        set(value) {
-            val diffResult = DiffUtil.calculateDiff(WalletDiffCallback(field, value))
-            field = value
-            diffResult.dispatchUpdatesTo(this)
-        }
+    var data: List<DisplayWallet>
+        get() = differ.currentList
+        set(value) = differ.submitList(value)
 
-    override fun getItemCount() = data.size
+    private val differ: AsyncListDiffer<DisplayWallet> = AsyncListDiffer(this, WalletItemCallback())
+
+    override fun getItemCount() = differ.currentList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = WalletListItemBinding.inflate(
@@ -31,7 +31,7 @@ class WalletAdapter(data: List<DisplayWallet>) : RecyclerView.Adapter<WalletAdap
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val displayWallet = data[position]
+        val displayWallet = differ.currentList[position]
         holder.binding.apply {
             coinNameTextView.text = displayWallet.wallet.coin.name
             coinAmountTextView.text = displayWallet.wallet.amount.asCoinAmount()
@@ -58,21 +58,13 @@ class WalletAdapter(data: List<DisplayWallet>) : RecyclerView.Adapter<WalletAdap
 
 }
 
-class WalletDiffCallback(
-    private val old: List<DisplayWallet>,
-    private val next: List<DisplayWallet>
-) : DiffUtil.Callback() {
 
-    override fun getOldListSize(): Int = old.size
-
-    override fun getNewListSize(): Int = next.size
-
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return old[oldItemPosition].wallet.id == next[newItemPosition].wallet.id
+class WalletItemCallback : DiffUtil.ItemCallback<DisplayWallet>() {
+    override fun areItemsTheSame(oldItem: DisplayWallet, newItem: DisplayWallet): Boolean {
+        return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return old[oldItemPosition] == next[newItemPosition]
+    override fun areContentsTheSame(oldItem: DisplayWallet, newItem: DisplayWallet): Boolean {
+        return oldItem == newItem
     }
-
 }

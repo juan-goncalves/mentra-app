@@ -1,5 +1,7 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
+import android.animation.Animator
+import android.animation.AnimatorInflater
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,22 +13,21 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
-import me.juangoncalves.mentra.extensions.createErrorSnackbar
-import me.juangoncalves.mentra.extensions.onDismissed
-import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
-import me.juangoncalves.mentra.extensions.styleByTheme
+import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
 import me.juangoncalves.mentra.ui.wallet_edit.EditWalletDialogFragment
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     private val viewModel: WalletListViewModel by viewModels()
-    private val walletAdapter: WalletAdapter = WalletAdapter(emptyList())
+    private val walletAdapter: WalletAdapter = WalletAdapter()
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
@@ -52,6 +53,25 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
         return binding.root
     }
 
+    /** Initialize the observers after the enter transition ended to prevent stuttering */
+    override fun onCreateAnimator(transit: Int, enter: Boolean, nextAnim: Int): Animator? {
+        val animator = AnimatorInflater.loadAnimator(activity, nextAnim)
+
+        val listener = object : Animator.AnimatorListener {
+            override fun onAnimationEnd(p0: Animator?) {
+                initObservers()
+                animator.removeListener(this)
+            }
+
+            override fun onAnimationStart(p0: Animator?) {}
+            override fun onAnimationCancel(p0: Animator?) {}
+            override fun onAnimationRepeat(p0: Animator?) {}
+        }
+
+        animator.addListener(listener)
+        return animator
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -70,8 +90,6 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
             startActivity(intent)
         }
-
-        initObservers()
     }
 
     private fun initObservers() {
@@ -89,6 +107,10 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             createErrorSnackbar(error, binding.addWalletButton)
                 .onDismissed { walletAdapter.notifyItemChanged(position) }
                 .show()
+        }
+
+        viewModel.shouldShowWalletLoadingIndicator.observe(viewLifecycleOwner) { shouldShow ->
+            binding.walletsLoadingIndicator.animateVisibility(shouldShow)
         }
     }
 

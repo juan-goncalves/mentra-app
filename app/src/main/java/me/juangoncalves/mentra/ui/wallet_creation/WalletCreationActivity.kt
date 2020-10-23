@@ -55,7 +55,7 @@ class WalletCreationActivity : AppCompatActivity() {
         showSnackbarOnFleetingErrors(viewModel, binding.root)
 
         viewModel.coins.observe(this) { coins ->
-            coinAdapter.submitList(coins)
+            coinAdapter.data = coins
         }
 
         viewModel.shouldScrollToStart.observe(this) {

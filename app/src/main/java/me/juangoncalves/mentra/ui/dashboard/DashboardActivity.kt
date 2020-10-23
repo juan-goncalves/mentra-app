@@ -8,24 +8,28 @@ import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.extensions.asPercentage
-import me.juangoncalves.mentra.extensions.hide
-import me.juangoncalves.mentra.extensions.showExistingOrCreate
+import me.juangoncalves.mentra.extensions.show
 import me.juangoncalves.mentra.ui.stats.StatsFragment
 import me.juangoncalves.mentra.ui.wallet_list.WalletListFragment
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class DashboardActivity : FragmentActivity() {
 
     private val viewModel: DashboardViewModel by viewModels()
 
     private lateinit var binding: DashboardActivityBinding
+
+    private val statsFragment: StatsFragment = StatsFragment()
+    private val walletListFragment: WalletListFragment = WalletListFragment()
 
     companion object {
         const val WALLETS_FRAGMENT_TAG = "wallets_fragment"
@@ -100,12 +104,13 @@ class DashboardActivity : FragmentActivity() {
                 R.animator.fade_in, R.animator.fade_out,
                 R.animator.fade_in, R.animator.fade_out
             )
-            .showExistingOrCreate(
+            .show(
+                statsFragment,
+                supportFragmentManager,
                 STATS_FRAGMENT_TAG,
-                lazy { StatsFragment() },
-                supportFragmentManager
+                R.id.fragmentContainer
             )
-            .hide(WALLETS_FRAGMENT_TAG, supportFragmentManager)
+            .hide(walletListFragment)
             .commit()
 
         binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_wallet))
@@ -118,12 +123,13 @@ class DashboardActivity : FragmentActivity() {
                 R.animator.fade_in, R.animator.fade_out,
                 R.animator.fade_in, R.animator.fade_out
             )
-            .showExistingOrCreate(
+            .show(
+                walletListFragment,
+                supportFragmentManager,
                 WALLETS_FRAGMENT_TAG,
-                lazy { WalletListFragment() },
-                supportFragmentManager
+                R.id.fragmentContainer
             )
-            .hide(STATS_FRAGMENT_TAG, supportFragmentManager)
+            .hide(statsFragment)
             .commit()
 
         binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_chart))
