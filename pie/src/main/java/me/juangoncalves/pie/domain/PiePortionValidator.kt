@@ -1,5 +1,6 @@
-package me.juangoncalves.pie
+package me.juangoncalves.pie.domain
 
+import me.juangoncalves.pie.PiePortion
 import kotlin.math.abs
 
 internal class PiePortionValidator {

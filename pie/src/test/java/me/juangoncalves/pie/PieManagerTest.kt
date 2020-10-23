@@ -1,5 +1,6 @@
 package me.juangoncalves.pie
 
+import me.juangoncalves.pie.domain.PieManager
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertArrayEquals

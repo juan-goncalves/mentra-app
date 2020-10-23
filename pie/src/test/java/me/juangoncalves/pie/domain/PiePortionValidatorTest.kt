@@ -1,7 +1,6 @@
-package me.juangoncalves.pie.unlabeled
+package me.juangoncalves.pie.domain
 
 import me.juangoncalves.pie.PiePortion
-import me.juangoncalves.pie.PiePortionValidator
 import org.junit.Before
 import org.junit.Test
 

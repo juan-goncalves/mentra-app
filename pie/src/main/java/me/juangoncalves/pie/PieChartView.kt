@@ -9,6 +9,9 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.content.res.ResourcesCompat
+import me.juangoncalves.pie.domain.GridZone
+import me.juangoncalves.pie.domain.PiePortionValidator
+import me.juangoncalves.pie.domain.PortionDrawData
 import me.juangoncalves.pie.extensions.asPercentage
 import me.juangoncalves.pie.extensions.closeTo
 import me.juangoncalves.pie.extensions.toRadians

@@ -1,4 +1,4 @@
-package me.juangoncalves.pie
+package me.juangoncalves.pie.domain
 
 import me.juangoncalves.pie.extensions.toRadians
 
