@@ -31,7 +31,6 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         strokeWidth = 4f
         isAntiAlias = true
     }
-
     private val textPaint = TextPaint().apply {
         isAntiAlias = true
         color = Color.WHITE
@@ -307,10 +306,11 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         val rx = pieChartContainer.centerX() + pieRadius * cos(middleAngle)
         val ry = pieChartContainer.centerY() + pieRadius * sin(middleAngle)
         val arcCenter = PointF(rx.toFloat(), ry.toFloat())
+        val lineAngle = getArcZone(arcCenter).textLineDegree()
 
         val textLineLength = pieRadius * 0.3
-        val sx = rx + textLineLength * cos(middleAngle + 45.0.toRadians())
-        val sy = ry + textLineLength * sin(middleAngle + 45.0.toRadians())
+        val sx = rx + textLineLength * cos(lineAngle)
+        val sy = ry + textLineLength * sin(lineAngle)
         val middle = PointF(sx.toFloat(), sy.toFloat())
 
         val ex = pieRadius * 0.4f * if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
@@ -349,6 +349,34 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         return Pair(textLayout, textLayoutPosition)
     }
 
+    /** Get the [GridZone] in which the [point] is contained. */
+    private fun getArcZone(point: PointF): GridZone {
+        val third = pieDiameter / 3f
+        val verticalBreakpoint1 = pieChartContainer.left + third
+        val verticalBreakpoint2 = verticalBreakpoint1 + third
+        val horizontalBreakpoint1 = pieChartContainer.top + third
+        val horizontalBreakpoint2 = horizontalBreakpoint1 + third
+
+        val isInFirstRow = point.y <= horizontalBreakpoint1
+        val isInMiddleRow = point.y in horizontalBreakpoint1..horizontalBreakpoint2
+        val isInEndRow = point.y >= horizontalBreakpoint2
+
+        val isInFirstCol = point.x <= verticalBreakpoint1
+        val isInMiddleCol = point.x in verticalBreakpoint1..verticalBreakpoint2
+        val isInEndCol = point.x >= verticalBreakpoint2
+
+        return when {
+            isInEndCol && isInFirstRow -> GridZone.TopRight
+            isInEndCol && isInMiddleRow -> GridZone.MiddleRight
+            isInEndCol && isInEndRow -> GridZone.BottomRight
+            isInMiddleCol && isInFirstRow -> GridZone.TopMiddle
+            isInMiddleCol && isInEndRow -> GridZone.BottomMiddle
+            isInFirstCol && isInFirstRow -> GridZone.TopLeft
+            isInFirstCol && isInMiddleRow -> GridZone.MiddleLeft
+            isInFirstCol && isInEndRow -> GridZone.BottomLeft
+            else -> GridZone.None
+        }
+    }
 
     companion object {
         private const val DefaultPieRadius = 230
