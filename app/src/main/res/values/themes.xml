@@ -35,6 +35,10 @@
         <item name="lineChartValueBackgroundColor">@color/wild_strawberry</item>
         <item name="lineChartValueColor">@color/white</item>
 
+        <!-- Pie chart colors -->
+        <item name="pieChartLineColor">@color/tundora</item>
+        <item name="pieChartTextColor">@color/tundora</item>
+
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>

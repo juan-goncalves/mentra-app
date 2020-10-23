@@ -3,6 +3,9 @@
     <attr name="lineChartValueBackgroundColor" format="reference" />
     <attr name="lineChartValueColor" format="reference" />
 
+    <attr name="pieChartLineColor" format="reference|color" />
+    <attr name="pieChartTextColor" format="reference|color" />
+
     <attr name="colorWarning" format="reference|color" />
     <attr name="colorOnWarning" format="reference|color" />
     <attr name="colorDisabled" format="reference|color" />

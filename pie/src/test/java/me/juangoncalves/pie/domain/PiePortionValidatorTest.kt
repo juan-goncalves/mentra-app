@@ -1,4 +1,4 @@
-package me.juangoncalves.pie.unlabeled
+package me.juangoncalves.pie.domain
 
 import me.juangoncalves.pie.PiePortion
 import org.junit.Before
@@ -28,15 +28,10 @@ class PiePortionValidatorTest {
         sut.validatePortions(portions)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `validatePortions throws a IllegalArgumentException if there is an empty portion`() {
+    @Test
+    fun `validatePortions doesn't throw an exception if the portion list is empty`() {
         // Arrange
-        val portions = arrayOf(
-            PiePortion(0.45, "Coin 1"),
-            PiePortion(0.00, "Coin 2"),
-            PiePortion(0.15, "Coin 3"),
-            PiePortion(0.15, "Coin 4")
-        )
+        val portions = emptyArray<PiePortion>()
 
         // Act
         sut.validatePortions(portions)
@@ -54,4 +49,5 @@ class PiePortionValidatorTest {
         // Act
         sut.validatePortions(portions)
     }
+
 }
