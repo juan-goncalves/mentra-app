@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.content.res.ResourcesCompat
+import me.juangoncalves.pie.extensions.asPercentage
 import me.juangoncalves.pie.extensions.closeTo
 import me.juangoncalves.pie.extensions.toRadians
 import java.util.*
@@ -20,6 +21,13 @@ import kotlin.math.sin
 class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     var colors: IntArray? = null
+
+    var showPercentages: Boolean = true
+        set(value) {
+            field = value
+            portionsDrawData = calculatePieDrawData(piePortions)
+            invalidate()
+        }
 
     private val viewContainer = RectF()
     private val pieChartContainer = RectF()
@@ -42,7 +50,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     private var paintsForPortions: Map<PiePortion, Paint> = emptyMap()
     private val portionValidator = PiePortionValidator()
 
-    private val textHorizontalMargin = 8f * resources.displayMetrics.density
+    private val textHorizontalMargin = 5f * resources.displayMetrics.density
     private val usableWidth get() = width - paddingHorizontal
     private val usableHeight get() = height - paddingVertical
     private val paddingHorizontal get() = paddingStart + paddingEnd
@@ -70,6 +78,8 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
                 R.styleable.PieChartView_pie_label_text_size,
                 14 * resources.displayMetrics.density
             )
+
+            showPercentages = getBoolean(R.styleable.PieChartView_pie_label_show_percentage, true)
 
             val colorArrayId = getResourceId(
                 R.styleable.PieChartView_pie_colors,
@@ -308,12 +318,17 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         val arcCenter = PointF(rx.toFloat(), ry.toFloat())
         val lineAngle = getArcZone(arcCenter).textLineDegree()
 
-        val textLineLength = pieRadius * 0.3
-        val sx = rx + textLineLength * cos(lineAngle)
-        val sy = ry + textLineLength * sin(lineAngle)
-        val middle = PointF(sx.toFloat(), sy.toFloat())
+        val middle = when {
+            lineAngle closeTo 0.0 -> arcCenter
+            else -> {
+                val textLineLength = pieRadius * 0.3
+                val sx = rx + textLineLength * cos(lineAngle)
+                val sy = ry + textLineLength * sin(lineAngle)
+                PointF(sx.toFloat(), sy.toFloat())
+            }
+        }
 
-        val ex = pieRadius * 0.4f * if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
+        val ex = pieRadius * 0.3f * if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
         val end = PointF(middle.x + ex, middle.y)
 
         return Triple(arcCenter, middle, end)
@@ -337,8 +352,13 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
             else -> Layout.Alignment.ALIGN_NORMAL
         }
 
+        val text = when {
+            showPercentages -> "${portion.text} (${portion.percentage.asPercentage()})"
+            else -> portion.text
+        }
+
         val textLayout = StaticLayout.Builder
-            .obtain(portion.text, 0, portion.text.length, textPaint, textLayoutMaxWidth)
+            .obtain(text, 0, text.length, textPaint, textLayoutMaxWidth)
             .setAlignment(textLayoutAlignment)
             .setMaxLines(1)
             .build()

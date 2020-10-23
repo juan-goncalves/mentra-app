@@ -5,8 +5,8 @@ import kotlin.math.abs
 
 internal fun Double.asPercentage(): String {
     val format = DecimalFormat()
-    format.minimumFractionDigits = 2
-    format.maximumFractionDigits = 2
+    format.minimumFractionDigits = 1
+    format.maximumFractionDigits = 1
     return format.format(this * 100) + "%"
 }
 

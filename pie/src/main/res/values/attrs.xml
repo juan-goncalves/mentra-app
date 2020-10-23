@@ -6,6 +6,7 @@
         <attr name="pie_text_line_color" format="color|reference" />
         <attr name="pie_label_text_color" format="color|reference" />
         <attr name="pie_label_text_size" format="dimension|reference" />
+        <attr name="pie_label_show_percentage" format="boolean" />
     </declare-styleable>
 
 </resources>
