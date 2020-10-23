@@ -13,17 +13,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
-import me.juangoncalves.mentra.extensions.createErrorSnackbar
-import me.juangoncalves.mentra.extensions.onDismissed
-import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
-import me.juangoncalves.mentra.extensions.styleByTheme
+import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
 import me.juangoncalves.mentra.ui.wallet_edit.EditWalletDialogFragment
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
@@ -108,6 +107,10 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             createErrorSnackbar(error, binding.addWalletButton)
                 .onDismissed { walletAdapter.notifyItemChanged(position) }
                 .show()
+        }
+
+        viewModel.shouldShowWalletLoadingIndicator.observe(viewLifecycleOwner) { shouldShow ->
+            binding.walletsLoadingIndicator.animateVisibility(shouldShow)
         }
     }
 

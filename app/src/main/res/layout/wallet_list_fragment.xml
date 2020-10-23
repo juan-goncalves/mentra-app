@@ -46,6 +46,16 @@
 
         </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
+        <ProgressBar
+            android:id="@+id/walletsLoadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="?attr/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/addWalletButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/fadingEdgeLayout" />
+
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/addWalletButton"
             android:layout_width="wrap_content"

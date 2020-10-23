@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.domain.models.Price
@@ -19,6 +20,7 @@ import me.juangoncalves.mentra.ui.wallet_list.WalletListFragment
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class DashboardActivity : FragmentActivity() {
 
