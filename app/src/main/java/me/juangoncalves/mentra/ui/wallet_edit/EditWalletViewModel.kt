@@ -63,7 +63,7 @@ class EditWalletViewModel @ViewModelInject constructor(
         _amountInputValidation.value = validationMessageId
         _saveButtonEnabled.value =
             validationMessageId == null && parsedAmount != wallet.amountOfCoin
-        _estimatedValue.value = parsedAmount * wallet.coin.value.value
+        _estimatedValue.value = parsedAmount * wallet.coin.value
         _updatedAmount = parsedAmount
     }
 

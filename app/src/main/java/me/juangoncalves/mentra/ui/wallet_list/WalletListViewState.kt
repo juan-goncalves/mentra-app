@@ -2,7 +2,6 @@ package me.juangoncalves.mentra.ui.wallet_list
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import me.juangoncalves.mentra.domain.models.Price
 
 data class WalletListViewState(
     val isLoadingWallets: Boolean = true,
@@ -12,7 +11,6 @@ data class WalletListViewState(
 ) {
 
     sealed class Error {
-
         var wasDismissed: Boolean = false
             private set
 
@@ -20,8 +18,6 @@ data class WalletListViewState(
 
         object None : Error()
         class PricesNotRefreshed : Error()
-        class UpdatesNotSaved : Error()
-        class DeleteNotSaved : Error()
     }
 
     @Parcelize
@@ -29,7 +25,7 @@ data class WalletListViewState(
         val id: Long,
         val primaryIconUrl: String,
         val secondaryIconUrl: String,
-        val value: Price,
+        val value: Double,
         val coin: Coin,
         val amountOfCoin: Double
     ) : Parcelable
@@ -37,7 +33,7 @@ data class WalletListViewState(
     @Parcelize
     data class Coin(
         val name: String,
-        val value: Price
+        val value: Double
     ) : Parcelable
 
 }

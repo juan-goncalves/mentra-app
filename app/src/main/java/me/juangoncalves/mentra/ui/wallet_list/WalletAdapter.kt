@@ -36,8 +36,8 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
         holder.binding.apply {
             coinNameTextView.text = wallet.coin.name
             coinAmountTextView.text = wallet.amountOfCoin.asCoinAmount()
-            coinPriceTextView.text = wallet.coin.value.value.asCurrency(symbol = "$")
-            walletValueTextView.text = wallet.value.value.asCurrency(symbol = "$")
+            coinPriceTextView.text = wallet.coin.value.asCurrency(symbol = "$")
+            walletValueTextView.text = wallet.value.asCurrency(symbol = "$")
 
             Glide.with(root)
                 .load(wallet.primaryIconUrl)

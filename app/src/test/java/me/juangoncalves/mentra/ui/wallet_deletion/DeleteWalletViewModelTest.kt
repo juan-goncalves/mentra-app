@@ -141,9 +141,9 @@ class DeleteWalletViewModelTest {
         id = 1,
         primaryIconUrl = "https://someurl.com/img.png",
         secondaryIconUrl = "",
-        value = (0.2312 * 11384.23).toPrice(),
+        value = 0.2312 * 11384.23,
         amountOfCoin = 0.2312,
-        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23.toPrice())
+        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23)
     )
 
     private fun initSutWithFakeWallet() {
