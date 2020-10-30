@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.extensions
 
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import me.juangoncalves.mentra.R
 
 fun Snackbar.onDismissed(func: (Int) -> Unit) = run {
     addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
@@ -15,4 +16,13 @@ fun Snackbar.onDismissed(func: (Int) -> Unit) = run {
             transientBottomBar?.removeCallback(this)
         }
     })
+}
+
+fun Snackbar.applyErrorStyle(): Snackbar = apply {
+    val errorColor = context.getThemeColor(R.attr.colorError)
+    val onErrorColor = context.getThemeColor(R.attr.colorOnError)
+
+    setBackgroundTint(errorColor)
+    setTextColor(onErrorColor)
+    setActionTextColor(onErrorColor)
 }
