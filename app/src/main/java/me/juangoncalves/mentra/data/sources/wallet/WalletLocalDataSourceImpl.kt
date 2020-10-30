@@ -32,6 +32,10 @@ class WalletLocalDataSourceImpl @Inject constructor(
         return orStorageException { walletDao.findByCoin(coin.symbol) }
     }
 
+    override suspend fun findById(id: Long): WalletModel? {
+        return orStorageException { walletDao.findById(id) }
+    }
+
     override suspend fun update(wallet: WalletModel, price: Price?) = orStorageException {
         walletDao.update(wallet)
         if (price != null) {

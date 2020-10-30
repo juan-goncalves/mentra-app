@@ -72,6 +72,16 @@ class WalletRepositoryImpl @Inject constructor(
             }
         }
 
+    override suspend fun findWalletById(id: Long): Either<Failure, Wallet?> =
+        withContext(ioDispatcher) {
+            handleException {
+                val model = localDataSource.findById(id) ?: return@handleException Right(null)
+                val wallet = walletMapper.map(model)
+                Right(wallet)
+            }
+        }
+
+
     override suspend fun updateWallet(wallet: Wallet, price: Price?): Either<Failure, Unit> =
         withContext(ioDispatcher) {
             handleException {

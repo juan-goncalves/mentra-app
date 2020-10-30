@@ -19,6 +19,8 @@ interface WalletRepository {
 
     suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>>
 
+    suspend fun findWalletById(id: Long): Either<Failure, Wallet?>
+
     suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<Failure, Unit>
 
     suspend fun getWalletValueHistory(wallet: Wallet): Either<Failure, List<Price>>
