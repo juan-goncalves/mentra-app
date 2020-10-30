@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.ui.common.*
-import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
+import me.juangoncalves.mentra.ui.wallet_list.WalletListViewState
 
 class EditWalletViewModel @ViewModelInject constructor(
     private val updateWallet: UpdateWallet
@@ -23,7 +23,7 @@ class EditWalletViewModel @ViewModelInject constructor(
     var savedUpdates: Boolean = false
         private set
 
-    lateinit var displayWallet: DisplayWallet
+    lateinit var wallet: WalletListViewState.Wallet
         private set
 
     private val _dismiss: MutableLiveData<Notification> = MutableLiveData()
@@ -34,15 +34,15 @@ class EditWalletViewModel @ViewModelInject constructor(
     private var _updatedAmount: Double? = null
 
     fun initialize(args: Bundle?) {
-        displayWallet = args?.getSerializable(BundleKeys.Wallet) as? DisplayWallet
+        wallet = args?.getParcelable(BundleKeys.Wallet)
             ?: error("You must provide the wallet to edit")
 
-        amountInputChanged(displayWallet.wallet.amount.toString())
+        amountInputChanged(wallet.amountOfCoin.toString())
     }
 
     fun saveSelected() {
         val updatedAmount = _updatedAmount ?: return
-        val updatedWallet = displayWallet.wallet.copy(amount = updatedAmount)
+        val params = UpdateWallet.Params(wallet.id, updatedAmount)
 
         updateWallet.executor()
             .inScope(viewModelScope)
@@ -51,7 +51,7 @@ class EditWalletViewModel @ViewModelInject constructor(
                 _dismiss.postValue(Notification())
             }
             .onFailurePublishFleetingError()
-            .run(updatedWallet)
+            .run(params)
     }
 
     fun cancelSelected() {
@@ -62,8 +62,8 @@ class EditWalletViewModel @ViewModelInject constructor(
         val (validationMessageId, parsedAmount) = validateAndParseAmountInput(text)
         _amountInputValidation.value = validationMessageId
         _saveButtonEnabled.value =
-            validationMessageId == null && parsedAmount != displayWallet.wallet.amount
-        _estimatedValue.value = parsedAmount * displayWallet.currentCoinPrice
+            validationMessageId == null && parsedAmount != wallet.amountOfCoin
+        _estimatedValue.value = parsedAmount * wallet.coin.value.value
         _updatedAmount = parsedAmount
     }
 

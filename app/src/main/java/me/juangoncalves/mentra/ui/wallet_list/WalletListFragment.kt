@@ -12,14 +12,19 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.Callback.DISMISS_EVENT_MANUAL
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
-import me.juangoncalves.mentra.extensions.*
+import me.juangoncalves.mentra.extensions.animateVisibility
+import me.juangoncalves.mentra.extensions.applyErrorStyle
+import me.juangoncalves.mentra.extensions.onDismissed
+import me.juangoncalves.mentra.extensions.styleByTheme
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
-import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
 import me.juangoncalves.mentra.ui.wallet_edit.EditWalletDialogFragment
 
 @ExperimentalCoroutinesApi
@@ -31,6 +36,8 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     private var _binding: WalletListFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private var observersInitialized: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,40 +97,52 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
             startActivity(intent)
         }
+
+        initObservers()
     }
 
     private fun initObservers() {
-        showSnackbarOnFleetingErrors(viewModel, binding.addWalletButton)
+        if (observersInitialized) return
 
-        viewModel.shouldShowRefreshIndicator.observe(viewLifecycleOwner) { shouldShow ->
-            binding.refreshLayout.isRefreshing = shouldShow
+        observersInitialized = true
+
+        viewModel.viewStateStream.observe(viewLifecycleOwner) { state ->
+            walletAdapter.data = state.wallets
+            binding.walletsLoadingIndicator.animateVisibility(state.isLoadingWallets)
+            binding.refreshLayout.isRefreshing = state.isRefreshingPrices
+            bindError(state)
         }
+    }
 
-        viewModel.wallets.observe(viewLifecycleOwner) { wallets ->
-            walletAdapter.data = wallets
-        }
+    private fun bindError(state: WalletListViewState) {
+        if (state.error.wasDismissed) return
 
-        viewModel.walletManagementError.observe(viewLifecycleOwner) { (error, position) ->
-            createErrorSnackbar(error, binding.addWalletButton)
-                .onDismissed { walletAdapter.notifyItemChanged(position) }
-                .show()
-        }
-
-        viewModel.shouldShowWalletLoadingIndicator.observe(viewLifecycleOwner) { shouldShow ->
-            binding.walletsLoadingIndicator.animateVisibility(shouldShow)
+        when (state.error) {
+            WalletListViewState.Error.None -> {
+            }
+            is WalletListViewState.Error.PricesNotRefreshed -> {
+                Snackbar
+                    .make(requireView(), R.string.price_refresh_error, Snackbar.LENGTH_LONG)
+                    .onDismissed { actionCode ->
+                        if (actionCode != DISMISS_EVENT_MANUAL) state.error.dismiss()
+                    }
+                    .setAnchorView(binding.addWalletButton)
+                    .applyErrorStyle()
+                    .show()
+            }
         }
     }
 
     override fun onDeleteWalletGesture(position: Int) {
-        DeleteWalletDialogFragment
-            .newInstance(walletAdapter.data[position])
-            .show(parentFragmentManager, "delete_wallet")
+//        DeleteWalletDialogFragment
+//            .newInstance(walletAdapter.data[position])
+//            .show(parentFragmentManager, "delete_wallet")
     }
 
     override fun onEditWalletGesture(position: Int) {
         EditWalletDialogFragment
             .newInstance(walletAdapter.data[position])
-            .show(parentFragmentManager, "delete_wallet")
+            .show(parentFragmentManager, "edit_wallet")
     }
 
     override fun onDestroyView() {
@@ -139,7 +158,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
      * state (e.g hide the delete bubble).
      */
     private fun processWalletActionResult(bundle: Bundle, resultKey: String) {
-        val wallet = bundle[BundleKeys.Wallet] as? DisplayWallet
+        val wallet = bundle.getParcelable<WalletListViewState.Wallet>(BundleKeys.Wallet)
         val wasModified = bundle.getBoolean(resultKey, false)
         if (wasModified) return
 
