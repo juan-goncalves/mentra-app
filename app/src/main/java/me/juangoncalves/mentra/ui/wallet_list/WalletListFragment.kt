@@ -25,6 +25,7 @@ import me.juangoncalves.mentra.extensions.styleByTheme
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
+import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
 import me.juangoncalves.mentra.ui.wallet_edit.EditWalletDialogFragment
 
 @ExperimentalCoroutinesApi
@@ -134,9 +135,9 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
     }
 
     override fun onDeleteWalletGesture(position: Int) {
-//        DeleteWalletDialogFragment
-//            .newInstance(walletAdapter.data[position])
-//            .show(parentFragmentManager, "delete_wallet")
+        DeleteWalletDialogFragment
+            .newInstance(walletAdapter.data[position])
+            .show(parentFragmentManager, "delete_wallet")
     }
 
     override fun onEditWalletGesture(position: Int) {
