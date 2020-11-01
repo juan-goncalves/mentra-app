@@ -9,13 +9,12 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.errors.StorageFailure
-import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.DisplayError
 import me.juangoncalves.mentra.ui.common.Event
 import me.juangoncalves.mentra.ui.common.Notification
-import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
 import org.junit.Before
@@ -79,7 +78,7 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 1) { estimateObserver.onChanged(capture(captor)) }
-        assertThat(captor.captured, closeTo(fakeWallet.currentWalletPrice, 0.0001))
+        assertThat(captor.captured, closeTo(fakeWallet.value, 0.0001))
     }
 
     @Test
@@ -91,7 +90,7 @@ class EditWalletViewModelTest {
         sut.initialize(args)
 
         // Assert
-        fakeWallet equals sut.displayWallet
+        fakeWallet equals sut.wallet
     }
 
     @Test
@@ -217,7 +216,7 @@ class EditWalletViewModelTest {
         val captor = mutableListOf<Boolean>()
 
         // Act
-        sut.amountInputChanged(fakeWallet.wallet.amount.toString())
+        sut.amountInputChanged(fakeWallet.amountOfCoin.toString())
 
         // Assert
         verify(exactly = 2) { saveButtonStateObserver.onChanged(capture(captor)) }
@@ -241,7 +240,7 @@ class EditWalletViewModelTest {
         // Arrange
         initSutWithFakeWallet()
         coEvery { updateWalletMock.invoke(any()) } returns Right(Unit)
-        val captor = slot<Wallet>()
+        val captor = slot<UpdateWallet.Params>()
 
         // Act
         sut.amountInputChanged("3.456")
@@ -249,7 +248,7 @@ class EditWalletViewModelTest {
 
         // Assert
         coVerify { updateWalletMock.invoke(capture(captor)) }
-        captor.captured.amount closeTo 3.456
+        captor.captured.newAmount closeTo 3.456
     }
 
     @Test
@@ -291,11 +290,13 @@ class EditWalletViewModelTest {
         verify(exactly = 1) { fleetingErrorObserver.onChanged(any()) }
     }
 
-    private val fakeWallet = DisplayWallet(
-        Wallet(Bitcoin, 0.2312, 1),
-        "https://someurl.com/img.png",
-        11384.23,
-        0.2312 * 11384.23
+    private val fakeWallet = WalletListViewState.Wallet(
+        id = 1,
+        primaryIconUrl = "https://someurl.com/img.png",
+        secondaryIconUrl = "",
+        value = 0.2312 * 11384.23,
+        amountOfCoin = 0.2312,
+        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23)
     )
 
     private fun initSutWithFakeWallet() {

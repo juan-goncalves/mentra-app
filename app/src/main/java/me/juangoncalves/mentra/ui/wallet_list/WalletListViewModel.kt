@@ -1,78 +1,90 @@
 package me.juangoncalves.mentra.ui.wallet_list
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import either.fold
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.di.DefaultDispatcher
+import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.repositories.CoinRepository
-import me.juangoncalves.mentra.domain.repositories.WalletRepository
-import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIcon
+import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
-import me.juangoncalves.mentra.extensions.rightValue
-import me.juangoncalves.mentra.ui.common.*
-
-// Error with the position of the wallet being modified
-typealias WalletManagementError = Pair<DisplayError, Int>
+import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
+import me.juangoncalves.mentra.ui.wallet_list.mappers.UIWalletMapper
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState.Error
 
 class WalletListViewModel @ViewModelInject constructor(
-    coinRepository: CoinRepository,
-    walletRepository: WalletRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
-    private val getGradientCoinIcon: GetGradientCoinIcon,
-    private val refreshPortfolioValue: RefreshPortfolioValue
-) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+    private val activeCoinsPriceStream: GetActiveCoinsPriceStream,
+    private val walletListStream: GetWalletListStream,
+    private val refreshPortfolioValue: RefreshPortfolioValue,
+    private val walletListMapper: UIWalletMapper
+) : ViewModel() {
 
-    @ExperimentalCoroutinesApi
-    val wallets: LiveData<List<DisplayWallet>> = coinRepository.pricesOfCoinsInUse
-        .onStart { _shouldShowWalletLoadingIndicator.value = true }
-        .onEach { _shouldShowWalletLoadingIndicator.value = false }
-        .combine(walletRepository.wallets, ::mergeIntoDisplayWallets)
-        .asLiveData()
+    val viewStateStream = MutableLiveData<WalletListViewState>(WalletListViewState())
 
-    val walletManagementError: LiveData<WalletManagementError> get() = _walletManagementError
-    val shouldShowRefreshIndicator: LiveData<Boolean> get() = _shouldShowRefreshIndicator
-    val shouldShowWalletLoadingIndicator: LiveData<Boolean> get() = _shouldShowWalletLoadingIndicator
+    private val currentViewState: WalletListViewState get() = viewStateStream.value!!
 
-    private val _walletManagementError: MutableLiveData<WalletManagementError> = MutableLiveData()
-    private val _shouldShowRefreshIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _shouldShowWalletLoadingIndicator: MutableLiveData<Boolean> = MutableLiveData(true)
+    fun initialize() {
+        loadWallets()
+    }
 
+    private fun loadWallets() = viewModelScope.launch {
+        activeCoinsPriceStream()
+            .combine(walletListStream(), ::mergeIntoDisplayWallets)
+            .onStart { viewStateStream.value = currentViewState.copy(isLoadingWallets = true) }
+            .catch {
+                viewStateStream.value = currentViewState.copy(
+                    error = Error.WalletsNotLoaded,
+                    isLoadingWallets = false
+                )
+            }
+            .collectLatest { wallets ->
+                viewStateStream.value = currentViewState.copy(
+                    wallets = wallets,
+                    error = Error.None,
+                    isLoadingWallets = false
+                )
+            }
+    }
 
-    fun refreshSelected() {
-        refreshPortfolioValue.executor()
-            .withDispatcher(Dispatchers.IO)
-            .inScope(viewModelScope)
-            .beforeInvoke { _shouldShowRefreshIndicator.postValue(true) }
-            .afterInvoke { _shouldShowRefreshIndicator.postValue(false) }
-            .onFailurePublishFleetingError()
-            .run()
+    fun refreshSelected() = viewModelScope.launch {
+        viewStateStream.value = currentViewState.copy(isRefreshingPrices = true)
+
+        val result = refreshPortfolioValue.invoke()
+
+        viewStateStream.value = result.fold(
+            left = {
+                currentViewState.copy(
+                    error = Error.PricesNotRefreshed(),
+                    isRefreshingPrices = false
+                )
+            },
+            right = {
+                val nextError = when (currentViewState.error) {
+                    is Error.PricesNotRefreshed -> Error.None
+                    else -> currentViewState.error
+                }
+
+                currentViewState.copy(
+                    error = nextError,
+                    isRefreshingPrices = false
+                )
+            }
+        )
     }
 
     private suspend fun mergeIntoDisplayWallets(
         coinPrices: Map<Coin, Price>,
         wallets: List<Wallet>
-    ): List<DisplayWallet> = wallets.map { wallet ->
-        withContext(defaultDispatcher) {
-            val coinPrice = coinPrices[wallet.coin] ?: Price.None
-            val params = GetGradientCoinIcon.Params(wallet.coin)
-            val coinGradientIconUrl = getGradientCoinIcon(params).rightValue ?: ""
-
-            DisplayWallet(
-                wallet,
-                coinGradientIconUrl,
-                coinPrice.value,
-                coinPrice.value * wallet.amount
-            )
-        }
+    ): List<WalletListViewState.Wallet> = wallets.map { wallet ->
+        walletListMapper.map(wallet, coinPrices[wallet.coin] ?: Price.None)
     }
 
 }

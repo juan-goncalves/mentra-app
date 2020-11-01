@@ -11,13 +11,12 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.errors.StorageFailure
-import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.wallet.DeleteWallet
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.DisplayError
 import me.juangoncalves.mentra.ui.common.Event
 import me.juangoncalves.mentra.ui.common.Notification
-import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -71,7 +70,7 @@ class DeleteWalletViewModelTest {
         sut.initialize(args)
 
         // Assert
-        fakeWallet equals sut.displayWallet
+        fakeWallet equals sut.wallet
     }
 
     @Test
@@ -138,11 +137,13 @@ class DeleteWalletViewModelTest {
         verify(exactly = 1) { dismissObserver.onChanged(any()) }
     }
 
-    private val fakeWallet = DisplayWallet(
-        Wallet(Bitcoin, 0.2312, 1),
-        "https://someurl.com/img.png",
-        11384.23,
-        0.2312 * 11384.23
+    private val fakeWallet = WalletListViewState.Wallet(
+        id = 1,
+        primaryIconUrl = "https://someurl.com/img.png",
+        secondaryIconUrl = "",
+        value = 0.2312 * 11384.23,
+        amountOfCoin = 0.2312,
+        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23)
     )
 
     private fun initSutWithFakeWallet() {

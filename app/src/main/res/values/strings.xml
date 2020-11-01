@@ -25,4 +25,7 @@
     <string name="required_field">Required field</string>
     <string name="last_day_change">%1$s %2$s (%3$s)</string>
     <string name="last_day_change_tooltip">24 hour change</string>
+    <string name="price_refresh_error">Error, could not get the latest coin prices</string>
+    <string name="whoops_something_went_wrong">Whoops! Something went wrong.</string>
+    <string name="error_loading_wallets">An error occurred while trying to load your wallets.</string>
 </resources>

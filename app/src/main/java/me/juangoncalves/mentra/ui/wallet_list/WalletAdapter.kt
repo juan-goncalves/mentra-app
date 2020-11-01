@@ -10,14 +10,16 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
 import me.juangoncalves.mentra.extensions.asCurrency
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 
 class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 
-    var data: List<DisplayWallet>
+    var data: List<WalletListViewState.Wallet>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    private val differ: AsyncListDiffer<DisplayWallet> = AsyncListDiffer(this, WalletItemCallback())
+    private val differ: AsyncListDiffer<WalletListViewState.Wallet> =
+        AsyncListDiffer(this, WalletItemCallback())
 
     override fun getItemCount() = differ.currentList.size
 
@@ -31,21 +33,21 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val displayWallet = differ.currentList[position]
+        val wallet = differ.currentList[position]
         holder.binding.apply {
-            coinNameTextView.text = displayWallet.wallet.coin.name
-            coinAmountTextView.text = displayWallet.wallet.amount.asCoinAmount()
-            coinPriceTextView.text = displayWallet.currentCoinPrice.asCurrency(symbol = "$")
-            walletValueTextView.text = displayWallet.currentWalletPrice.asCurrency(symbol = "$")
+            coinNameTextView.text = wallet.coin.name
+            coinAmountTextView.text = wallet.amountOfCoin.asCoinAmount()
+            coinPriceTextView.text = wallet.coin.value.asCurrency(symbol = "$")
+            walletValueTextView.text = wallet.value.asCurrency(symbol = "$")
 
             Glide.with(root)
-                .load(displayWallet.gradientIconUrl)
+                .load(wallet.primaryIconUrl)
                 // TODO: Make a placeholder png with the same dimensions as the gradient drawables
                 // .placeholder(R.drawable.coin_placeholder)
                 // .transition(DrawableTransitionOptions.withCrossFade())
                 .error(
                     Glide.with(root)
-                        .load(displayWallet.wallet.coin.imageUrl)
+                        .load(wallet.secondaryIconUrl)
                         .circleCrop()
                         .error(R.drawable.coin_placeholder)
                 )
@@ -59,12 +61,18 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 }
 
 
-class WalletItemCallback : DiffUtil.ItemCallback<DisplayWallet>() {
-    override fun areItemsTheSame(oldItem: DisplayWallet, newItem: DisplayWallet): Boolean {
+class WalletItemCallback : DiffUtil.ItemCallback<WalletListViewState.Wallet>() {
+    override fun areItemsTheSame(
+        oldItem: WalletListViewState.Wallet,
+        newItem: WalletListViewState.Wallet
+    ): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: DisplayWallet, newItem: DisplayWallet): Boolean {
+    override fun areContentsTheSame(
+        oldItem: WalletListViewState.Wallet,
+        newItem: WalletListViewState.Wallet
+    ): Boolean {
         return oldItem == newItem
     }
 }

@@ -17,13 +17,13 @@ import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
-import me.juangoncalves.mentra.ui.wallet_list.DisplayWallet
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
 class EditWalletDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
-        fun newInstance(wallet: DisplayWallet): EditWalletDialogFragment {
+        fun newInstance(wallet: WalletListViewState.Wallet): EditWalletDialogFragment {
             val fragment = EditWalletDialogFragment()
             fragment.arguments = bundleOf(BundleKeys.Wallet to wallet)
             return fragment
@@ -51,7 +51,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initObservers()
-        binding.amountEditText.setText(viewModel.displayWallet.wallet.amount.toString())
+        binding.amountEditText.setText(viewModel.wallet.amountOfCoin.toString())
         binding.saveButton.setOnClickListener { viewModel.saveSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
         binding.amountEditText.doOnTextChanged { text, _, _, _ ->
@@ -84,7 +84,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         setFragmentResult(
             RequestKeys.WalletEdit,
             bundleOf(
-                BundleKeys.Wallet to viewModel.displayWallet,
+                BundleKeys.Wallet to viewModel.wallet,
                 BundleKeys.WalletEditResult to viewModel.savedUpdates
             )
         )

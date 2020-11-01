@@ -46,11 +46,40 @@
 
         </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/loadWalletsErrorStateView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="28dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/walletsLabel">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/whoops_something_went_wrong" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/error_loading_wallets"
+                android:visibility="visible" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
         <ProgressBar
             android:id="@+id/walletsLoadingIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminateTint="?attr/colorPrimary"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/addWalletButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
