@@ -6,7 +6,7 @@ import android.view.View
 import androidx.annotation.AttrRes
 import com.google.android.material.snackbar.Snackbar
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.ui.common.DisplayError
+import me.juangoncalves.mentra.features.common.DisplayError
 
 fun Context.getThemeColor(@AttrRes attrRes: Int): Int {
     val typedValue = TypedValue()

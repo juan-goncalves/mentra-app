@@ -15,11 +15,11 @@
         android:theme="@style/Theme.Mentra">
 
         <activity
-            android:name=".ui.dashboard.DashboardActivity"
+            android:name=".features.dashboard.DashboardActivity"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
 
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name=".features.splash.SplashActivity"
             android:label="@string/app_name"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".ui.wallet_creation.WalletCreationActivity"
+            android:name=".features.wallet_creation.WalletCreationActivity"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
 
         <provider

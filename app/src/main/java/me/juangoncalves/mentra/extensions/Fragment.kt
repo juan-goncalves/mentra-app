@@ -4,8 +4,8 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
-import me.juangoncalves.mentra.ui.common.DisplayError
-import me.juangoncalves.mentra.ui.common.FleetingErrorPublisher
+import me.juangoncalves.mentra.features.common.DisplayError
+import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
 
 fun Fragment.createErrorSnackbar(
     error: DisplayError,

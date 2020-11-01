@@ -5,7 +5,7 @@
     android:id="@+id/refreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.wallet_list.WalletListFragment">
+    tools:context=".features.wallet_list.ui.WalletListFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
