@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import either.fold
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.di.DefaultDispatcher
@@ -21,6 +18,7 @@ import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIcon
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.extensions.rightValue
+import me.juangoncalves.mentra.ui.wallet_list.WalletListViewState.*
 
 class WalletListViewModel @ViewModelInject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
@@ -40,11 +38,12 @@ class WalletListViewModel @ViewModelInject constructor(
 
     private fun loadWallets() = viewModelScope.launch {
         activeCoinsPriceStream()
+            .combine(walletListStream(), ::mergeIntoDisplayWallets)
             .onStart { viewStateStream.value = currentViewState.copy(isLoadingWallets = true) }
             .onEach { viewStateStream.value = currentViewState.copy(isLoadingWallets = false) }
-            .combine(walletListStream(), ::mergeIntoDisplayWallets)
+            .catch { viewStateStream.value = currentViewState.copy(error = Error.WalletsNotLoaded) }
             .collectLatest { wallets ->
-                viewStateStream.value = currentViewState.copy(wallets = wallets)
+                viewStateStream.value = currentViewState.copy(wallets = wallets, error = Error.None)
             }
     }
 
@@ -54,13 +53,13 @@ class WalletListViewModel @ViewModelInject constructor(
         viewStateStream.value = result.fold(
             left = {
                 currentViewState.copy(
-                    error = WalletListViewState.Error.PricesNotRefreshed(),
+                    error = Error.PricesNotRefreshed(),
                     isRefreshingPrices = false
                 )
             },
             right = {
                 val nextError = when (currentViewState.error) {
-                    is WalletListViewState.Error.PricesNotRefreshed -> WalletListViewState.Error.None
+                    is Error.PricesNotRefreshed -> Error.None
                     else -> currentViewState.error
                 }
 
@@ -82,12 +81,12 @@ class WalletListViewModel @ViewModelInject constructor(
             val coinGradientIconUrl = getGradientCoinIcon(params).rightValue ?: ""
             val walletValue = coinPrice.value * wallet.amount
 
-            WalletListViewState.Wallet(
+            Wallet(
                 id = wallet.id,
                 primaryIconUrl = coinGradientIconUrl,
                 secondaryIconUrl = wallet.coin.imageUrl,
                 value = walletValue,
-                coin = WalletListViewState.Coin(wallet.coin.name, coinPrice.value),
+                coin = Coin(wallet.coin.name, coinPrice.value),
                 amountOfCoin = wallet.amount
             )
         }

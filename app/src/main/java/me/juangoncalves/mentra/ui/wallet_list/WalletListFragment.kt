@@ -18,10 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
-import me.juangoncalves.mentra.extensions.animateVisibility
-import me.juangoncalves.mentra.extensions.applyErrorStyle
-import me.juangoncalves.mentra.extensions.onDismissed
-import me.juangoncalves.mentra.extensions.styleByTheme
+import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
@@ -109,19 +106,28 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
         viewModel.viewStateStream.observe(viewLifecycleOwner) { state ->
             walletAdapter.data = state.wallets
-            binding.walletsLoadingIndicator.animateVisibility(state.isLoadingWallets)
+            binding.walletsLoadingIndicator.animateVisibility(state.isLoadingWallets, 300L)
             binding.refreshLayout.isRefreshing = state.isRefreshingPrices
             bindError(state)
         }
     }
 
     private fun bindError(state: WalletListViewState) {
-        if (state.error.wasDismissed) return
-
         when (state.error) {
             WalletListViewState.Error.None -> {
+                binding.refreshLayout.isEnabled = true
+                binding.recyclerView.animateVisibility(true, 300L)
+                binding.loadWalletsErrorStateView.hide()
+            }
+            WalletListViewState.Error.WalletsNotLoaded -> {
+                binding.refreshLayout.isEnabled = false
+                binding.recyclerView.animateVisibility(false, 300L)
+                binding.loadWalletsErrorStateView.show()
             }
             is WalletListViewState.Error.PricesNotRefreshed -> {
+                binding.refreshLayout.isEnabled = true
+                if (state.error.wasDismissed) return
+
                 Snackbar
                     .make(requireView(), R.string.price_refresh_error, Snackbar.LENGTH_LONG)
                     .onDismissed { actionCode ->

@@ -11,13 +11,16 @@ data class WalletListViewState(
 ) {
 
     sealed class Error {
-        var wasDismissed: Boolean = false
-            private set
-
-        fun dismiss() = run { wasDismissed = true }
-
         object None : Error()
-        class PricesNotRefreshed : Error()
+
+        object WalletsNotLoaded : Error()
+
+        class PricesNotRefreshed : Error() {
+            var wasDismissed: Boolean = false
+                private set
+
+            fun dismiss() = run { wasDismissed = true }
+        }
     }
 
     @Parcelize
