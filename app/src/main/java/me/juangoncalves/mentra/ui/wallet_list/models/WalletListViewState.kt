@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.ui.wallet_list
+package me.juangoncalves.mentra.ui.wallet_list.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

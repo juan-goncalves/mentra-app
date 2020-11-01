@@ -5,34 +5,33 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import either.fold
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
-import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIcon
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
-import me.juangoncalves.mentra.extensions.rightValue
-import me.juangoncalves.mentra.ui.wallet_list.WalletListViewState.*
+import me.juangoncalves.mentra.ui.wallet_list.mappers.UIWalletMapper
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState.Error
 
 class WalletListViewModel @ViewModelInject constructor(
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val activeCoinsPriceStream: GetActiveCoinsPriceStream,
     private val walletListStream: GetWalletListStream,
-    private val getGradientCoinIcon: GetGradientCoinIcon,
-    private val refreshPortfolioValue: RefreshPortfolioValue
+    private val refreshPortfolioValue: RefreshPortfolioValue,
+    private val walletListMapper: UIWalletMapper
 ) : ViewModel() {
 
     val viewStateStream = MutableLiveData<WalletListViewState>(WalletListViewState())
 
     private val currentViewState: WalletListViewState get() = viewStateStream.value!!
 
-    init {
+    fun initialize() {
         loadWallets()
     }
 
@@ -40,14 +39,24 @@ class WalletListViewModel @ViewModelInject constructor(
         activeCoinsPriceStream()
             .combine(walletListStream(), ::mergeIntoDisplayWallets)
             .onStart { viewStateStream.value = currentViewState.copy(isLoadingWallets = true) }
-            .onEach { viewStateStream.value = currentViewState.copy(isLoadingWallets = false) }
-            .catch { viewStateStream.value = currentViewState.copy(error = Error.WalletsNotLoaded) }
+            .catch {
+                viewStateStream.value = currentViewState.copy(
+                    error = Error.WalletsNotLoaded,
+                    isLoadingWallets = false
+                )
+            }
             .collectLatest { wallets ->
-                viewStateStream.value = currentViewState.copy(wallets = wallets, error = Error.None)
+                viewStateStream.value = currentViewState.copy(
+                    wallets = wallets,
+                    error = Error.None,
+                    isLoadingWallets = false
+                )
             }
     }
 
     fun refreshSelected() = viewModelScope.launch {
+        viewStateStream.value = currentViewState.copy(isRefreshingPrices = true)
+
         val result = refreshPortfolioValue.invoke()
 
         viewStateStream.value = result.fold(
@@ -75,21 +84,7 @@ class WalletListViewModel @ViewModelInject constructor(
         coinPrices: Map<Coin, Price>,
         wallets: List<Wallet>
     ): List<WalletListViewState.Wallet> = wallets.map { wallet ->
-        withContext(defaultDispatcher) {
-            val coinPrice = coinPrices[wallet.coin] ?: Price.None
-            val params = GetGradientCoinIcon.Params(wallet.coin)
-            val coinGradientIconUrl = getGradientCoinIcon(params).rightValue ?: ""
-            val walletValue = coinPrice.value * wallet.amount
-
-            Wallet(
-                id = wallet.id,
-                primaryIconUrl = coinGradientIconUrl,
-                secondaryIconUrl = wallet.coin.imageUrl,
-                value = walletValue,
-                coin = Coin(wallet.coin.name, coinPrice.value),
-                amountOfCoin = wallet.amount
-            )
-        }
+        walletListMapper.map(wallet, coinPrices[wallet.coin] ?: Price.None)
     }
 
 }

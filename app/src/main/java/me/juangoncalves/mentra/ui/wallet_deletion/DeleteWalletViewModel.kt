@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import me.juangoncalves.mentra.domain.usecases.wallet.DeleteWallet
 import me.juangoncalves.mentra.ui.common.*
-import me.juangoncalves.mentra.ui.wallet_list.WalletListViewState
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 
 class DeleteWalletViewModel @ViewModelInject constructor(
     private val deleteWallet: DeleteWallet

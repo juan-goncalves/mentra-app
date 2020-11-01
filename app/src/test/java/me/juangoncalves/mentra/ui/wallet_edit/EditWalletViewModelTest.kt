@@ -14,7 +14,7 @@ import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.DisplayError
 import me.juangoncalves.mentra.ui.common.Event
 import me.juangoncalves.mentra.ui.common.Notification
-import me.juangoncalves.mentra.ui.wallet_list.WalletListViewState
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
 import org.junit.Before

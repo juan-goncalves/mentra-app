@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.ui.common.*
-import me.juangoncalves.mentra.ui.wallet_list.WalletListViewState
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 
 class EditWalletViewModel @ViewModelInject constructor(
     private val updateWallet: UpdateWallet

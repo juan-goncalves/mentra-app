@@ -10,6 +10,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
 import me.juangoncalves.mentra.extensions.asCurrency
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 
 class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 

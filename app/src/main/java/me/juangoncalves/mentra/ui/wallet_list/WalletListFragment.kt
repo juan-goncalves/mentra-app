@@ -24,6 +24,7 @@ import me.juangoncalves.mentra.ui.common.RequestKeys
 import me.juangoncalves.mentra.ui.wallet_creation.WalletCreationActivity
 import me.juangoncalves.mentra.ui.wallet_deletion.DeleteWalletDialogFragment
 import me.juangoncalves.mentra.ui.wallet_edit.EditWalletDialogFragment
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -39,6 +40,8 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel.initialize()
 
         setFragmentResultListener(RequestKeys.WalletDeletion) { _, bundle ->
             processWalletActionResult(bundle, BundleKeys.WalletDeletionResult)

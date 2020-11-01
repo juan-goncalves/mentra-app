@@ -17,7 +17,7 @@ import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.ui.common.BundleKeys
 import me.juangoncalves.mentra.ui.common.RequestKeys
-import me.juangoncalves.mentra.ui.wallet_list.WalletListViewState
+import me.juangoncalves.mentra.ui.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
 class EditWalletDialogFragment : BottomSheetDialogFragment() {
