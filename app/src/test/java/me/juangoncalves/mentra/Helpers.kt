@@ -43,3 +43,5 @@ val ETHWalletModel = WalletModel("ETH", 1.233, 2)
 val XRPWalletModel = WalletModel("XRP", 23.982, 3)
 
 fun Double.toPrice(): Price = Price(Currency.USD, this, LocalDateTime.now())
+
+fun <T> T.toRight(): Right<T> = Right(this)

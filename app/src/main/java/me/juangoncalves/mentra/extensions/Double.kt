@@ -4,6 +4,7 @@ import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import java.text.DecimalFormat
 import java.time.LocalDateTime
+import kotlin.math.abs
 
 fun Double.asCurrency(
     symbol: String = "",
@@ -47,3 +48,5 @@ fun Double.toPrice(
     currency: Currency = Currency.USD,
     timestamp: LocalDateTime = LocalDateTime.now()
 ): Price = Price(currency, this, timestamp)
+
+infix fun Double.closeTo(other: Double): Boolean = abs(this - other) <= 0.001
