@@ -5,6 +5,7 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
@@ -12,10 +13,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.extensions.addIfMissing
 import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.extensions.asPercentage
-import me.juangoncalves.mentra.extensions.hideIfAdded
 import me.juangoncalves.mentra.features.stats.StatsFragment
 import me.juangoncalves.mentra.features.wallet_list.ui.WalletListFragment
 import kotlin.math.absoluteValue
@@ -41,6 +40,12 @@ class DashboardActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         binding = DashboardActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportFragmentManager.beginTransaction()
+            .add(binding.fragmentContainer.id, statsFragment, STATS_FRAGMENT_TAG)
+            .add(binding.fragmentContainer.id, walletListFragment, WALLETS_FRAGMENT_TAG)
+            .commit()
+
         initObservers()
     }
 
@@ -83,17 +88,17 @@ class DashboardActivity : FragmentActivity() {
         return when {
             amountDiff.value.sign > 0 -> Triple(
                 "+",
-                getDrawable(R.drawable.ic_arrow_up_20),
+                AppCompatResources.getDrawable(this, R.drawable.ic_arrow_up_20),
                 getColor(R.color.screaming_green)
             )
             amountDiff.value.sign < 0 -> Triple(
                 "-",
-                getDrawable(R.drawable.ic_arrow_down_20),
+                AppCompatResources.getDrawable(this, R.drawable.ic_arrow_down_20),
                 getColor(R.color.tobasco)
             )
             else -> Triple(
                 "",
-                getDrawable(R.drawable.ic_coins),
+                AppCompatResources.getDrawable(this, R.drawable.ic_coins),
                 getColor(android.R.color.transparent)
             )
         }
@@ -105,12 +110,12 @@ class DashboardActivity : FragmentActivity() {
                 R.animator.fade_in, R.animator.fade_out,
                 R.animator.fade_in, R.animator.fade_out
             )
-            .hideIfAdded(walletListFragment)
-            .addIfMissing(R.id.fragmentContainer, statsFragment, STATS_FRAGMENT_TAG)
+            .hide(walletListFragment)
             .show(statsFragment)
             .commit()
 
-        binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_wallet))
+        val walletIcon = AppCompatResources.getDrawable(this, R.drawable.ic_wallet)
+        binding.navButton.setImageDrawable(walletIcon)
         binding.navButton.setOnClickListener { viewModel.openWalletsSelected() }
     }
 
@@ -120,12 +125,12 @@ class DashboardActivity : FragmentActivity() {
                 R.animator.fade_in, R.animator.fade_out,
                 R.animator.fade_in, R.animator.fade_out
             )
-            .hideIfAdded(statsFragment)
-            .addIfMissing(R.id.fragmentContainer, walletListFragment, WALLETS_FRAGMENT_TAG)
+            .hide(statsFragment)
             .show(walletListFragment)
             .commit()
 
-        binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_chart))
+        val chartIcon = AppCompatResources.getDrawable(this, R.drawable.ic_chart)
+        binding.navButton.setImageDrawable(chartIcon)
         binding.navButton.setOnClickListener { viewModel.openStatsSelected() }
     }
 

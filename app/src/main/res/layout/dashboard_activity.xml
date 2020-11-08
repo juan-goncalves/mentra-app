@@ -58,8 +58,8 @@
         android:background="@android:color/transparent"
         android:foreground="?android:attr/actionBarItemBackground"
         android:padding="5dp"
-        android:tint="@color/white"
-        app:srcCompat="@drawable/ic_settings" />
+        app:srcCompat="@drawable/ic_settings"
+        app:tint="@color/white" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"

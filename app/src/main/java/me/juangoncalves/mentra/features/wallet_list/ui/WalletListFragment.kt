@@ -63,6 +63,8 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     /** Initialize the observers after the enter transition ended to prevent stuttering */
     override fun onCreateAnimator(transit: Int, enter: Boolean, nextAnim: Int): Animator? {
+        if (nextAnim == 0) return null
+
         val animator = AnimatorInflater.loadAnimator(activity, nextAnim)
 
         val listener = object : Animator.AnimatorListener {
