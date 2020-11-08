@@ -6,7 +6,9 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,12 +30,15 @@ class DashboardActivity : FragmentActivity() {
 
     private lateinit var binding: DashboardActivityBinding
 
-    private val statsFragment: StatsFragment = StatsFragment()
-    private val walletListFragment: WalletListFragment = WalletListFragment()
+    private val statsFragment: Fragment
+        get() = supportFragmentManager.findFragmentByTag(StatsFragmentTag) ?: StatsFragment()
+
+    private val walletListFragment: Fragment
+        get() = supportFragmentManager.findFragmentByTag(WalletsFragmentTag) ?: WalletListFragment()
 
     companion object {
-        const val WALLETS_FRAGMENT_TAG = "wallets_fragment"
-        const val STATS_FRAGMENT_TAG = "stats_fragment"
+        const val WalletsFragmentTag = "wallets_fragment"
+        const val StatsFragmentTag = "stats_fragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,8 +47,8 @@ class DashboardActivity : FragmentActivity() {
         setContentView(binding.root)
 
         supportFragmentManager.beginTransaction()
-            .add(binding.fragmentContainer.id, statsFragment, STATS_FRAGMENT_TAG)
-            .add(binding.fragmentContainer.id, walletListFragment, WALLETS_FRAGMENT_TAG)
+            .addIfMissing(statsFragment, StatsFragmentTag)
+            .addIfMissing(walletListFragment, WalletsFragmentTag)
             .commit()
 
         initObservers()
@@ -132,6 +137,13 @@ class DashboardActivity : FragmentActivity() {
         val chartIcon = AppCompatResources.getDrawable(this, R.drawable.ic_chart)
         binding.navButton.setImageDrawable(chartIcon)
         binding.navButton.setOnClickListener { viewModel.openStatsSelected() }
+    }
+
+    private fun FragmentTransaction.addIfMissing(
+        fragment: Fragment,
+        tag: String
+    ): FragmentTransaction = apply {
+        if (!fragment.isAdded) add(binding.fragmentContainer.id, fragment, tag)
     }
 
     override fun onBackPressed() {
