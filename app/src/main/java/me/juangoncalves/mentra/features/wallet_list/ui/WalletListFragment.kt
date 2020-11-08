@@ -113,6 +113,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             walletAdapter.data = state.wallets
             binding.walletsLoadingIndicator.animateVisibility(state.isLoadingWallets, 300L)
             binding.refreshLayout.isRefreshing = state.isRefreshingPrices
+            binding.emptyStateView.animateVisibility(state.isEmpty, 300L)
             bindError(state)
         }
     }

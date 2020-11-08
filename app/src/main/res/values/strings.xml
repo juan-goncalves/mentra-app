@@ -28,4 +28,6 @@
     <string name="price_refresh_error">Error, could not get the latest coin prices</string>
     <string name="whoops_something_went_wrong">Whoops! Something went wrong.</string>
     <string name="error_loading_wallets">An error occurred while trying to load your wallets.</string>
+    <string name="empty_wallets_title">Empty in wallets</string>
+    <string name="empty_wallets_description">Add a wallet and it will show up here.</string>
 </resources>

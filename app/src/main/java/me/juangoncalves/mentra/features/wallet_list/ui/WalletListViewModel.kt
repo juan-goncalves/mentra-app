@@ -42,14 +42,16 @@ class WalletListViewModel @ViewModelInject constructor(
             .catch {
                 viewStateStream.value = currentViewState.copy(
                     error = Error.WalletsNotLoaded,
-                    isLoadingWallets = false
+                    isLoadingWallets = false,
+                    isEmpty = false
                 )
             }
             .collectLatest { wallets ->
                 viewStateStream.value = currentViewState.copy(
                     wallets = wallets,
                     error = Error.None,
-                    isLoadingWallets = false
+                    isLoadingWallets = false,
+                    isEmpty = wallets.isEmpty()
                 )
             }
     }

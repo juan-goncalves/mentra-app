@@ -52,7 +52,7 @@ class WalletListViewModelTest {
     }
 
     @Test
-    fun `viewStateStream emits the correct wallet load progress updates when the VM is initialized`() {
+    fun `initialize pushes the wallet list load progress updates through the viewStateStream`() {
         // Arrange
         setupSuccessMocks()
         val state1 = slot<WalletListViewState>()
@@ -72,7 +72,7 @@ class WalletListViewModelTest {
     }
 
     @Test
-    fun `viewStateStream emits the mapped wallet list when the VM is initialized`() {
+    fun `initialize loads the wallet list and emits them on the viewStateStream`() {
         // Arrange
         setupSuccessMocks()
         val state = slot<WalletListViewState>()
@@ -94,6 +94,45 @@ class WalletListViewModelTest {
                 uiWalletMapper.map(wallet, prices[wallet.coin]!!)
             }
         }
+    }
+
+    @Test
+    fun `initialize enables the empty view state when the loaded wallet list is empty`() {
+        // Arrange
+        setupSuccessMocks()
+        coEvery { walletListStreamMock.invoke() } returns flowOf(emptyList())
+        val state = slot<WalletListViewState>()
+
+        // Act
+        sut.initialize()
+
+        // Assert
+        verifySequence {
+            ignoreDefaultState()
+            stateObserver.onChanged(any()) // Ignore the load progress update
+            stateObserver.onChanged(capture(state))
+        }
+
+        state.captured.isEmpty equals true
+    }
+
+    @Test
+    fun `initialize disables the empty view state when the loaded wallet list isn't empty`() {
+        // Arrange
+        setupSuccessMocks()
+        val state = slot<WalletListViewState>()
+
+        // Act
+        sut.initialize()
+
+        // Assert
+        verifySequence {
+            ignoreDefaultState()
+            stateObserver.onChanged(any()) // Ignore the load progress update
+            stateObserver.onChanged(capture(state))
+        }
+
+        state.captured.isEmpty equals false
     }
 
     @Test
@@ -197,7 +236,27 @@ class WalletListViewModelTest {
             stateObserver.onChanged(capture(state))
         }
 
-        assertTrue(state.captured.error is Error.WalletsNotLoaded)
+        (state.captured.error is Error.WalletsNotLoaded) equals true
+    }
+
+    @Test
+    fun `viewStateStream disables the empty state when the coin prices stream fails`() {
+        // Arrange
+        val state = slot<WalletListViewState>()
+        setupSuccessMocks()
+        coEvery { activeCoinsPriceStreamMock.invoke() } returns flow { error("Mock") }
+
+        // Act
+        sut.initialize()
+
+        // Assert
+        verifySequence {
+            ignoreDefaultState()
+            stateObserver.onChanged(any()) // Ignore the load progress update
+            stateObserver.onChanged(capture(state))
+        }
+
+        state.captured.isEmpty equals false
     }
 
     @Test

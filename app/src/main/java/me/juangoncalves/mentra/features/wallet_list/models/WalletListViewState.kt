@@ -6,6 +6,7 @@ import kotlinx.android.parcel.Parcelize
 data class WalletListViewState(
     val isLoadingWallets: Boolean = true,
     val isRefreshingPrices: Boolean = false,
+    val isEmpty: Boolean = false,
     val wallets: List<Wallet> = emptyList(),
     val error: Error = Error.None
 ) {
