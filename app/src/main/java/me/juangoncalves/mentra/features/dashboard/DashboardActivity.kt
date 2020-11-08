@@ -12,9 +12,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.extensions.addIfMissing
 import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.extensions.asPercentage
-import me.juangoncalves.mentra.extensions.show
+import me.juangoncalves.mentra.extensions.hideIfAdded
 import me.juangoncalves.mentra.features.stats.StatsFragment
 import me.juangoncalves.mentra.features.wallet_list.ui.WalletListFragment
 import kotlin.math.absoluteValue
@@ -104,13 +105,9 @@ class DashboardActivity : FragmentActivity() {
                 R.animator.fade_in, R.animator.fade_out,
                 R.animator.fade_in, R.animator.fade_out
             )
-            .show(
-                statsFragment,
-                supportFragmentManager,
-                STATS_FRAGMENT_TAG,
-                R.id.fragmentContainer
-            )
-            .hide(walletListFragment)
+            .hideIfAdded(walletListFragment)
+            .addIfMissing(R.id.fragmentContainer, statsFragment, STATS_FRAGMENT_TAG)
+            .show(statsFragment)
             .commit()
 
         binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_wallet))
@@ -123,13 +120,9 @@ class DashboardActivity : FragmentActivity() {
                 R.animator.fade_in, R.animator.fade_out,
                 R.animator.fade_in, R.animator.fade_out
             )
-            .show(
-                walletListFragment,
-                supportFragmentManager,
-                WALLETS_FRAGMENT_TAG,
-                R.id.fragmentContainer
-            )
-            .hide(statsFragment)
+            .hideIfAdded(statsFragment)
+            .addIfMissing(R.id.fragmentContainer, walletListFragment, WALLETS_FRAGMENT_TAG)
+            .show(walletListFragment)
             .commit()
 
         binding.navButton.setImageDrawable(getDrawable(R.drawable.ic_chart))
