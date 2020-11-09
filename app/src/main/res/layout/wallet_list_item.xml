@@ -1,114 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="100dp"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="@dimen/default_corner_radius"
+    app:cardElevation="@dimen/default_card_elevation"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintEnd_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_margin="8dp"
-        app:cardBackgroundColor="?attr/colorSurface"
-        app:cardCornerRadius="@dimen/default_corner_radius"
-        app:cardElevation="@dimen/default_card_elevation"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/bitcoin_logo" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/logoImageView"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginHorizontal="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@drawable/bitcoin_logo" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/coinNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/coinPriceTextView"
+            app:layout_constraintStart_toEndOf="@+id/logoImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintWidth_percent="0.25"
+            tools:text="BTC" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/coinNameTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:scrollHorizontally="true"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/coinPriceTextView"
-                app:layout_constraintStart_toEndOf="@+id/logoImageView"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:layout_constraintWidth_percent="0.25"
-                tools:text="BTC" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/coinPriceTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/coinNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/coinNameTextView"
+            app:layout_constraintWidth_percent="0.25"
+            tools:text="$ 9.322,38" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/coinPriceTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/coinNameTextView"
-                app:layout_constraintTop_toBottomOf="@+id/coinNameTextView"
-                app:layout_constraintWidth_percent="0.25"
-                tools:text="$ 9.322,38" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/coinDataBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="coinNameTextView,coinPriceTextView" />
 
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/coinDataBarrier"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="end"
-                app:constraint_referenced_ids="coinNameTextView,coinPriceTextView" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/walletValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/coinAmountTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/coinDataBarrier"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="$ 15.532,12" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/walletValueTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:scrollHorizontally="true"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/coinAmountTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/coinDataBarrier"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                tools:text="$ 15.532,12" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/coinAmountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:drawablePadding="3dp"
+            android:drawableTint="?attr/colorOnSurface"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textAlignment="center"
+            android:textColor="?attr/colorOnSurface"
+            app:drawableStartCompat="@drawable/ic_coins"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/walletValueTextView"
+            app:layout_constraintStart_toStartOf="@+id/walletValueTextView"
+            app:layout_constraintTop_toBottomOf="@+id/walletValueTextView"
+            tools:text="0.3456" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/coinAmountTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:drawablePadding="3dp"
-                android:drawableTint="?attr/colorOnSurface"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:scrollHorizontally="true"
-                android:textAlignment="center"
-                android:textColor="?attr/colorOnSurface"
-                app:drawableStartCompat="@drawable/ic_coins"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/walletValueTextView"
-                app:layout_constraintStart_toStartOf="@+id/walletValueTextView"
-                app:layout_constraintTop_toBottomOf="@+id/walletValueTextView"
-                tools:text="0.3456" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    </com.google.android.material.card.MaterialCardView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
