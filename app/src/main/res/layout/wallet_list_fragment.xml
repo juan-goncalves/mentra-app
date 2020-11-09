@@ -9,7 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/walletsLabel"
@@ -117,21 +118,31 @@
             android:layout_height="wrap_content"
             android:indeterminateTint="?attr/colorPrimary"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/addWalletButton"
+            app:layout_constraintBottom_toTopOf="@+id/addWalletButtonWrapper"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/fadingEdgeLayout" />
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/addWalletButton"
+        <!--
+            Wrapper view added to manipulate programmatically the padding surrounding the FAB.
+            This is used to make sure that the FAB is above the navigation bar on any screen.
+        -->
+        <FrameLayout
+            android:id="@+id/addWalletButtonWrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="20dp"
-            android:text="@string/add_wallet"
-            app:icon="@drawable/ic_add_24"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/addWalletButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/add_wallet"
+                app:icon="@drawable/ic_add_24" />
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

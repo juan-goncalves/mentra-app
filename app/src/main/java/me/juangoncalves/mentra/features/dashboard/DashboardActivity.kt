@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
@@ -45,6 +46,7 @@ class DashboardActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         binding = DashboardActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        adjustHeaderPosition()
 
         supportFragmentManager.beginTransaction()
             .addIfMissing(statsFragment, StatsFragmentTag)
@@ -148,6 +150,42 @@ class DashboardActivity : FragmentActivity() {
 
     override fun onBackPressed() {
         viewModel.backPressed()
+    }
+
+    /** Ensures that the header contents aren't being drawn behind the status bar */
+    private fun adjustHeaderPosition() {
+        binding.root.setOnApplyWindowInsetsListener { _, insets ->
+            if (insets.systemWindowInsetTop == 0) return@setOnApplyWindowInsetsListener insets
+
+            val expandedHeaderHeight =
+                resources.getDimensionPixelSize(R.dimen.expanded_header_height)
+
+            val collapsedHeaderHeight =
+                resources.getDimensionPixelSize(R.dimen.collapsed_header_height)
+
+            binding.root.getConstraintSet(R.id.expanded)?.run {
+                setMargin(R.id.settingsButton, ConstraintSet.TOP, insets.systemWindowInsetTop)
+                constrainHeight(
+                    R.id.headerBackground,
+                    expandedHeaderHeight + insets.systemWindowInsetTop
+                )
+            }
+
+            binding.root.getConstraintSet(R.id.collapsed)?.run {
+                setMargin(R.id.settingsButton, ConstraintSet.TOP, insets.systemWindowInsetTop)
+                setMargin(
+                    R.id.portfolioValueTextView,
+                    ConstraintSet.TOP,
+                    insets.systemWindowInsetTop
+                )
+                constrainHeight(
+                    R.id.headerBackground,
+                    collapsedHeaderHeight + insets.systemWindowInsetTop
+                )
+            }
+
+            insets
+        }
     }
 
 }

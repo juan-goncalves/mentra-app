@@ -2,5 +2,6 @@
 <resources>
     <dimen name="default_corner_radius">20dp</dimen>
     <dimen name="default_card_elevation">5dp</dimen>
-    <dimen name="status_bar_height">24dp</dimen>
+    <dimen name="expanded_header_height">180dp</dimen>
+    <dimen name="collapsed_header_height">50dp</dimen>
 </resources>
