@@ -16,7 +16,7 @@
     <ConstraintSet android:id="@+id/expanded">
         <Constraint
             android:id="@id/headerBackground"
-            android:layout_height="200dp"
+            android:layout_height="@dimen/expanded_header_height"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintTop_toTopOf="parent" />
@@ -73,7 +73,6 @@
             android:id="@id/settingsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:layout_marginEnd="12dp"
             android:alpha="0.80"
             android:rotation="0"
@@ -84,7 +83,7 @@
     <ConstraintSet android:id="@+id/collapsed">
         <Constraint
             android:id="@id/headerBackground"
-            android:layout_height="65dp"
+            android:layout_height="@dimen/collapsed_header_height"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintTop_toTopOf="parent" />
@@ -98,7 +97,8 @@
             android:scaleY="0.625"
             motion:layout_constraintBottom_toBottomOf="@id/headerBackground"
             motion:layout_constraintEnd_toEndOf="@id/headerBackground"
-            motion:layout_constraintStart_toStartOf="@id/headerBackground" />
+            motion:layout_constraintStart_toStartOf="@id/headerBackground"
+            motion:layout_constraintTop_toTopOf="@id/headerBackground" />
 
         <Constraint
             android:id="@id/portfolioChangeTextView"
@@ -146,10 +146,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:layout_marginBottom="6dp"
             android:alpha="0.80"
             android:rotation="90"
             motion:layout_constraintBottom_toBottomOf="@id/headerBackground"
-            motion:layout_constraintEnd_toEndOf="@id/headerBackground" />
+            motion:layout_constraintEnd_toEndOf="@id/headerBackground"
+            motion:layout_constraintTop_toTopOf="@id/headerBackground" />
     </ConstraintSet>
 </MotionScene>
