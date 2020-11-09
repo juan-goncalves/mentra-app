@@ -60,7 +60,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
         savedInstanceState: Bundle?
     ): View? {
         _binding = WalletListFragmentBinding.inflate(inflater, container, false)
-        placeFabAboveNavigationBar()
+        adjustFabPosition()
         return binding.root
     }
 
@@ -184,7 +184,8 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
         if (position > -1) walletAdapter.notifyItemChanged(position)
     }
 
-    private fun placeFabAboveNavigationBar() {
+    /** Ensures that the add wallet button (FAB) is positioned above the navigation bar */
+    private fun adjustFabPosition() {
         binding.root.setOnApplyWindowInsetsListener { _, insets ->
             if (insets.systemWindowInsetBottom != 0) {
                 binding.addWalletButtonWrapper.updatePadding(
