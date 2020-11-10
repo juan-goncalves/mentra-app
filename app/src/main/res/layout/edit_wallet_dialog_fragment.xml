@@ -47,7 +47,6 @@
             android:imeOptions="actionNext"
             android:inputType="numberDecimal"
             android:lines="1"
-            android:nextFocusDown="@id/amountInput"
             android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>

@@ -9,7 +9,7 @@
     <View
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_height="@dimen/expanded_header_height"
         android:background="@drawable/banner_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -40,104 +40,13 @@
         app:layout_constraintBottom_toBottomOf="@+id/headerBackground"
         app:layout_constraintStart_toStartOf="@+id/headerBackground" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/nameInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="18dp"
-        android:hint="@string/coin_name_hint"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusTopStart="16dp"
-        app:endIconDrawable="@drawable/ic_search"
-        app:endIconMode="custom"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerBackground">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/coinNameInput"
-            style="@style/Widget.MaterialComponents.AutoCompleteTextView.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:lines="1"
-            android:nextFocusDown="@id/amountInput"
-            android:singleLine="true" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ProgressBar
-        android:id="@+id/coinsProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fadingEdgeLayout"
-        app:layout_constraintEnd_toEndOf="@id/fadingEdgeLayout"
-        app:layout_constraintStart_toStartOf="@id/fadingEdgeLayout"
-        app:layout_constraintTop_toTopOf="@id/fadingEdgeLayout" />
-
-    <com.bosphere.fadingedgelayout.FadingEdgeLayout
-        android:id="@+id/fadingEdgeLayout"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:fel_edge="top|bottom"
-        app:fel_size_bottom="20dp"
-        app:fel_size_top="20dp"
-        app:layout_constraintEnd_toEndOf="@+id/nameInputLayout"
-        app:layout_constraintHeight_percent="0.30"
-        app:layout_constraintStart_toStartOf="@+id/nameInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/coinSelectionList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/coin_recommendation_item" />
-
-    </com.bosphere.fadingedgelayout.FadingEdgeLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/amountInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="14dp"
-        android:hint="@string/amount_hint"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusTopStart="16dp"
-        app:errorEnabled="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fadingEdgeLayout">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/amountInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionDone"
-            android:inputType="numberDecimal" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="?attr/colorSecondary"
-        android:text="@string/action_save_wallet"
-        android:textColor="?attr/colorOnSecondary"
-        app:layout_constraintEnd_toEndOf="@+id/amountInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/amountInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/headerBackground" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

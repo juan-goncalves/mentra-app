@@ -11,14 +11,14 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinRecommendationItemBinding
 import me.juangoncalves.mentra.domain.models.Coin
 
-class CoinAdapter : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
+class CoinAdapter(
+    private val commitCallback: () -> Unit
+) : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
 
     var data: List<Coin>
         get() = differ.currentList
-        set(value) = differ.submitList(value)
+        set(value) = differ.submitList(value, commitCallback)
 
-    var selectedCoin: Coin? = null
-        private set
 
     private val differ: AsyncListDiffer<Coin> = AsyncListDiffer(this, CoinItemCallback())
 
@@ -37,11 +37,6 @@ class CoinAdapter : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
         val coin = differ.currentList[position];
         holder.binding.apply {
             nameTextView.text = coin.name
-            if (coin == selectedCoin) {
-                radioButton.post { radioButton.isChecked = true }
-            } else {
-                radioButton.isChecked = false
-            }
 
             Glide.with(root)
                 .load(coin.imageUrl)
@@ -49,11 +44,6 @@ class CoinAdapter : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.coin_placeholder)
                 .into(coinImageView)
-
-            root.setOnClickListener {
-                selectedCoin = coin
-                notifyDataSetChanged()
-            }
         }
     }
 
