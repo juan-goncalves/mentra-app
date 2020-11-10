@@ -1,6 +1,7 @@
 package me.juangoncalves.mentra.features.wallet_creation
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -12,15 +13,20 @@ import me.juangoncalves.mentra.databinding.CoinRecommendationItemBinding
 import me.juangoncalves.mentra.domain.models.Coin
 
 class CoinAdapter(
-    private val commitCallback: () -> Unit
+    private val listener: Listener
 ) : RecyclerView.Adapter<CoinAdapter.ViewHolder>() {
+
+    interface Listener {
+        fun onCoinSelected(coin: Coin)
+        fun onCommitCoinListUpdates()
+    }
 
     var data: List<Coin>
         get() = differ.currentList
-        set(value) = differ.submitList(value, commitCallback)
+        set(value) = differ.submitList(value, listener::onCommitCoinListUpdates)
 
 
-    private val differ: AsyncListDiffer<Coin> = AsyncListDiffer(this, CoinItemCallback())
+    private val differ: AsyncListDiffer<Coin> = AsyncListDiffer(this, CoinDiffItemCallback())
 
     override fun getItemCount() = differ.currentList.size
 
@@ -30,11 +36,12 @@ class CoinAdapter(
             parent,
             false
         )
-        return ViewHolder(binding)
+        return ViewHolder(binding, CoinClickListener())
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val coin = differ.currentList[position];
+        val coin = differ.currentList[position]
+        holder.coinClickListener.coin = coin
         holder.binding.apply {
             nameTextView.text = coin.name
 
@@ -47,12 +54,30 @@ class CoinAdapter(
         }
     }
 
-    inner class ViewHolder(val binding: CoinRecommendationItemBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(
+        val binding: CoinRecommendationItemBinding,
+        val coinClickListener: CoinClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener(coinClickListener)
+        }
+
+    }
+
+    inner class CoinClickListener : View.OnClickListener {
+
+        var coin: Coin? = null
+
+        override fun onClick(v: View?) {
+            coin?.run { listener.onCoinSelected(this) }
+        }
+
+    }
 
 }
 
-class CoinItemCallback : DiffUtil.ItemCallback<Coin>() {
+class CoinDiffItemCallback : DiffUtil.ItemCallback<Coin>() {
     override fun areItemsTheSame(oldItem: Coin, newItem: Coin): Boolean {
         return oldItem.symbol == newItem.symbol
     }

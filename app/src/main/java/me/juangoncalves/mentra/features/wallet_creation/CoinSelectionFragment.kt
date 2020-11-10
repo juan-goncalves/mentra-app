@@ -12,15 +12,14 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.CoinSelectionFragmentBinding
+import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.extensions.animateVisibility
 
 @AndroidEntryPoint
-class CoinSelectionFragment : Fragment() {
+class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
 
     private val viewModel: WalletCreationViewModel by activityViewModels()
-    private val coinAdapter: CoinAdapter = CoinAdapter {
-        binding.coinSelectionList.scrollToPosition(0)
-    }
+    private val coinAdapter: CoinAdapter = CoinAdapter(this)
 
     private var _binding: CoinSelectionFragmentBinding? = null
     private val binding get() = _binding!!
@@ -53,13 +52,18 @@ class CoinSelectionFragment : Fragment() {
     }
 
     private fun initObservers() {
-        viewModel.coins.observe(viewLifecycleOwner) { coins ->
-            coinAdapter.data = coins
+        viewModel.viewStateStream.observe(viewLifecycleOwner) { state ->
+            coinAdapter.data = state.coins
+            binding.coinsProgressBar.animateVisibility(state.isLoadingCoins)
         }
+    }
 
-        viewModel.shouldShowCoinLoadIndicator.observe(viewLifecycleOwner) { shouldShow ->
-            binding.coinsProgressBar.animateVisibility(shouldShow)
-        }
+    override fun onCoinSelected(coin: Coin) {
+        viewModel.selectCoin(coin)
+    }
+
+    override fun onCommitCoinListUpdates() {
+        binding.coinSelectionList.scrollToPosition(0)
     }
 
     override fun onDestroyView() {

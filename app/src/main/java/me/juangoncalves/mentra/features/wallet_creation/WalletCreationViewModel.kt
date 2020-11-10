@@ -1,10 +1,10 @@
 package me.juangoncalves.mentra.features.wallet_creation
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -14,28 +14,22 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
-import me.juangoncalves.mentra.features.common.*
+import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
+import me.juangoncalves.mentra.features.common.FleetingErrorPublisherImpl
+import me.juangoncalves.mentra.features.common.executor
+import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
+import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState.Error
+import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState.Step
 import java.util.*
-
-typealias WarningEvent = Event<Int>
 
 class WalletCreationViewModel @ViewModelInject constructor(
     private val _getCoins: GetCoins,
     private val _createWallet: CreateWallet
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
-    val coins: LiveData<List<Coin>> get() = _coins
-    val shouldScrollToStart: LiveData<Boolean> get() = _shouldScrollToStart
-    val warning: LiveData<WarningEvent> get() = _warning
-    val onSuccessfulSave: LiveData<Unit> get() = _onSuccessfulSave
-    val shouldShowCoinLoadIndicator: LiveData<Boolean> get() = _shouldShowCoinLoadIndicator
+    val viewStateStream = MutableLiveData<WalletCreationState>(WalletCreationState())
 
-    private val _coins: MutableLiveData<List<Coin>> = MutableLiveData(emptyList())
-    private val _shouldScrollToStart: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _warning: MutableLiveData<WarningEvent> = MutableLiveData()
-    private val _onSuccessfulSave: MutableLiveData<Unit> = MutableLiveData()
-    private val _shouldShowCoinLoadIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    private val currentViewState: WalletCreationState get() = viewStateStream.value!!
     private var unfilteredCoins: List<Coin> = emptyList()
     private var filterJob: Job? = null
 
@@ -43,24 +37,34 @@ class WalletCreationViewModel @ViewModelInject constructor(
         fetchCoins()
     }
 
-    private fun fetchCoins() {
-        _getCoins.executor()
-            .inScope(viewModelScope)
-            .beforeInvoke { _shouldShowCoinLoadIndicator.postValue(true) }
-            .afterInvoke { _shouldShowCoinLoadIndicator.postValue(false) }
-            .onSuccess { coins ->
-                _coins.postValue(coins)
+    private fun fetchCoins() = viewModelScope.launch {
+        viewStateStream.value = currentViewState.copy(isLoadingCoins = true)
+
+        val result = _getCoins(Unit)
+
+        viewStateStream.value = result.fold(
+            left = {
+                currentViewState.copy(
+                    error = Error.CoinsNotLoaded,
+                    isLoadingCoins = false
+                )
+            },
+            right = { coins ->
                 unfilteredCoins = coins
+                currentViewState.copy(
+                    error = Error.None,
+                    isLoadingCoins = false,
+                    coins = coins
+                )
             }
-            .onFailurePublishFleetingError()
-            .run()
+        )
     }
 
     fun submitQuery(query: String) {
         if (query.length in 1..2) return
 
         if (query.isEmpty()) {
-            _coins.postValue(unfilteredCoins)
+            viewStateStream.value = currentViewState.copy(coins = unfilteredCoins)
             return
         }
 
@@ -68,29 +72,48 @@ class WalletCreationViewModel @ViewModelInject constructor(
         if (workInProgress) filterJob?.cancel()
 
         filterJob = viewModelScope.launch {
-            val matching = filterCoinsByName(query)
-            _coins.value = matching
-            _shouldScrollToStart.value = true
+            viewStateStream.value = currentViewState.copy(coins = filterCoinsByName(query))
         }
     }
 
-    fun submitForm(coin: Coin?, amount: String) {
-        if (coin == null) {
-            _warning.postValue(WarningEvent(R.string.no_coin_selected_warning))
-            return
-        }
+    fun selectCoin(coin: Coin) {
+        viewStateStream.value = currentViewState.copy(
+            selectedCoin = coin,
+            currentStep = Step.AmountInput
+        )
+    }
 
-        val parsedAmount = amount.toDoubleOrNull()
-        if (parsedAmount == null || parsedAmount <= 0) {
-            _warning.postValue(WarningEvent(R.string.invalid_amount_warning))
-            return
+    fun backPressed() {
+        val previousStep = when (currentViewState.currentStep) {
+            Step.AmountInput -> Step.CoinSelection
+            Step.CoinSelection -> Step.Done
+            Step.Done -> Step.Done
         }
+        viewStateStream.value = currentViewState.copy(currentStep = previousStep)
+    }
 
-        val wallet = Wallet(coin, parsedAmount)
+    fun amountInputChanged(text: CharSequence?) {
+        val (validationMessageId, parsedAmount) = validateAndParseAmountInput(text)
+
+        viewStateStream.value = currentViewState.copy(
+            amountInput = if (validationMessageId != null) null else parsedAmount,
+            inputValidation = validationMessageId,
+            isSaveEnabled = validationMessageId == null
+        )
+    }
+
+    fun saveSelected() {
+        val currentState = currentViewState
+        currentState.selectedCoin ?: return
+        currentState.amountInput ?: return
+
+        val wallet = Wallet(currentState.selectedCoin, currentState.amountInput)
 
         _createWallet.executor()
             .inScope(viewModelScope)
-            .onSuccess { _onSuccessfulSave.postValue(Unit) }
+            .onSuccess {
+                viewStateStream.value = currentState.copy(currentStep = Step.Done)
+            }
             .onFailurePublishFleetingError()
             .run(wallet)
     }
@@ -105,5 +128,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
                 match.name.length - query.length
             }
         }
+
+    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Int?, Double> {
+        if (text.isNullOrEmpty()) return R.string.required_field to 0.0
+
+        val amount = text.toString().toDoubleOrNull() ?: return R.string.invalid_number to 0.0
+
+        return if (amount <= 0) R.string.invalid_amount_warning to 0.0 else null to amount
+    }
 
 }

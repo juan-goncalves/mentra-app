@@ -6,10 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.observe
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
+import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
 
 @AndroidEntryPoint
 class WalletCreationActivity : FragmentActivity() {
@@ -22,8 +22,13 @@ class WalletCreationActivity : FragmentActivity() {
         get() = supportFragmentManager.findFragmentByTag(CoinSelectionFragmentTag)
             ?: CoinSelectionFragment()
 
+    private val amountInputFragment: Fragment
+        get() = supportFragmentManager.findFragmentByTag(CoinAmountInputFragmentTag)
+            ?: CoinAmountInputFragment()
+
     companion object {
         const val CoinSelectionFragmentTag = "coin_selection_fragment"
+        const val CoinAmountInputFragmentTag = "coin_amount_input_fragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,33 +40,39 @@ class WalletCreationActivity : FragmentActivity() {
     }
 
     private fun configureView() {
-        supportFragmentManager.beginTransaction()
-            .addIfMissing(coinSelectionFragment, CoinSelectionFragmentTag)
-            .show(coinSelectionFragment)
-            .commit()
-
-//        binding.saveButton.setOnClickListener {
-//            val amountStr = binding.amountInput.text.toString()
-//            viewModel.submitForm(coinAdapter.selectedCoin, amountStr)
-//        }
-
         binding.backButton.setOnClickListener {
             onBackPressed()
         }
     }
 
     private fun initObservers() {
-        viewModel.warning.observe(this) { event ->
-            event.use { messageId ->
-                Snackbar.make(binding.root, messageId, Snackbar.LENGTH_SHORT)
-                    .setBackgroundTint(getColor(R.color.lighting_yellow))
-                    .show()
+        viewModel.viewStateStream.observe(this) { state ->
+            when (state.currentStep) {
+                WalletCreationState.Step.CoinSelection -> showFragment(
+                    coinSelectionFragment,
+                    CoinSelectionFragmentTag
+                )
+                WalletCreationState.Step.AmountInput -> showFragment(
+                    amountInputFragment,
+                    CoinAmountInputFragmentTag
+                )
+                WalletCreationState.Step.Done -> finish()
             }
         }
+    }
 
-        viewModel.onSuccessfulSave.observe(this) {
-            finish()
-        }
+    private fun showFragment(fragment: Fragment, tag: String) {
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.animator.fade_in, R.animator.fade_out,
+                R.animator.fade_in, R.animator.fade_out
+            )
+            .addIfMissing(fragment, tag)
+            .apply {
+                supportFragmentManager.fragments.forEach { hide(it) }
+            }
+            .show(fragment)
+            .commit()
     }
 
     private fun FragmentTransaction.addIfMissing(
@@ -69,6 +80,10 @@ class WalletCreationActivity : FragmentActivity() {
         tag: String
     ): FragmentTransaction = apply {
         if (!fragment.isAdded) add(binding.fragmentContainer.id, fragment, tag)
+    }
+
+    override fun onBackPressed() {
+        viewModel.backPressed()
     }
 
 }
