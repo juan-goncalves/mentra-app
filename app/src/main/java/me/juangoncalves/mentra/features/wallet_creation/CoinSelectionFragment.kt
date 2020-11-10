@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.CoinSelectionFragmentBinding
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.extensions.animateVisibility
+import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
 
 @AndroidEntryPoint
 class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
@@ -44,6 +45,10 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
             setHasFixedSize(true)
         }
 
+        binding.retryButton.setOnClickListener {
+            viewModel.retryLoadCoinListSelected()
+        }
+
         binding.coinNameInput.addTextChangedListener { text ->
             viewModel.submitQuery(text.toString())
         }
@@ -55,6 +60,20 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
         viewModel.viewStateStream.observe(viewLifecycleOwner) { state ->
             coinAdapter.data = state.coins
             binding.coinsProgressBar.animateVisibility(state.isLoadingCoins)
+            bindErrorState(state.error)
+        }
+    }
+
+    private fun bindErrorState(error: WalletCreationState.Error) {
+        when (error) {
+            is WalletCreationState.Error.CoinsNotLoaded -> {
+                binding.coinNameInput.isEnabled = false
+                binding.errorStateView.animateVisibility(true, 300L)
+            }
+            else -> {
+                binding.coinNameInput.isEnabled = true
+                binding.errorStateView.animateVisibility(false, 150L)
+            }
         }
     }
 

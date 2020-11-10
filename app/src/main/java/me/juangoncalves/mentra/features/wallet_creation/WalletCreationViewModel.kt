@@ -23,8 +23,8 @@ import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationSta
 import java.util.*
 
 class WalletCreationViewModel @ViewModelInject constructor(
-    private val _getCoins: GetCoins,
-    private val _createWallet: CreateWallet
+    private val getCoins: GetCoins,
+    private val createWallet: CreateWallet
 ) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
     val viewStateStream = MutableLiveData<WalletCreationState>(WalletCreationState())
@@ -38,9 +38,12 @@ class WalletCreationViewModel @ViewModelInject constructor(
     }
 
     private fun fetchCoins() = viewModelScope.launch {
-        viewStateStream.value = currentViewState.copy(isLoadingCoins = true)
+        viewStateStream.value = currentViewState.copy(
+            isLoadingCoins = true,
+            error = Error.None
+        )
 
-        val result = _getCoins(Unit)
+        val result = getCoins(Unit)
 
         viewStateStream.value = result.fold(
             left = {
@@ -109,13 +112,17 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
         val wallet = Wallet(currentState.selectedCoin, currentState.amountInput)
 
-        _createWallet.executor()
+        createWallet.executor()
             .inScope(viewModelScope)
             .onSuccess {
                 viewStateStream.value = currentState.copy(currentStep = Step.Done)
             }
             .onFailurePublishFleetingError()
             .run(wallet)
+    }
+
+    fun retryLoadCoinListSelected() {
+        fetchCoins()
     }
 
     // TODO: Move into use case that receives the default dispatcher by DI?

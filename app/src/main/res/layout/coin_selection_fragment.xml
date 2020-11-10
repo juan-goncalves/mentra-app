@@ -66,9 +66,58 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:indeterminateTint="?attr/colorPrimary"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/fadingEdgeLayout"
         app:layout_constraintStart_toStartOf="@id/fadingEdgeLayout"
         app:layout_constraintTop_toTopOf="@id/fadingEdgeLayout" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/errorStateView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nameInputLayout">
+
+        <!-- TODO: Change for error graphic -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="170dp"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/no_data" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:text="@string/whoops_something_went_wrong" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="@string/coin_list_fetch_error"
+            android:textAlignment="center"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/retryButton"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/primary_or_disabled"
+            android:text="@string/retry"
+            android:textColor="?attr/colorOnPrimary" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
