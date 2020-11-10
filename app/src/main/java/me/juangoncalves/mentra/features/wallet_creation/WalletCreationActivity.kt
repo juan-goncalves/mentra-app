@@ -4,11 +4,12 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
-import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
+import me.juangoncalves.mentra.extensions.addIfMissing
+import me.juangoncalves.mentra.extensions.hideAllFragmentsIn
+import me.juangoncalves.mentra.extensions.withFadeAnimation
 import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
 
 @AndroidEntryPoint
@@ -63,23 +64,11 @@ class WalletCreationActivity : FragmentActivity() {
 
     private fun showFragment(fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.animator.fade_in, R.animator.fade_out,
-                R.animator.fade_in, R.animator.fade_out
-            )
-            .addIfMissing(fragment, tag)
-            .apply {
-                supportFragmentManager.fragments.forEach { hide(it) }
-            }
+            .addIfMissing(binding.fragmentContainer, fragment, tag)
+            .hideAllFragmentsIn(supportFragmentManager)
+            .withFadeAnimation()
             .show(fragment)
             .commit()
-    }
-
-    private fun FragmentTransaction.addIfMissing(
-        fragment: Fragment,
-        tag: String
-    ): FragmentTransaction = apply {
-        if (!fragment.isAdded) add(binding.fragmentContainer.id, fragment, tag)
     }
 
     override fun onBackPressed() {

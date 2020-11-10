@@ -9,15 +9,13 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.extensions.asCurrency
-import me.juangoncalves.mentra.extensions.asPercentage
+import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.features.stats.StatsFragment
 import me.juangoncalves.mentra.features.wallet_list.ui.WalletListFragment
 import kotlin.math.absoluteValue
@@ -49,8 +47,8 @@ class DashboardActivity : FragmentActivity() {
         adjustHeaderPosition()
 
         supportFragmentManager.beginTransaction()
-            .addIfMissing(statsFragment, StatsFragmentTag)
-            .addIfMissing(walletListFragment, WalletsFragmentTag)
+            .addIfMissing(binding.fragmentContainer, statsFragment, StatsFragmentTag)
+            .addIfMissing(binding.fragmentContainer, walletListFragment, WalletsFragmentTag)
             .commit()
 
         initObservers()
@@ -112,44 +110,29 @@ class DashboardActivity : FragmentActivity() {
     }
 
     private fun loadStatsTab() {
-        supportFragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.animator.fade_in, R.animator.fade_out,
-                R.animator.fade_in, R.animator.fade_out
-            )
-            .hide(walletListFragment)
-            .show(statsFragment)
-            .commit()
-
+        showFragment(statsFragment)
         val walletIcon = AppCompatResources.getDrawable(this, R.drawable.ic_wallet)
         binding.navButton.setImageDrawable(walletIcon)
         binding.navButton.setOnClickListener { viewModel.openWalletsSelected() }
     }
 
     private fun loadWalletsTab() {
-        supportFragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.animator.fade_in, R.animator.fade_out,
-                R.animator.fade_in, R.animator.fade_out
-            )
-            .hide(statsFragment)
-            .show(walletListFragment)
-            .commit()
-
+        showFragment(walletListFragment)
         val chartIcon = AppCompatResources.getDrawable(this, R.drawable.ic_chart)
         binding.navButton.setImageDrawable(chartIcon)
         binding.navButton.setOnClickListener { viewModel.openStatsSelected() }
     }
 
-    private fun FragmentTransaction.addIfMissing(
-        fragment: Fragment,
-        tag: String
-    ): FragmentTransaction = apply {
-        if (!fragment.isAdded) add(binding.fragmentContainer.id, fragment, tag)
-    }
-
     override fun onBackPressed() {
         viewModel.backPressed()
+    }
+
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .hideAllFragmentsIn(supportFragmentManager)
+            .withFadeAnimation()
+            .show(fragment)
+            .commit()
     }
 
     /** Ensures that the header contents aren't being drawn behind the status bar */
