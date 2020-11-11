@@ -14,9 +14,6 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisherImpl
-import me.juangoncalves.mentra.features.common.executor
 import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
 import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState.Error
 import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState.Step
@@ -25,7 +22,7 @@ import java.util.*
 class WalletCreationViewModel @ViewModelInject constructor(
     private val getCoins: GetCoins,
     private val createWallet: CreateWallet
-) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+) : ViewModel() {
 
     val viewStateStream = MutableLiveData<WalletCreationState>(WalletCreationState())
 
@@ -112,13 +109,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
         val wallet = Wallet(currentState.selectedCoin, currentState.amountInput)
 
-        createWallet.executor()
-            .inScope(viewModelScope)
-            .onSuccess {
-                viewStateStream.value = currentState.copy(currentStep = Step.Done)
-            }
-            .onFailurePublishFleetingError()
-            .run(wallet)
+        viewModelScope.launch {
+            val result = createWallet(wallet)
+            viewStateStream.value = result.fold(
+                left = { currentViewState.copy(error = Error.WalletNotCreated()) },
+                right = { currentState.copy(currentStep = Step.Done, error = Error.None) }
+            )
+        }
     }
 
     fun retryLoadCoinListSelected() {

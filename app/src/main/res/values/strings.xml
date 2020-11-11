@@ -31,4 +31,5 @@
     <string name="empty_wallets_title">Empty in wallets</string>
     <string name="empty_wallets_description">Add a wallet and it will show up here.</string>
     <string name="coin_list_fetch_error">An error occurred while getting the list of supported coins.</string>
+    <string name="create_wallet_error">Error, could not save your wallet</string>
 </resources>

@@ -72,7 +72,7 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
             }
             else -> {
                 binding.coinNameInput.isEnabled = true
-                binding.errorStateView.animateVisibility(false, 150L)
+                binding.errorStateView.visibility = View.GONE
             }
         }
     }
