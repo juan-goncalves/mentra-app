@@ -17,6 +17,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinAmountInputFragmentBinding
 import me.juangoncalves.mentra.extensions.applyErrorStyle
 import me.juangoncalves.mentra.extensions.empty
+import me.juangoncalves.mentra.extensions.hideKeyboard
 import me.juangoncalves.mentra.extensions.onDismissed
 import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
 
@@ -42,6 +43,7 @@ class CoinAmountInputFragment : Fragment() {
 
         binding.saveButton.setOnClickListener {
             viewModel.saveSelected()
+            hideKeyboard()
         }
 
         binding.amountInput.doOnTextChanged { text, _, _, _ ->
@@ -51,6 +53,7 @@ class CoinAmountInputFragment : Fragment() {
         binding.amountInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.saveSelected()
+                hideKeyboard()
                 return@setOnEditorActionListener true
             }
 
@@ -99,6 +102,7 @@ class CoinAmountInputFragment : Fragment() {
                     }
                     .applyErrorStyle()
                     .show()
+                    .also { hideKeyboard() }
             }
             else -> empty()
         }

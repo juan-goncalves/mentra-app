@@ -23,3 +23,5 @@ fun Fragment.showSnackbarOnFleetingErrors(
         }
     }
 }
+
+fun Fragment.hideKeyboard() = requireView().hideKeyboard()
