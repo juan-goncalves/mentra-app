@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_creation
+package me.juangoncalves.mentra.features.wallet_creation.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +19,8 @@ import me.juangoncalves.mentra.extensions.applyErrorStyle
 import me.juangoncalves.mentra.extensions.empty
 import me.juangoncalves.mentra.extensions.hideKeyboard
 import me.juangoncalves.mentra.extensions.onDismissed
-import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationState
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 
 @AndroidEntryPoint
 class CoinAmountInputFragment : Fragment() {

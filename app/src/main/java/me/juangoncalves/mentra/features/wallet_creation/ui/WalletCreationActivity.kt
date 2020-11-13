@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_creation
+package me.juangoncalves.mentra.features.wallet_creation.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -10,7 +10,8 @@ import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
 import me.juangoncalves.mentra.extensions.addIfMissing
 import me.juangoncalves.mentra.extensions.hideAllFragmentsIn
 import me.juangoncalves.mentra.extensions.withFadeAnimation
-import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationState
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 
 @AndroidEntryPoint
 class WalletCreationActivity : FragmentActivity() {

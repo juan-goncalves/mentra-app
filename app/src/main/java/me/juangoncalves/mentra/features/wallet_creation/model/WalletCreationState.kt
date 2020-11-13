@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_creation.models
+package me.juangoncalves.mentra.features.wallet_creation.model
 
 import androidx.annotation.StringRes
 import me.juangoncalves.mentra.domain.models.Coin

@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_creation
+package me.juangoncalves.mentra.features.wallet_creation.ui
 
 import android.view.LayoutInflater
 import android.view.View

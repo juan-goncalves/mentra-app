@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_creation
+package me.juangoncalves.mentra.features.wallet_creation.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +14,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.CoinSelectionFragmentBinding
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.extensions.animateVisibility
-import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationState
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 
 @AndroidEntryPoint
 class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {

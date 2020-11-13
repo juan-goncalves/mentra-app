@@ -23,7 +23,7 @@ import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
-import me.juangoncalves.mentra.features.wallet_creation.WalletCreationActivity
+import me.juangoncalves.mentra.features.wallet_creation.ui.WalletCreationActivity
 import me.juangoncalves.mentra.features.wallet_deletion.DeleteWalletDialogFragment
 import me.juangoncalves.mentra.features.wallet_edit.EditWalletDialogFragment
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState

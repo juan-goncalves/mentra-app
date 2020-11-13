@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".features.wallet_creation.WalletCreationActivity"
+            android:name=".features.wallet_creation.ui.WalletCreationActivity"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
 
         <provider

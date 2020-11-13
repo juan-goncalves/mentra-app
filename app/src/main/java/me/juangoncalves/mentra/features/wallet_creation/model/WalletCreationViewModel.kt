@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_creation
+package me.juangoncalves.mentra.features.wallet_creation.model
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
@@ -14,9 +14,8 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
-import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState
-import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState.Error
-import me.juangoncalves.mentra.features.wallet_creation.models.WalletCreationState.Step
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationState.Error
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationState.Step
 import java.util.*
 
 class WalletCreationViewModel @ViewModelInject constructor(
