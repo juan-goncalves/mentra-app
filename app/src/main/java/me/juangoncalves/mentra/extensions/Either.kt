@@ -16,3 +16,7 @@ fun <L, R> Either<L, R>.requireRight(): R = (this as Either.Right).value
 fun <L, R> Either<L, R>.requireLeft(): L = (this as Either.Left).value
 
 fun <L, R> Either<L, R>.isLeft(): Boolean = (this is Left)
+
+fun <T> T.toRight(): Right<T> = Right(this)
+
+fun <T> T.toLeft(): Left<T> = Left(this)
