@@ -11,6 +11,7 @@ import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.di.IoDispatcher
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageFailure
+import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
@@ -45,10 +46,13 @@ class WalletRepositoryImpl @Inject constructor(
 
     override suspend fun createWallet(wallet: Wallet): Either<Failure, Unit> =
         withContext(ioDispatcher) {
-            handleException {
+            try {
                 val model = walletMapper.map(wallet)
                 localDataSource.save(model)
                 Either.Right(Unit)
+            } catch (e: Exception) {
+                logger.error(TAG, "Error storing wallet.\n$$e")
+                Either.Left(WalletCreationFailure())
             }
         }
 

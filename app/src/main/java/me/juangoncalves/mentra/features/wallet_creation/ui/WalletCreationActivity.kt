@@ -9,9 +9,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
 import me.juangoncalves.mentra.extensions.addIfMissing
 import me.juangoncalves.mentra.extensions.hideAllFragmentsIn
+import me.juangoncalves.mentra.extensions.hideKeyboard
 import me.juangoncalves.mentra.extensions.withFadeAnimation
-import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationState
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel.Step
 
 @AndroidEntryPoint
 class WalletCreationActivity : FragmentActivity() {
@@ -37,28 +38,27 @@ class WalletCreationActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         binding = WalletCreationActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel.initialize()
         configureView()
         initObservers()
     }
 
     private fun configureView() {
-        binding.backButton.setOnClickListener {
-            onBackPressed()
-        }
+        binding.backButton.setOnClickListener { onBackPressed() }
     }
 
     private fun initObservers() {
-        viewModel.viewStateStream.observe(this) { state ->
-            when (state.currentStep) {
-                WalletCreationState.Step.CoinSelection -> showFragment(
+        viewModel.currentStepStream.observe(this) { nextStep ->
+            when (nextStep) {
+                Step.CoinSelection -> showFragment(
                     coinSelectionFragment,
                     CoinSelectionFragmentTag
                 )
-                WalletCreationState.Step.AmountInput -> showFragment(
+                Step.AmountInput -> showFragment(
                     amountInputFragment,
                     CoinAmountInputFragmentTag
                 )
-                WalletCreationState.Step.Done -> finish()
+                Step.Done -> finish()
             }
         }
     }
@@ -70,6 +70,7 @@ class WalletCreationActivity : FragmentActivity() {
             .withFadeAnimation()
             .show(fragment)
             .commit()
+            .also { binding.root.hideKeyboard() }
     }
 
     override fun onBackPressed() {

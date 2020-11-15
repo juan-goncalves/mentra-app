@@ -11,15 +11,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinAmountInputFragmentBinding
-import me.juangoncalves.mentra.extensions.applyErrorStyle
-import me.juangoncalves.mentra.extensions.empty
 import me.juangoncalves.mentra.extensions.hideKeyboard
-import me.juangoncalves.mentra.extensions.onDismissed
-import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationState
+import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 
 @AndroidEntryPoint
@@ -41,6 +37,8 @@ class CoinAmountInputFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindSelectedCoinPreview()
+        initObservers()
 
         binding.saveButton.setOnClickListener {
             viewModel.saveSelected()
@@ -60,53 +58,35 @@ class CoinAmountInputFragment : Fragment() {
 
             false
         }
-
-        initObservers()
     }
 
     private fun initObservers() {
-        viewModel.viewStateStream.observe(viewLifecycleOwner) { state ->
-            bindSelectedCoinPreview(state)
-            bindErrorState(state)
-            binding.saveButton.isEnabled = state.isSaveEnabled
-            binding.amountInputLayout.error = when (state.inputValidation) {
+        showSnackbarOnFleetingErrors(viewModel, view = binding.coordinator)
+
+        viewModel.isSaveActionEnabledStream.observe(viewLifecycleOwner) { isEnabled ->
+            binding.saveButton.isEnabled = isEnabled
+        }
+
+        viewModel.amountInputValidationStream.observe(viewLifecycleOwner) { stringId ->
+            binding.amountInputLayout.error = when (stringId) {
                 null -> null
-                else -> getString(state.inputValidation)
+                else -> getString(stringId)
             }
         }
     }
 
-    private fun bindSelectedCoinPreview(state: WalletCreationState) {
-        state.selectedCoin ?: error("We need a selected coin to reach this fragment")
+    private fun bindSelectedCoinPreview() {
+        val selectedCoin = viewModel.selectedCoin
+            ?: error("We need a selected coin to reach this fragment")
 
         Glide.with(this)
-            .load(state.selectedCoin.imageUrl)
+            .load(selectedCoin.imageUrl)
             .circleCrop()
             .transition(DrawableTransitionOptions.withCrossFade())
             .error(R.drawable.coin_placeholder)
             .into(binding.selectedCoinImageView)
 
-        binding.selectedCoinNameTextView.text = state.selectedCoin.name
-    }
-
-    private fun bindErrorState(state: WalletCreationState) {
-        when (state.error) {
-            is WalletCreationState.Error.WalletNotCreated -> {
-                if (state.error.wasDismissed) return
-
-                Snackbar
-                    .make(binding.coordinator, R.string.create_wallet_error, Snackbar.LENGTH_LONG)
-                    .onDismissed { actionCode ->
-                        if (actionCode != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                            state.error.dismiss()
-                        }
-                    }
-                    .applyErrorStyle()
-                    .show()
-                    .also { hideKeyboard() }
-            }
-            else -> empty()
-        }
+        binding.selectedCoinNameTextView.text = selectedCoin.name
     }
 
     override fun onDestroyView() {
