@@ -2,6 +2,8 @@ package me.juangoncalves.mentra.features.wallet_creation.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.observe
@@ -40,6 +42,7 @@ class WalletCreationActivity : FragmentActivity() {
         setContentView(binding.root)
         viewModel.initialize()
         configureView()
+        adjustBackButtonPosition()
         initObservers()
     }
 
@@ -71,6 +74,19 @@ class WalletCreationActivity : FragmentActivity() {
             .show(fragment)
             .commit()
             .also { binding.root.hideKeyboard() }
+    }
+
+    /** Ensures that the back button isn't being drawn behind the status bar */
+    private fun adjustBackButtonPosition() {
+        binding.root.setOnApplyWindowInsetsListener { _, insets ->
+            if (insets.systemWindowInsetTop == 0) return@setOnApplyWindowInsetsListener insets
+
+            binding.backButton.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topMargin = insets.systemWindowInsetTop
+            }
+
+            insets
+        }
     }
 
     override fun onBackPressed() {
