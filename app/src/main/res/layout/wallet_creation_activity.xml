@@ -32,12 +32,26 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginStart="34dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:text="@string/create_wallet"
         android:textColor="?attr/colorOnBackground"
         android:textSize="26sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/stepDescriptionTextView"
+        app:layout_constraintStart_toStartOf="@id/headerBackground" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/stepDescriptionTextView"
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="34dp"
+        android:layout_marginBottom="16dp"
+        android:maxLines="2"
+        tools:text="@string/create_wallet_desc_step_1"
+        android:textColor="?attr/colorOnBackground"
         app:layout_constraintBottom_toBottomOf="@+id/headerBackground"
+        app:layout_constraintEnd_toEndOf="@id/headerBackground"
         app:layout_constraintStart_toStartOf="@+id/headerBackground" />
 
     <androidx.fragment.app.FragmentContainerView

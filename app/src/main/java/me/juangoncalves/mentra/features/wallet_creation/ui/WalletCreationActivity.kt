@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletCreationActivityBinding
 import me.juangoncalves.mentra.extensions.addIfMissing
 import me.juangoncalves.mentra.extensions.hideAllFragmentsIn
@@ -18,6 +19,11 @@ import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationView
 
 @AndroidEntryPoint
 class WalletCreationActivity : FragmentActivity() {
+
+    companion object {
+        const val CoinSelectionFragmentTag = "coin_selection_fragment"
+        const val CoinAmountInputFragmentTag = "coin_amount_input_fragment"
+    }
 
     private val viewModel: WalletCreationViewModel by viewModels()
 
@@ -31,9 +37,11 @@ class WalletCreationActivity : FragmentActivity() {
         get() = supportFragmentManager.findFragmentByTag(CoinAmountInputFragmentTag)
             ?: CoinAmountInputFragment()
 
-    companion object {
-        const val CoinSelectionFragmentTag = "coin_selection_fragment"
-        const val CoinAmountInputFragmentTag = "coin_amount_input_fragment"
+    private val stepDescriptions by lazy {
+        mapOf(
+            CoinSelectionFragmentTag to getString(R.string.create_wallet_desc_step_1),
+            CoinAmountInputFragmentTag to getString(R.string.create_wallet_desc_step_2)
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +82,8 @@ class WalletCreationActivity : FragmentActivity() {
             .show(fragment)
             .commit()
             .also { binding.root.hideKeyboard() }
+
+        binding.stepDescriptionTextView.text = stepDescriptions[tag]
     }
 
     /** Ensures that the back button isn't being drawn behind the status bar */
