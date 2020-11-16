@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinAmountInputFragmentBinding
+import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.extensions.hideKeyboard
 import me.juangoncalves.mentra.extensions.showKeyboard
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
@@ -38,7 +39,6 @@ class CoinAmountInputFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindSelectedCoinPreview()
         initObservers()
 
         binding.saveButton.setOnClickListener {
@@ -68,6 +68,10 @@ class CoinAmountInputFragment : Fragment() {
     private fun initObservers() {
         showSnackbarOnFleetingErrors(viewModel, view = binding.coordinator)
 
+        viewModel.selectedCoinStream.observe(viewLifecycleOwner) { selectedCoin ->
+            bindSelectedCoinPreview(selectedCoin)
+        }
+
         viewModel.isSaveActionEnabledStream.observe(viewLifecycleOwner) { isEnabled ->
             binding.saveButton.isEnabled = isEnabled
         }
@@ -80,9 +84,8 @@ class CoinAmountInputFragment : Fragment() {
         }
     }
 
-    private fun bindSelectedCoinPreview() {
-        val selectedCoin = viewModel.selectedCoin
-            ?: error("We need a selected coin to reach this fragment")
+    private fun bindSelectedCoinPreview(selectedCoin: Coin?) {
+        selectedCoin ?: error("We need a selected coin to reach this fragment")
 
         Glide.with(this)
             .load(selectedCoin.imageUrl)

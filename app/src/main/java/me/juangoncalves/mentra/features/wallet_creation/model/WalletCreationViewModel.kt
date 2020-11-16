@@ -43,9 +43,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val errorStream = MutableLiveData<Error>(Error.None)
     val currentStepStream = MutableLiveData<Step>(Step.CoinSelection)
     val amountInputValidationStream = MutableLiveData<Int?>(null)
-
-    var selectedCoin: Coin? = null
-        private set
+    val selectedCoinStream = MutableLiveData<Coin?>(null)
 
     private var amountInput: Double? = null
     private var filterJob: Job? = null
@@ -68,7 +66,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     }
 
     fun selectCoin(coin: Coin) {
-        selectedCoin = coin
+        selectedCoinStream.value = coin
         currentStepStream.value = Step.AmountInput
     }
 
@@ -76,7 +74,11 @@ class WalletCreationViewModel @ViewModelInject constructor(
         val currentStep = currentStepStream.value ?: return
 
         currentStepStream.value = when (currentStep) {
-            Step.AmountInput -> Step.CoinSelection
+            Step.AmountInput -> {
+                amountInputValidationStream.value = null
+                amountInput = null
+                Step.CoinSelection
+            }
             Step.CoinSelection -> Step.Done
             Step.Done -> Step.Done
         }
@@ -90,7 +92,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     }
 
     fun saveSelected() {
-        val selectedCoin = selectedCoin ?: return
+        val selectedCoin = selectedCoinStream.value ?: return
         val amountInput = amountInput ?: return
         val wallet = Wallet(selectedCoin, amountInput)
 
