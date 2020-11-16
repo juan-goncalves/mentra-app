@@ -39,6 +39,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val coinListStream = MutableLiveData<List<Coin>>(emptyList())
     val isLoadingCoinListStream = MutableLiveData<Boolean>(true)
     val isSaveActionEnabledStream = MutableLiveData<Boolean>(false)
+    val shouldShowNoMatchesWarningStream = MutableLiveData<Boolean>(false)
     val errorStream = MutableLiveData<Error>(Error.None)
     val currentStepStream = MutableLiveData<Step>(Step.CoinSelection)
     val amountInputValidationStream = MutableLiveData<Int?>(null)
@@ -61,6 +62,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
             val result = findCoinsByName(query)
             result.rightValue?.let { filteredCoins ->
                 coinListStream.value = filteredCoins
+                shouldShowNoMatchesWarningStream.value = filteredCoins.isEmpty()
             }
         }
     }

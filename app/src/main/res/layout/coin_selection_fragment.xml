@@ -61,6 +61,18 @@
 
     </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:id="@+id/noSearchResultsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/no_coins_were_found_for_your_search"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/nameInputLayout"
+        app:layout_constraintStart_toStartOf="@+id/nameInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/nameInputLayout" />
+
     <ProgressBar
         android:id="@+id/coinsProgressBar"
         android:layout_width="wrap_content"

@@ -62,11 +62,15 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
         }
 
         viewModel.isLoadingCoinListStream.observe(viewLifecycleOwner) { shouldShow ->
-            binding.coinsProgressBar.animateVisibility(shouldShow)
+            binding.coinsProgressBar.animateVisibility(shouldShow, 300L)
         }
 
         viewModel.errorStream.observe(viewLifecycleOwner) { error ->
             bindErrorState(error)
+        }
+
+        viewModel.shouldShowNoMatchesWarningStream.observe(viewLifecycleOwner) { shouldShow ->
+            binding.noSearchResultsTextView.animateVisibility(shouldShow, 300L)
         }
     }
 
@@ -78,7 +82,7 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
             }
             is WalletCreationViewModel.Error.None -> {
                 binding.coinNameInput.isEnabled = true
-                binding.errorStateView.visibility = View.GONE
+                binding.errorStateView.animateVisibility(false, 300L)
             }
         }
     }
