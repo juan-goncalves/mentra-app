@@ -3,14 +3,17 @@ package me.juangoncalves.mentra.features.wallet_creation.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinRecommendationItemBinding
 import me.juangoncalves.mentra.domain.models.Coin
+
 
 class CoinAdapter(
     private val listener: Listener
@@ -25,8 +28,11 @@ class CoinAdapter(
         get() = differ.currentList
         set(value) = differ.submitList(value, listener::onCommitCoinListUpdates)
 
-
     private val differ: AsyncListDiffer<Coin> = AsyncListDiffer(this, CoinDiffItemCallback())
+
+    private val crossFadeFactory = DrawableCrossFadeFactory.Builder()
+        .setCrossFadeEnabled(true)
+        .build()
 
     override fun getItemCount() = differ.currentList.size
 
@@ -44,12 +50,11 @@ class CoinAdapter(
         holder.coinClickListener.coin = coin
         holder.binding.apply {
             nameTextView.text = coin.name
-
             Glide.with(root)
                 .load(coin.imageUrl)
                 .circleCrop()
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.coin_placeholder)
+                .transition(DrawableTransitionOptions.withCrossFade(crossFadeFactory))
+                .placeholder(getDrawable(root.context, R.drawable.coin_placeholder))
                 .into(coinImageView)
         }
     }
