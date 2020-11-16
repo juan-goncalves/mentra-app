@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinAmountInputFragmentBinding
 import me.juangoncalves.mentra.extensions.hideKeyboard
+import me.juangoncalves.mentra.extensions.showKeyboard
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 
@@ -45,8 +46,12 @@ class CoinAmountInputFragment : Fragment() {
             hideKeyboard()
         }
 
-        binding.amountInput.doOnTextChanged { text, _, _, _ ->
-            viewModel.amountInputChanged(text)
+        binding.amountInput.apply {
+            requestFocus()
+            showKeyboard()
+            doOnTextChanged { text, _, _, _ ->
+                viewModel.amountInputChanged(text)
+            }
         }
 
         binding.amountInput.setOnEditorActionListener { _, actionId, _ ->
