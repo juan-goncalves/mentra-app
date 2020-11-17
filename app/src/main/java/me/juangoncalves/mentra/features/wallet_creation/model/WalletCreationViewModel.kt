@@ -100,7 +100,6 @@ class WalletCreationViewModel @ViewModelInject constructor(
             .inScope(viewModelScope)
             .onSuccess {
                 currentStepStream.value = Step.Done
-                errorStream.value = Error.None
             }
             .onFailurePublishFleetingError()
             .run(wallet)
