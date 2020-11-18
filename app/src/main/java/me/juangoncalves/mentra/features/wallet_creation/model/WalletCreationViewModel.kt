@@ -43,7 +43,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val currentStepStream = MutableLiveData<Step>(Step.CoinSelection)
     val amountInputValidationStream = MutableLiveData<Int?>(null)
     val selectedCoinStream = MutableLiveData<Coin?>(null)
-    val fleetingErrorStream: MutableLiveData<Event<Int>> = MutableLiveData()
+    val fleetingErrorStream = MutableLiveData<Event<Int>>()
 
     private var amountInput: Double? = null
     private var filterJob: Job? = null
