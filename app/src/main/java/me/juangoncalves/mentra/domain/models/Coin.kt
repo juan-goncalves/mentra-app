@@ -4,7 +4,7 @@ data class Coin(
     val name: String,
     val symbol: String,
     val imageUrl: String,
-    val iconType: IconType
+    val iconType: IconType = IconType.Unknown
 ) {
 
     companion object {

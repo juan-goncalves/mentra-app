@@ -15,15 +15,13 @@ import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
 import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.requireRight
 import me.juangoncalves.mentra.extensions.rightValue
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisherImpl
-import me.juangoncalves.mentra.features.common.executor
+import me.juangoncalves.mentra.features.common.Event
 
 class WalletCreationViewModel @ViewModelInject constructor(
     private val getCoins: GetCoins,
     private val createWallet: CreateWallet,
     private val findCoinsByName: FindCoinsByName
-) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+) : ViewModel() {
 
     sealed class Step {
         object CoinSelection : Step()
@@ -39,11 +37,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val coinListStream = MutableLiveData<List<Coin>>(emptyList())
     val isLoadingCoinListStream = MutableLiveData<Boolean>(true)
     val isSaveActionEnabledStream = MutableLiveData<Boolean>(false)
+    val shouldShowSaveProgressIndicatorStream = MutableLiveData<Boolean>(false)
     val shouldShowNoMatchesWarningStream = MutableLiveData<Boolean>(false)
     val errorStream = MutableLiveData<Error>(Error.None)
     val currentStepStream = MutableLiveData<Step>(Step.CoinSelection)
     val amountInputValidationStream = MutableLiveData<Int?>(null)
     val selectedCoinStream = MutableLiveData<Coin?>(null)
+    val fleetingErrorStream: MutableLiveData<Event<Int>> = MutableLiveData()
 
     private var amountInput: Double? = null
     private var filterJob: Job? = null
@@ -96,13 +96,20 @@ class WalletCreationViewModel @ViewModelInject constructor(
         val amountInput = amountInput ?: return
         val wallet = Wallet(selectedCoin, amountInput)
 
-        createWallet.executor()
-            .inScope(viewModelScope)
-            .onSuccess {
+        viewModelScope.launch {
+            isSaveActionEnabledStream.value = false
+            shouldShowSaveProgressIndicatorStream.value = true
+
+            val result = createWallet(wallet)
+            if (result.isLeft()) {
+                isSaveActionEnabledStream.value = true
+                fleetingErrorStream.value = Event(R.string.create_wallet_error)
+            } else {
                 currentStepStream.value = Step.Done
             }
-            .onFailurePublishFleetingError()
-            .run(wallet)
+
+            shouldShowSaveProgressIndicatorStream.value = false
+        }
     }
 
     fun retryLoadCoinListSelected() {

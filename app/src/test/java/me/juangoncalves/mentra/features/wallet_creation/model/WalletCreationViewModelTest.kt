@@ -16,7 +16,6 @@ import me.juangoncalves.mentra.domain.usecases.coin.FindCoinsByName
 import me.juangoncalves.mentra.domain.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
 import me.juangoncalves.mentra.extensions.toLeft
-import me.juangoncalves.mentra.features.common.DisplayError
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel.Step
 import me.juangoncalves.mentra.toRight
@@ -290,7 +289,8 @@ class WalletCreationViewModelTest {
     @Test
     fun `a fleeting error is emitted when the wallet creation fails`() {
         // Arrange
-        val observer = mockk<Observer<Event<DisplayError>>>(relaxUnitFun = true)
+        val captor = slot<Event<Int>>()
+        val observer = mockk<Observer<Event<Int>>>(relaxUnitFun = true)
         sut.fleetingErrorStream.observeForever(observer)
         coEvery { createWalletMock.invoke(any()) } returns WalletCreationFailure().toLeft()
 
@@ -300,9 +300,8 @@ class WalletCreationViewModelTest {
         sut.saveSelected()
 
         // Assert
-        verifySequence {
-            observer.onChanged(any())
-        }
+        verifySequence { observer.onChanged(capture(captor)) }
+        assertEquals(R.string.create_wallet_error, captor.captured.content)
     }
 
     @Test
@@ -325,7 +324,7 @@ class WalletCreationViewModelTest {
         }
     }
 
-    // TODO: test coin load, filtering and error state
+    // TODO: test coin load, filtering, error state and save progress indicator
 
     //region Helpers
     //endregion

@@ -21,12 +21,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="16dp"
         android:maxLines="1"
-        app:layout_constraintBottom_toBottomOf="@+id/selectedCoinImageView"
-        app:layout_constraintEnd_toStartOf="@+id/saveButton"
-        app:layout_constraintStart_toEndOf="@+id/selectedCoinImageView"
-        app:layout_constraintTop_toTopOf="@+id/selectedCoinImageView"
+        app:layout_constraintBottom_toBottomOf="@id/selectedCoinImageView"
+        app:layout_constraintEnd_toStartOf="@id/saveProgressBar"
+        app:layout_constraintStart_toEndOf="@id/selectedCoinImageView"
+        app:layout_constraintTop_toTopOf="@id/selectedCoinImageView"
         tools:text="Bitcoin" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -56,6 +56,17 @@
             android:inputType="numberDecimal" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <ProgressBar
+        android:id="@+id/saveProgressBar"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="5dp"
+        android:indeterminateTint="?attr/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/saveButton"
+        app:layout_constraintEnd_toStartOf="@+id/saveButton"
+        app:layout_constraintTop_toTopOf="@+id/saveButton" />
 
     <Button
         android:id="@+id/saveButton"

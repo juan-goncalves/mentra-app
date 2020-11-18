@@ -34,5 +34,5 @@
     <string name="create_wallet_error">Error, could not save your wallet</string>
     <string name="no_coins_were_found_for_your_search">No coins were found for your search</string>
     <string name="create_wallet_desc_step_1">First, select the wallet\'s coin</string>
-    <string name="create_wallet_desc_step_2">Now, enter the amount of coin it holds</string>
+    <string name="create_wallet_desc_step_2">Now, enter how many of them it holds</string>
 </resources>
