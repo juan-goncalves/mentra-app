@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import me.juangoncalves.mentra.network.CryptoCompareService
+import me.juangoncalves.mentra.network.CryptoIconsService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -35,6 +36,17 @@ object NetworkModule {
             .client(httpClient)
             .build()
             .create(CryptoCompareService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCryptoIconsService(httpClient: OkHttpClient): CryptoIconsService {
+        return Retrofit.Builder()
+            .baseUrl("https://cryptoicons.org/") // TODO: Make build config variable for different flavors
+            .addConverterFactory(MoshiConverterFactory.create())
+            .client(httpClient)
+            .build()
+            .create(CryptoIconsService::class.java)
     }
 
 }

@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.data.mapper
 
 import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain.models.IconType
 import me.juangoncalves.mentra.network.models.CoinSchema
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -66,7 +67,7 @@ class CoinMapperTest {
     @Test
     fun `map should return a valid coin model based on the coin object`() {
         // Arrange
-        val coin = Coin("Bitcoin", "BTC", "http://hola.com/btc.png")
+        val coin = Coin("Bitcoin", "BTC", "http://hola.com/btc.png", IconType.Unknown)
 
         // Act
         val result = sut.map(coin)

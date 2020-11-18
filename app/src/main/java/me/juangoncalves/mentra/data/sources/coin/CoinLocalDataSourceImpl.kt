@@ -52,6 +52,11 @@ class CoinLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateCoin(coin: Coin) = orStorageException {
+        val model = coinMapper.map(coin)
+        coinDao.update(model)
+    }
+
     override fun getActiveCoinPricesStream(): Flow<List<CoinPriceModel>> =
         coinPriceDao.getActiveCoinPricesStream()
 

@@ -292,8 +292,7 @@ class EditWalletViewModelTest {
 
     private val fakeWallet = WalletListViewState.Wallet(
         id = 1,
-        primaryIconUrl = "https://someurl.com/img.png",
-        secondaryIconUrl = "",
+        iconUrl = "https://someurl.com/img.png",
         value = 0.2312 * 11384.23,
         amountOfCoin = 0.2312,
         coin = WalletListViewState.Coin(Bitcoin.name, 11384.23)

@@ -289,8 +289,7 @@ class WalletListViewModelTest {
         coEvery { activeCoinsPriceStreamMock.invoke() } returns flowOf(prices)
         coEvery { uiWalletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
             id = 0,
-            primaryIconUrl = "",
-            secondaryIconUrl = "",
+            iconUrl = "",
             value = 0.0,
             coin = WalletListViewState.Coin("", 0.0),
             amountOfCoin = 0.0

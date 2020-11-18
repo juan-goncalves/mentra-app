@@ -20,6 +20,8 @@ interface CoinLocalDataSource {
 
     suspend fun findCoinBySymbol(symbol: String): Coin?
 
+    suspend fun updateCoin(coin: Coin)
+
     fun getActiveCoinPricesStream(): Flow<List<CoinPriceModel>>
 
 }

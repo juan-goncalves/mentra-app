@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
@@ -20,6 +22,10 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 
     private val differ: AsyncListDiffer<WalletListViewState.Wallet> =
         AsyncListDiffer(this, WalletItemCallback())
+
+    private val crossFadeFactory = DrawableCrossFadeFactory.Builder()
+        .setCrossFadeEnabled(true)
+        .build()
 
     override fun getItemCount() = differ.currentList.size
 
@@ -41,16 +47,10 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
             walletValueTextView.text = wallet.value.asCurrency(symbol = "$")
 
             Glide.with(root)
-                .load(wallet.primaryIconUrl)
-                // TODO: Make a placeholder png with the same dimensions as the gradient drawables
-                // .placeholder(R.drawable.coin_placeholder)
-                // .transition(DrawableTransitionOptions.withCrossFade())
-                .error(
-                    Glide.with(root)
-                        .load(wallet.secondaryIconUrl)
-                        .circleCrop()
-                        .error(R.drawable.coin_placeholder)
-                )
+                .load(wallet.iconUrl)
+                .placeholder(R.drawable.coin_placeholder)
+                .circleCrop()
+                .transition(DrawableTransitionOptions.withCrossFade(crossFadeFactory))
                 .into(logoImageView)
         }
     }
