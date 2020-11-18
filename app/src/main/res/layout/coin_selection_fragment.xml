@@ -62,8 +62,8 @@
     </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
-        style="@style/TextAppearance.MaterialComponents.Body1"
         android:id="@+id/noSearchResultsTextView"
+        style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -95,12 +95,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/nameInputLayout">
 
-        <!-- TODO: Change for error graphic -->
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="wrap_content"
             android:layout_height="170dp"
             android:layout_gravity="center_horizontal"
-            app:srcCompat="@drawable/no_data" />
+            app:srcCompat="@drawable/error_graphic" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/TextAppearance.MaterialComponents.Headline6"
