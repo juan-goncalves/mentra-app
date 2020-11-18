@@ -27,8 +27,7 @@ data class WalletListViewState(
     @Parcelize
     data class Wallet(
         val id: Long,
-        val primaryIconUrl: String,
-        val secondaryIconUrl: String,
+        val iconUrl: String,
         val value: Double,
         val coin: Coin,
         val amountOfCoin: Double

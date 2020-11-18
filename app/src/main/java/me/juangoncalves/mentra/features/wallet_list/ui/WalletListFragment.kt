@@ -97,7 +97,11 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = walletAdapter
-            val touchHelper = WalletTouchHelper(requireContext(), this@WalletListFragment)
+            val touchHelper = WalletTouchHelper(
+                requireContext(),
+                this@WalletListFragment,
+                binding.refreshLayout
+            )
             touchHelper.attachToRecyclerView(this)
         }
 

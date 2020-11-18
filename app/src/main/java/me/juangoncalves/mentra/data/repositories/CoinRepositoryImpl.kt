@@ -97,6 +97,13 @@ class CoinRepositoryImpl @Inject constructor(
             }
         }
 
+    override suspend fun updateCoin(coin: Coin): Either<Failure, Unit> = withContext(ioDispatcher) {
+        // TODO: Handle exceptions
+        localDataSource.updateCoin(coin)
+        Either.Right(Unit)
+    }
+
+
     private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> =
         map { prices ->
             val coinPricesMap = hashMapOf<Coin, Price>()

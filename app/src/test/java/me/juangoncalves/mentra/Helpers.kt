@@ -5,15 +5,16 @@ import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Currency
+import me.juangoncalves.mentra.domain.models.IconType
 import me.juangoncalves.mentra.domain.models.Price
 import java.time.LocalDateTime
 
 typealias Right<T> = Either.Right<T>
 typealias Left<T> = Either.Left<T>
 
-val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png")
-val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png")
-val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.png")
+val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png", IconType.Unknown)
+val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png", IconType.Unknown)
+val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.png", IconType.Unknown)
 
 val USDPrices = mapOf(
     Bitcoin to Price(Currency.USD, 9538.423, LocalDateTime.now()),

@@ -13,15 +13,23 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.math.MathUtils
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.extensions.getThemeColor
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 
-class WalletTouchHelper(context: Context, listener: WalletSwipeHelper.Listener) :
-    ItemTouchHelper(WalletSwipeHelper(context, listener))
+class WalletTouchHelper(
+    context: Context,
+    listener: WalletSwipeHelper.Listener,
+    refreshLayout: SwipeRefreshLayout
+) : ItemTouchHelper(WalletSwipeHelper(context, listener, refreshLayout))
 
-class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.Callback() {
+class WalletSwipeHelper(
+    context: Context,
+    listener: Listener,
+    refreshLayout: SwipeRefreshLayout
+) : ItemTouchHelper.Callback() {
 
     interface Listener {
         fun onDeleteWalletGesture(position: Int)
@@ -29,6 +37,7 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
     }
 
     private val listener: WeakReference<Listener> = WeakReference(listener)
+    private val refreshLayout: WeakReference<SwipeRefreshLayout?> = WeakReference(refreshLayout)
     private val deleteDrawable: Drawable? = getDrawable(context, R.drawable.ic_trash)
     private val deleteIconColor: Int = context.getThemeColor(R.attr.errorIconTint)
     private val editDrawable: Drawable? = getDrawable(context, R.drawable.ic_edit)
@@ -68,6 +77,12 @@ class WalletSwipeHelper(context: Context, listener: Listener) : ItemTouchHelper.
             ItemTouchHelper.LEFT ->
                 listener.get()?.onDeleteWalletGesture(viewHolder.adapterPosition)
         }
+    }
+
+    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+        super.onSelectedChanged(viewHolder, actionState)
+        val swipeInProgress = actionState == ItemTouchHelper.ACTION_STATE_SWIPE
+        refreshLayout.get()?.isEnabled = !swipeInProgress
     }
 
     override fun onChildDraw(

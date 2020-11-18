@@ -9,7 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.coin.GetGradientCoinIcon
+import me.juangoncalves.mentra.domain.usecases.coin.DeterminePrimaryIcon
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -22,7 +22,7 @@ class UIWalletMapperTest {
     //endregion
 
     //region Mocks
-    @MockK private lateinit var getGradientCoinIconMock: GetGradientCoinIcon
+    @MockK private lateinit var determinePrimaryIconMock: DeterminePrimaryIcon
     //endregion
 
     private lateinit var sut: UIWalletMapper
@@ -30,7 +30,7 @@ class UIWalletMapperTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        sut = UIWalletMapper(mainCoroutineRule.dispatcher, getGradientCoinIconMock)
+        sut = UIWalletMapper(mainCoroutineRule.dispatcher, determinePrimaryIconMock)
     }
 
     @Test
@@ -38,7 +38,7 @@ class UIWalletMapperTest {
         // Arrange
         val wallet = Wallet(Bitcoin, 1.5, 10)
         val btcPrice = 12_431.0.toPrice()
-        coEvery { getGradientCoinIconMock.invoke(any()) } returns Right("mock")
+        coEvery { determinePrimaryIconMock.invoke(any()) } returns Right("mock")
 
         // Act
         val result = sut.map(wallet, btcPrice)
@@ -47,11 +47,10 @@ class UIWalletMapperTest {
         result.id equals 10
         result.amountOfCoin closeTo 1.5
         result.value closeTo 12_431.0 * 1.5
-        result.primaryIconUrl equals "mock"
-        result.secondaryIconUrl equals Bitcoin.imageUrl
+        result.iconUrl equals "mock"
         result.coin.name equals Bitcoin.name
         result.coin.value closeTo btcPrice.value
-        coVerify { getGradientCoinIconMock.invoke(any()) }
+        coVerify { determinePrimaryIconMock.invoke(any()) }
     }
 
     @Test
@@ -60,13 +59,13 @@ class UIWalletMapperTest {
             // Arrange
             val wallet = Wallet(Bitcoin, 1.0, 10)
             val btcPrice = 12_431.0.toPrice()
-            coEvery { getGradientCoinIconMock.invoke(any()) } returns Left(mockk())
+            coEvery { determinePrimaryIconMock.invoke(any()) } returns Left(mockk())
 
             // Act
             val result = sut.map(wallet, btcPrice)
 
             // Assert
-            result.primaryIconUrl equals ""
+            result.iconUrl equals ""
         }
 
     //region Helpers

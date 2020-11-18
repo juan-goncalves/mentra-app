@@ -14,7 +14,7 @@ import me.juangoncalves.mentra.db.models.*
         WalletValueModel::class,
         PortfolioValueModel::class
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
