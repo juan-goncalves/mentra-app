@@ -9,7 +9,7 @@ import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 
 interface CoinRepository {
-    
+
     /**
      * Latest available price per used coin.
      * A coin is considered to be in use if there's a wallet for it.
@@ -24,5 +24,7 @@ interface CoinRepository {
      * with the most recent cached coin price will be returned.
      */
     suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Price>
+
+    suspend fun updateCoin(coin: Coin): Either<Failure, Unit>
 
 }

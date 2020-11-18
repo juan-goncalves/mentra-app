@@ -8,10 +8,12 @@ import me.juangoncalves.mentra.domain.usecases.UseCase
 import javax.inject.Inject
 
 class CreateWallet @Inject constructor(
-    private val walletRepository: WalletRepository
+    private val walletRepository: WalletRepository,
+    private val determineIconType: DetermineIconType
 ) : UseCase<Wallet, Unit> {
 
     override suspend operator fun invoke(params: Wallet): Either<Failure, Unit> {
+        determineIconType(params.coin) // TODO: Handle failure
         return walletRepository.createWallet(params)
     }
 

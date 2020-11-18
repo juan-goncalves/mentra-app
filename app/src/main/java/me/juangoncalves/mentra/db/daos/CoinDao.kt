@@ -1,9 +1,6 @@
 package me.juangoncalves.mentra.db.daos
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import me.juangoncalves.mentra.db.models.CoinModel
 
 @Dao
@@ -20,5 +17,8 @@ interface CoinDao {
 
     @Query("SELECT * FROM Coin WHERE symbol = :symbol")
     suspend fun getCoinBySymbol(symbol: String): CoinModel?
+
+    @Update
+    suspend fun update(coin: CoinModel)
 
 }
