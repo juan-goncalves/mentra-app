@@ -5,14 +5,14 @@ import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.wallet.DetermineIconType
+import me.juangoncalves.mentra.domain.usecases.coin.DeterminePrimaryIcon
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import javax.inject.Inject
 
 class UIWalletMapper @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
-    private val determineIconType: DetermineIconType
+    private val determinePrimaryIcon: DeterminePrimaryIcon
 ) {
 
     suspend fun map(wallet: Wallet, coinPrice: Price): WalletListViewState.Wallet {
@@ -21,7 +21,7 @@ class UIWalletMapper @Inject constructor(
 
             WalletListViewState.Wallet(
                 id = wallet.id,
-                iconUrl = determineIconType(wallet.coin).rightValue ?: "",
+                iconUrl = determinePrimaryIcon(wallet.coin).rightValue ?: "",
                 value = walletValue,
                 coin = WalletListViewState.Coin(wallet.coin.name, coinPrice.value),
                 amountOfCoin = wallet.amount
