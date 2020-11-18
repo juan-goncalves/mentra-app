@@ -40,6 +40,7 @@
         <item name="pieChartTextColor">@color/tundora</item>
 
         <!-- Customize your theme here. -->
+        <item name="colorControlHighlight">@color/wild_strawberry_trans</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowLightStatusBar">true</item>

@@ -9,17 +9,24 @@ import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
 
 fun Fragment.createErrorSnackbar(
     error: DisplayError,
+    view: View? = null,
     anchor: View? = null,
-    duration: Int = Snackbar.LENGTH_INDEFINITE
-): Snackbar = with(requireContext()) { createErrorSnackbar(error, requireView(), duration, anchor) }
+    duration: Int = Snackbar.LENGTH_LONG
+): Snackbar = with(requireContext()) {
+    createErrorSnackbar(error, view ?: requireView(), duration, anchor)
+}
 
 fun Fragment.showSnackbarOnFleetingErrors(
     fleetingErrorPublisher: FleetingErrorPublisher,
-    anchor: View? = null
+    view: View? = null,
+    anchor: View? = null,
+    duration: Int = Snackbar.LENGTH_LONG
 ) {
     fleetingErrorPublisher.fleetingErrorStream.observe(viewLifecycleOwner) { errorEvent ->
         errorEvent.use { error ->
-            createErrorSnackbar(error, anchor).show()
+            createErrorSnackbar(error, view, anchor, duration).show()
         }
     }
 }
+
+fun Fragment.hideKeyboard() = requireView().hideKeyboard()

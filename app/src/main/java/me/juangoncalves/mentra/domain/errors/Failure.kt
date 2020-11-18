@@ -11,6 +11,8 @@ class ServerFailure : Failure()
 
 class StorageFailure : Failure()
 
+class WalletCreationFailure : Failure()
+
 class InternetConnectionFailure : Failure()
 
 class FetchPriceFailure(val storedPrice: Price? = null) : Failure()

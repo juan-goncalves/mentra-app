@@ -13,6 +13,7 @@ import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.errors.StorageFailure
+import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
@@ -111,7 +112,7 @@ class WalletRepositoryImplTest {
         }
 
     @Test
-    fun `createWallet returns a StorageFailure when a StorageException is thrown and logs it`() =
+    fun `createWallet returns a WalletCreationFailure when a StorageException is thrown and logs it`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45)
@@ -122,7 +123,7 @@ class WalletRepositoryImplTest {
 
             // Assert
             val failure = (result as Left).value
-            assertTrue(failure is StorageFailure)
+            assertTrue(failure is WalletCreationFailure)
             verify { loggerMock.error(any(), any()) }
         }
 

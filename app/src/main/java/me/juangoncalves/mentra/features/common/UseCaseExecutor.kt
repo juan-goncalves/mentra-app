@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.InternetConnectionFailure
+import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain.usecases.UseCase
 import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.requireLeft
@@ -61,6 +62,7 @@ class UseCaseExecutor<P, R>(val useCase: UseCase<P, R>) {
     private fun Failure.toStringResource(): Int {
         return when (this) {
             is InternetConnectionFailure -> me.juangoncalves.mentra.R.string.connection_error
+            is WalletCreationFailure -> me.juangoncalves.mentra.R.string.create_wallet_error
             else -> me.juangoncalves.mentra.R.string.default_error
         }
     }

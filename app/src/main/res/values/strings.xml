@@ -30,4 +30,9 @@
     <string name="error_loading_wallets">An error occurred while trying to load your wallets.</string>
     <string name="empty_wallets_title">Empty in wallets</string>
     <string name="empty_wallets_description">Add a wallet and it will show up here.</string>
+    <string name="coin_list_fetch_error">An error occurred while getting the list of supported coins.</string>
+    <string name="create_wallet_error">Error, could not save your wallet</string>
+    <string name="no_coins_were_found_for_your_search">No coins were found for your search</string>
+    <string name="create_wallet_desc_step_1">First, select the wallet\'s coin</string>
+    <string name="create_wallet_desc_step_2">Now, enter how many of them it holds</string>
 </resources>
