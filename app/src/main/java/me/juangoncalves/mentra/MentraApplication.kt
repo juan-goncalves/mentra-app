@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.*
 import dagger.hilt.android.HiltAndroidApp
-import me.juangoncalves.mentra.features.common.WindowLayoutCallbacks
 import me.juangoncalves.mentra.workers.PortfolioSnapshotWorker
 import java.time.Duration
 import java.util.concurrent.TimeUnit
@@ -17,7 +16,6 @@ class MentraApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        registerActivityLifecycleCallbacks(WindowLayoutCallbacks())
         schedulePortfolioSnapshots()
     }
 

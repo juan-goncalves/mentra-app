@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -60,7 +59,6 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
         savedInstanceState: Bundle?
     ): View? {
         _binding = WalletListFragmentBinding.inflate(inflater, container, false)
-        adjustFabPosition()
         return binding.root
     }
 
@@ -186,18 +184,6 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
         val position = walletAdapter.data.indexOfFirst { it == wallet }
         if (position > -1) walletAdapter.notifyItemChanged(position)
-    }
-
-    /** Ensures that the add wallet button (FAB) is positioned above the navigation bar */
-    private fun adjustFabPosition() {
-        binding.root.setOnApplyWindowInsetsListener { _, insets ->
-            if (insets.systemWindowInsetBottom != 0) {
-                binding.addWalletButtonWrapper.updatePadding(
-                    bottom = insets.systemWindowInsetBottom
-                )
-            }
-            insets
-        }
     }
 
 }

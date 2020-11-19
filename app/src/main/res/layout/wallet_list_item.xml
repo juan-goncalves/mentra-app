@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="@dimen/wallet_card_height"
     android:layout_margin="8dp"
     app:cardBackgroundColor="?attr/colorSurface"
     app:cardCornerRadius="@dimen/default_corner_radius"
