@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -31,7 +30,6 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
         savedInstanceState: Bundle?
     ): View? {
         _binding = CoinSelectionFragmentBinding.inflate(inflater, container, false)
-        adjustFadingEdgeLayoutPadding()
         return binding.root
     }
 
@@ -98,18 +96,6 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    /** Adds enough padding to make sure that it doesn;t draw below the navigation bar */
-    private fun adjustFadingEdgeLayoutPadding() {
-        binding.root.setOnApplyWindowInsetsListener { _, insets ->
-            if (insets.systemWindowInsetBottom != 0) {
-                binding.fadingEdgeLayout.updatePadding(
-                    bottom = insets.systemWindowInsetBottom
-                )
-            }
-            insets
-        }
     }
 
 }

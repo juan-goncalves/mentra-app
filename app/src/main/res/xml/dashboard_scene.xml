@@ -25,10 +25,10 @@
             android:id="@id/portfolioValueTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            motion:layout_constraintBottom_toBottomOf="@id/headerBackground"
             motion:layout_constraintEnd_toEndOf="@id/headerBackground"
             motion:layout_constraintStart_toStartOf="@id/headerBackground"
-            motion:layout_constraintTop_toTopOf="@id/headerBackground" />
+            motion:layout_constraintTop_toBottomOf="@+id/headerBackground"
+            motion:layout_constraintBottom_toTopOf="@+id/portfolioChangeTextView" />
 
         <Constraint
             android:id="@id/portfolioChangeTextView"
@@ -38,7 +38,8 @@
             android:alpha="1"
             motion:layout_constraintEnd_toEndOf="@id/portfolioValueTextView"
             motion:layout_constraintStart_toStartOf="@id/portfolioValueTextView"
-            motion:layout_constraintTop_toBottomOf="@id/portfolioValueTextView" />
+            motion:layout_constraintTop_toBottomOf="@+id/portfolioValueTextView"
+            motion:layout_constraintBottom_toTopOf="@+id/headerBackground" />
 
         <Constraint
             android:id="@id/portfolioChangeImageView"
