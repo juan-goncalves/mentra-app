@@ -25,6 +25,7 @@ import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_creation.ui.WalletCreationActivity
 import me.juangoncalves.mentra.features.wallet_deletion.DeleteWalletDialogFragment
 import me.juangoncalves.mentra.features.wallet_edit.EditWalletDialogFragment
+import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewModel
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @ExperimentalCoroutinesApi

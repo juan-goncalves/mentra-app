@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_list.ui
+package me.juangoncalves.mentra.features.wallet_list.models
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
@@ -17,7 +17,6 @@ import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.features.wallet_list.mappers.UIWalletMapper
-import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 
 class WalletListViewModel @ViewModelInject constructor(
@@ -33,6 +32,12 @@ class WalletListViewModel @ViewModelInject constructor(
 
     fun initialize() {
         loadWallets()
+
+        viewModelScope.launch {
+            walletListStream().collectLatest {
+                refreshSelected()
+            }
+        }
     }
 
     private fun loadWallets() = viewModelScope.launch {

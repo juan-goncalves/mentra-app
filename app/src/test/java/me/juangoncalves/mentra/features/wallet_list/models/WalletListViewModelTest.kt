@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.wallet_list.ui
+package me.juangoncalves.mentra.features.wallet_list.models
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
@@ -15,7 +15,6 @@ import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.features.wallet_list.mappers.UIWalletMapper
-import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 import org.junit.Before
 import org.junit.Rule
@@ -66,6 +65,7 @@ class WalletListViewModelTest {
             ignoreDefaultState()
             stateObserver.onChanged(capture(state1))
             stateObserver.onChanged(capture(state2))
+            ignorePortfolioRefresh()
         }
         state1.captured.isLoadingWallets equals true
         state2.captured.isLoadingWallets equals false
@@ -85,6 +85,7 @@ class WalletListViewModelTest {
             ignoreDefaultState()
             stateObserver.onChanged(any()) // Ignore the load progress update
             stateObserver.onChanged(capture(state))
+            ignorePortfolioRefresh()
         }
 
         state.captured.wallets.size equals wallets.size
@@ -111,6 +112,7 @@ class WalletListViewModelTest {
             ignoreDefaultState()
             stateObserver.onChanged(any()) // Ignore the load progress update
             stateObserver.onChanged(capture(state))
+            ignorePortfolioRefresh()
         }
 
         state.captured.isEmpty equals true
@@ -130,9 +132,15 @@ class WalletListViewModelTest {
             ignoreDefaultState()
             stateObserver.onChanged(any()) // Ignore the load progress update
             stateObserver.onChanged(capture(state))
+            ignorePortfolioRefresh()
         }
 
         state.captured.isEmpty equals false
+    }
+
+    @Test
+    fun `the prices are refreshed when the wallet list changes`() {
+        // TODO: Implement
     }
 
     @Test
@@ -234,6 +242,7 @@ class WalletListViewModelTest {
             ignoreDefaultState()
             stateObserver.onChanged(any()) // Ignore the load progress update
             stateObserver.onChanged(capture(state))
+            ignorePortfolioRefresh()
         }
 
         (state.captured.error is Error.WalletsNotLoaded) equals true
@@ -254,6 +263,7 @@ class WalletListViewModelTest {
             ignoreDefaultState()
             stateObserver.onChanged(any()) // Ignore the load progress update
             stateObserver.onChanged(capture(state))
+            ignorePortfolioRefresh()
         }
 
         state.captured.isEmpty equals false
@@ -284,9 +294,20 @@ class WalletListViewModelTest {
         stateObserver.onChanged(any())
     }
 
+    private fun MockKVerificationScope.ignorePortfolioRefresh() {
+        stateObserver.onChanged(any())
+        stateObserver.onChanged(any())
+    }
+
+    private fun MockKVerificationScope.ignoreWalletLoad() {
+        stateObserver.onChanged(any())
+        stateObserver.onChanged(any())
+    }
+
     private fun setupSuccessMocks() {
         coEvery { walletListStreamMock.invoke() } returns flowOf(wallets)
         coEvery { activeCoinsPriceStreamMock.invoke() } returns flowOf(prices)
+        coEvery { refreshPortfolioValueMock.invoke() } returns 10.0.toPrice().toRight()
         coEvery { uiWalletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
             id = 0,
             iconUrl = "",
