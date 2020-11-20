@@ -3,6 +3,7 @@ package me.juangoncalves.mentra.data.repositories
 import either.Either
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data.mapper.CoinMapper
@@ -104,12 +105,13 @@ class CoinRepositoryImpl @Inject constructor(
     }
 
 
-    private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> =
-        map { prices ->
+    private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> = debounce(500)
+        .map { prices ->
             val coinPricesMap = hashMapOf<Coin, Price>()
 
             prices.forEach { priceModel ->
-                val coin = localDataSource.findCoinBySymbol(priceModel.coinSymbol) ?: return@forEach
+                val coin =
+                    localDataSource.findCoinBySymbol(priceModel.coinSymbol) ?: return@forEach
                 coinPricesMap[coin] =
                     priceModel.valueInUSD.toPrice(timestamp = priceModel.timestamp)
             }
