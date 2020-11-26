@@ -12,7 +12,7 @@
         <item name="colorOnSecondary">@color/white</item>
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/medium_purple</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/wild_strawberry</item>
         <item name="android:windowLightStatusBar">false</item>
 
         <!-- Navigation bar color. -->

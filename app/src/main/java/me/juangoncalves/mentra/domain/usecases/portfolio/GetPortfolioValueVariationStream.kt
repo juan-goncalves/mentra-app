@@ -14,7 +14,7 @@ class GetPortfolioValueVariationStream @Inject constructor(
     // TODO: Support the different time units
 
     operator fun invoke(timeUnit: ValueVariation.TimeUnit): Flow<ValueVariation> =
-        portfolioRepository.portfolioValueHistory.map { prices ->
+        portfolioRepository.portfolioDailyValueHistory.map { prices ->
             if (prices.size < 2) return@map ValueVariation.None
 
             val latestValue = prices[prices.lastIndex]

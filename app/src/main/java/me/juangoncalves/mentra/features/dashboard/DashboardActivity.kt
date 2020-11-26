@@ -15,7 +15,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.extensions.*
-import me.juangoncalves.mentra.features.stats.StatsFragment
+import me.juangoncalves.mentra.features.stats.ui.StatsFragment
 import me.juangoncalves.mentra.features.wallet_list.ui.WalletListFragment
 import kotlin.math.absoluteValue
 import kotlin.math.sign

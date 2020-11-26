@@ -1,0 +1,207 @@
+package me.juangoncalves.mentra.features.stats.ui
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
+import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.databinding.StatsFragmentBinding
+import me.juangoncalves.mentra.domain.models.TimeGranularity
+import me.juangoncalves.mentra.extensions.getThemeColor
+import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
+import me.juangoncalves.mentra.extensions.styleByTheme
+import me.juangoncalves.mentra.features.stats.model.StatsViewModel
+import me.juangoncalves.mentra.features.stats.model.TimeChartData
+
+
+@AndroidEntryPoint
+class StatsFragment : Fragment() {
+
+    private val viewModel: StatsViewModel by viewModels()
+
+    private var _binding: StatsFragmentBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = StatsFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initObservers()
+        binding.valueLineChart.applyDefaultStyle()
+        binding.monthlyValueLineChart.applyDefaultStyle()
+
+        binding.weeklyValueLineChart.applyDefaultStyle().apply {
+            xAxis.setAvoidFirstLastClipping(true)
+        }
+
+        binding.statsRefreshLayout.styleByTheme().setOnRefreshListener {
+            viewModel.refreshSelected()
+        }
+
+        binding.dailyValueChip.setOnCheckedChangeListener { _, selected ->
+            if (selected) viewModel.timeGranularityChanged(TimeGranularity.Daily)
+        }
+
+        binding.weeklyValueChip.setOnCheckedChangeListener { _, selected ->
+            if (selected) viewModel.timeGranularityChanged(TimeGranularity.Weekly)
+        }
+
+        binding.monthlyValueChip.setOnCheckedChangeListener { _, selected ->
+            if (selected) viewModel.timeGranularityChanged(TimeGranularity.Monthly)
+        }
+    }
+
+    private fun initObservers() {
+        showSnackbarOnFleetingErrors(viewModel)
+
+        viewModel.valueChartData.observe(viewLifecycleOwner) { data ->
+            updateLineChartData(data)
+        }
+
+        viewModel.pieChartData.observe(viewLifecycleOwner) { entries ->
+            binding.distributionPieChart.setPortions(entries)
+        }
+
+        viewModel.shouldShowRefreshIndicator.observe(viewLifecycleOwner) { shouldShow ->
+            binding.statsRefreshLayout.isRefreshing = shouldShow
+        }
+
+        viewModel.valueChartGranularityStream.observe(viewLifecycleOwner) { granularity ->
+            when (granularity) {
+                TimeGranularity.Daily -> binding.dailyValueChip.isChecked = true
+                TimeGranularity.Weekly -> binding.weeklyValueChip.isChecked = true
+                TimeGranularity.Monthly -> binding.monthlyValueChip.isChecked = true
+            }
+        }
+    }
+
+    private fun updateLineChartData(chartData: TimeChartData) {
+        val (entries, labels, granularity) = chartData
+
+        val applicableChart = when (granularity) {
+            TimeGranularity.Daily -> binding.valueLineChart
+            TimeGranularity.Weekly -> binding.weeklyValueLineChart
+            TimeGranularity.Monthly -> binding.monthlyValueLineChart
+        }
+
+        valueCharts.forEach { chart ->
+            chart.visibility = if (chart == applicableChart) View.VISIBLE else View.GONE
+        }
+
+        val dateAxisFormatter = IndexAxisFormatter(labels)
+        val dataSet = LineDataSet(entries, "value").applyDefaultStyle()
+        val lineData = LineData(dataSet)
+
+        applicableChart.apply {
+            data = lineData
+
+            xAxis.apply {
+                valueFormatter = dateAxisFormatter
+                axisMinimum = 0f
+                axisMaximum = entries.lastIndex.toFloat()
+                isGranularityEnabled = true
+                setGranularity(1.0f)
+            }
+
+            setVisibleXRangeMaximum(5f)
+            moveViewToX(entries.last().x)
+        }
+    }
+
+    private fun LineChart.applyDefaultStyle() = apply {
+        setExtraOffsets(30f, 0f, 30f, 0f)
+        setHardwareAccelerationEnabled(true)
+
+        isHighlightPerTapEnabled = false
+        isHighlightPerDragEnabled = false
+        description.isEnabled = false
+        isAutoScaleMinMaxEnabled = true
+        legend.isEnabled = false
+
+        renderer = MentraLineChartRenderer(
+            context.getThemeColor(R.attr.lineChartValueBackgroundColor),
+            context.getThemeColor(R.attr.lineChartValueColor),
+            this,
+            animator,
+            viewPortHandler
+        )
+
+        axisLeft.apply {
+            isEnabled = false
+            setDrawAxisLine(false)
+            setDrawGridLines(false)
+            removeAllLimitLines()
+            setDrawZeroLine(false)
+        }
+
+        axisRight.apply {
+            isEnabled = false
+        }
+
+        xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            textColor = requireContext().getThemeColor(R.attr.colorOnSurface)
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+        }
+
+        onChartGestureListener = object : StartEndChartGestureListener() {
+            override fun onChartGestureStart(
+                me: MotionEvent?,
+                lastPerformedGesture: ChartGesture?
+            ) {
+                binding.statsRefreshLayout.isEnabled = false
+            }
+
+            override fun onChartGestureEnd(me: MotionEvent?, lastPerformedGesture: ChartGesture?) {
+                binding.statsRefreshLayout.isEnabled = true
+            }
+        }
+    }
+
+    private fun LineDataSet.applyDefaultStyle(): LineDataSet = apply {
+        val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
+        mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+        color = colorPrimary
+        fillDrawable = getDrawable(requireContext(), R.drawable.line_chart_background)
+        valueTextColor = requireContext().getThemeColor(R.attr.colorOnSurface)
+        lineWidth = 3f
+        circleRadius = 5f
+        valueTextSize = 10f
+        valueFormatter = ValueAxisFormatter()
+        setDrawCircleHole(false)
+        setCircleColor(colorPrimary)
+        setDrawFilled(true)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private val valueCharts: List<LineChart>
+        get() = listOf(
+            binding.valueLineChart,
+            binding.weeklyValueLineChart,
+            binding.monthlyValueLineChart
+        )
+
+}

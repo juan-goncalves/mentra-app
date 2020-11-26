@@ -7,6 +7,7 @@ import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.IconType
 import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.extensions.toPrice
 import java.time.LocalDateTime
 
 typealias Right<T> = Either.Right<T>
@@ -46,3 +47,5 @@ val XRPWalletModel = WalletModel("XRP", 23.982, 3)
 fun Double.toPrice(): Price = Price(Currency.USD, this, LocalDateTime.now())
 
 fun <T> T.toRight(): Right<T> = Right(this)
+
+infix fun Int.at(timestamp: LocalDateTime): Price = this.toDouble().toPrice(timestamp = timestamp)

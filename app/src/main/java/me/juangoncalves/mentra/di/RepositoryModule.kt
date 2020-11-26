@@ -4,14 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import me.juangoncalves.mentra.data.repositories.CoinRepositoryImpl
-import me.juangoncalves.mentra.data.repositories.IconRepositoryImpl
-import me.juangoncalves.mentra.data.repositories.PortfolioRepositoryImpl
-import me.juangoncalves.mentra.data.repositories.WalletRepositoryImpl
-import me.juangoncalves.mentra.domain.repositories.CoinRepository
-import me.juangoncalves.mentra.domain.repositories.IconRepository
-import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
-import me.juangoncalves.mentra.domain.repositories.WalletRepository
+import me.juangoncalves.mentra.data.repositories.*
+import me.juangoncalves.mentra.domain.repositories.*
 import javax.inject.Singleton
 
 @Module
@@ -33,5 +27,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindIconRepository(impl: IconRepositoryImpl): IconRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPreferenceRepository(impl: SharedPreferencesRepository): PreferenceRepository
 
 }

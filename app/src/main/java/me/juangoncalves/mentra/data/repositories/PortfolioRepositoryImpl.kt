@@ -27,7 +27,7 @@ class PortfolioRepositoryImpl @Inject constructor(
 ) : PortfolioRepository {
 
     override val portfolioValue: Flow<Price> get() = _portfolioValue
-    override val portfolioValueHistory: Flow<List<Price>> get() = _portfolioValueHistory
+    override val portfolioDailyValueHistory: Flow<List<Price>> get() = _portfolioValueHistory
 
     private val _portfolioValue: Flow<Price> =
         portfolioDao.getPortfolioValueStream()

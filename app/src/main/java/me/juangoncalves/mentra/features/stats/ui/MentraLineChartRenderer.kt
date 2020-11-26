@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.stats
+package me.juangoncalves.mentra.features.stats.ui
 
 import android.graphics.Canvas
 import android.graphics.Paint
