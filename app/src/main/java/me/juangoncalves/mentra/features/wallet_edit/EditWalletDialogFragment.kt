@@ -13,7 +13,7 @@ import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.EditWalletDialogFragmentBinding
-import me.juangoncalves.mentra.extensions.asCurrency
+import me.juangoncalves.mentra.extensions.asCurrencyAmount
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
@@ -75,7 +75,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         }
 
         viewModel.estimatedValueStream.observe(viewLifecycleOwner) { value ->
-            binding.priceTextView.text = value.asCurrency(symbol = "$")
+            binding.priceTextView.text = value.asCurrencyAmount()
         }
     }
 

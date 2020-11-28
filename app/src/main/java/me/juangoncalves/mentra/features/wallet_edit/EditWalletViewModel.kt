@@ -7,9 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
+import me.juangoncalves.mentra.extensions.toPrice
 import me.juangoncalves.mentra.features.common.*
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
+import java.math.BigDecimal
 
 class EditWalletViewModel @ViewModelInject constructor(
     private val updateWallet: UpdateWallet
@@ -18,7 +21,7 @@ class EditWalletViewModel @ViewModelInject constructor(
     val dismissStream: LiveData<Notification> get() = _dismiss
     val saveButtonStateStream: LiveData<Boolean> get() = _saveButtonEnabled
     val amountInputValidationStream: LiveData<Int?> get() = _amountInputValidation
-    val estimatedValueStream: LiveData<Double> get() = _estimatedValue
+    val estimatedValueStream: LiveData<Price> get() = _estimatedValue
 
     var savedUpdates: Boolean = false
         private set
@@ -29,9 +32,9 @@ class EditWalletViewModel @ViewModelInject constructor(
     private val _dismiss: MutableLiveData<Notification> = MutableLiveData()
     private val _amountInputValidation: MutableLiveData<Int?> = MutableLiveData()
     private val _saveButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
-    private val _estimatedValue: MutableLiveData<Double> = MutableLiveData()
+    private val _estimatedValue: MutableLiveData<Price> = MutableLiveData()
 
-    private var _updatedAmount: Double? = null
+    private var _updatedAmount: BigDecimal? = null
 
     fun initialize(args: Bundle?) {
         wallet = args?.getParcelable(BundleKeys.Wallet)
@@ -63,16 +66,18 @@ class EditWalletViewModel @ViewModelInject constructor(
         _amountInputValidation.value = validationMessageId
         _saveButtonEnabled.value =
             validationMessageId == null && parsedAmount != wallet.amountOfCoin
-        _estimatedValue.value = parsedAmount * wallet.coin.value
+        // TODO: Use the preferred user currency
+        _estimatedValue.value = (parsedAmount * wallet.coin.value.value).toPrice()
         _updatedAmount = parsedAmount
     }
 
-    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Int?, Double> {
-        if (text.isNullOrEmpty()) return R.string.required_field to 0.0
+    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Int?, BigDecimal> {
+        if (text.isNullOrEmpty()) return R.string.required_field to BigDecimal.ZERO
 
-        val amount = text.toString().toDoubleOrNull() ?: return R.string.invalid_number to 0.0
+        val amount = text.toString().toBigDecimalOrNull()
+            ?: return R.string.invalid_number to BigDecimal.ZERO
 
-        return if (amount <= 0) R.string.invalid_amount_warning to 0.0 else null to amount
+        return if (amount <= BigDecimal.ZERO) R.string.invalid_amount_warning to BigDecimal.ZERO else null to amount
     }
 
 }

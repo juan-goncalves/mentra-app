@@ -3,7 +3,6 @@ package me.juangoncalves.mentra.domain.usecases.coin
 import either.Either
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.usecases.UseCase
@@ -14,7 +13,7 @@ class GetCoinPrice @Inject constructor(
 ) : UseCase<Coin, Price> {
 
     override suspend operator fun invoke(params: Coin): Either<Failure, Price> {
-        return coinRepository.getCoinPrice(params, Currency.USD)
+        return coinRepository.getCoinPrice(params)
     }
 
 }

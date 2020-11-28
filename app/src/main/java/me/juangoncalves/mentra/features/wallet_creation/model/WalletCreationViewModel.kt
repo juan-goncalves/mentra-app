@@ -16,6 +16,7 @@ import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.requireRight
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.features.common.Event
+import java.math.BigDecimal
 
 class WalletCreationViewModel @ViewModelInject constructor(
     private val getCoins: GetCoins,
@@ -45,7 +46,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val selectedCoinStream = MutableLiveData<Coin?>(null)
     val fleetingErrorStream = MutableLiveData<Event<Int>>()
 
-    private var amountInput: Double? = null
+    private var amountInput: BigDecimal? = null
     private var filterJob: Job? = null
 
     fun initialize() {
@@ -132,12 +133,13 @@ class WalletCreationViewModel @ViewModelInject constructor(
         isLoadingCoinListStream.value = false
     }
 
-    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Int?, Double> {
-        if (text.isNullOrEmpty()) return R.string.required_field to 0.0
+    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Int?, BigDecimal> {
+        if (text.isNullOrEmpty()) return R.string.required_field to BigDecimal.ZERO
 
-        val amount = text.toString().toDoubleOrNull() ?: return R.string.invalid_number to 0.0
+        val amount = text.toString().toBigDecimalOrNull()
+            ?: return R.string.invalid_number to BigDecimal.ZERO
 
-        return if (amount <= 0) R.string.invalid_amount_warning to 0.0 else null to amount
+        return if (amount <= BigDecimal.ZERO) R.string.invalid_amount_warning to BigDecimal.ZERO else null to amount
     }
 
 }

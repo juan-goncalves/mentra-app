@@ -20,7 +20,7 @@ class GetPortfolioDistributionStream @Inject constructor(
         val valuePerCoin = hashMapOf<Coin, Double>()
         wallets.forEach { wallet ->
             val price = walletRepository.getWalletValueHistory(wallet).rightValue?.firstOrNull()
-            val value = price?.value ?: 0.0
+            val value = price?.value?.toDouble() ?: 0.0
             valuePerCoin[wallet.coin] = valuePerCoin.getOrDefault(wallet.coin, 0.0) + value
         }
 

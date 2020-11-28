@@ -14,21 +14,17 @@ import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
-import me.juangoncalves.mentra.domain.models.Currency
-import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.extensions.leftValue
 import me.juangoncalves.mentra.extensions.requireLeft
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.log.Logger
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.isA
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class WalletRepositoryImplTest {
@@ -72,11 +68,9 @@ class WalletRepositoryImplTest {
         val data = (result as Either.Right).value
         val btcWallet = data.find { it.coin == Bitcoin }
         val ethWallet = data.find { it.coin == Ethereum }
-        assertEquals(2, data.size)
-        assertNotNull(btcWallet)
-        assertNotNull(ethWallet)
-        assertThat(btcWallet!!.amount, closeTo(0.781, 0.0001))
-        assertThat(ethWallet!!.amount, closeTo(1.25, 0.0001))
+        data.size shouldBe 2
+        btcWallet!!.amount shouldBeCloseTo 0.781
+        ethWallet!!.amount shouldBeCloseTo 1.25
     }
 
     @Test
@@ -107,8 +101,8 @@ class WalletRepositoryImplTest {
 
             // Assert
             assertNotNull(result.rightValue)
-            assertEquals(Bitcoin.symbol, slot.captured.coinSymbol)
-            assertThat(slot.captured.amount, closeTo(0.45, 0.0001))
+            slot.captured.coinSymbol shouldBe Bitcoin.symbol
+            slot.captured.amount shouldBeCloseTo 0.45
         }
 
     @Test
@@ -163,7 +157,7 @@ class WalletRepositoryImplTest {
         runBlocking {
             // Arrange
             val wallet = Wallet(Ripple, 20.781, 1)
-            val newPrice = Price(Currency.USD, 1.34, LocalDateTime.now())
+            val newPrice = 1.34.toPrice()
 
             // Act
             val result = sut.updateWalletValue(wallet, newPrice)
@@ -178,7 +172,7 @@ class WalletRepositoryImplTest {
         runBlocking {
             // Arrange
             val wallet = Wallet(Ripple, 20.781, 1)
-            val newPrice = Price(Currency.USD, 1.34, LocalDateTime.now())
+            val newPrice = 1.34.toPrice()
             coEvery {
                 walletLocalDataSource.updateValue(any(), any())
             } throws StorageException()

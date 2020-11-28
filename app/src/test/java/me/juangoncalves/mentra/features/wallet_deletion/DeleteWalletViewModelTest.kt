@@ -70,7 +70,7 @@ class DeleteWalletViewModelTest {
         sut.initialize(args)
 
         // Assert
-        fakeWallet equals sut.wallet
+        fakeWallet shouldBe sut.wallet
     }
 
     @Test
@@ -109,7 +109,7 @@ class DeleteWalletViewModelTest {
         sut.deleteSelected()
 
         // Assert
-        sut.walletWasDeleted equals true
+        sut.walletWasDeleted shouldBe true
     }
 
     @Test
@@ -122,7 +122,7 @@ class DeleteWalletViewModelTest {
         sut.deleteSelected()
 
         // Assert
-        sut.walletWasDeleted equals false
+        sut.walletWasDeleted shouldBe false
     }
 
     @Test
@@ -140,9 +140,9 @@ class DeleteWalletViewModelTest {
     private val fakeWallet = WalletListViewState.Wallet(
         id = 1,
         iconUrl = "https://someurl.com/img.png",
-        value = 0.2312 * 11384.23,
-        amountOfCoin = 0.2312,
-        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23)
+        value = (0.2312 * 11384.23).toPrice(),
+        amountOfCoin = 0.2312.toBigDecimal(),
+        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23.toPrice())
     )
 
     private fun initSutWithFakeWallet() {

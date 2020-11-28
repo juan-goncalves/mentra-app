@@ -44,12 +44,12 @@ class UIWalletMapperTest {
         val result = sut.map(wallet, btcPrice)
 
         // Assert
-        result.id equals 10
-        result.amountOfCoin closeTo 1.5
-        result.value closeTo 12_431.0 * 1.5
-        result.iconUrl equals "mock"
-        result.coin.name equals Bitcoin.name
-        result.coin.value closeTo btcPrice.value
+        result.id shouldBe 10
+        result.amountOfCoin shouldBeCloseTo 1.5
+        result.value.value shouldBeCloseTo 12_431.0 * 1.5
+        result.iconUrl shouldBe "mock"
+        result.coin.name shouldBe Bitcoin.name
+        result.coin.value.value shouldBeCloseTo btcPrice.value
         coVerify { determinePrimaryIconMock.invoke(any()) }
     }
 
@@ -65,7 +65,7 @@ class UIWalletMapperTest {
             val result = sut.map(wallet, btcPrice)
 
             // Assert
-            result.iconUrl equals ""
+            result.iconUrl shouldBe ""
         }
 
     //region Helpers

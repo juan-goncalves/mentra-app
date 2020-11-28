@@ -15,18 +15,14 @@ import me.juangoncalves.mentra.db.daos.WalletValueDao
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.db.models.WalletValueModel
 import me.juangoncalves.mentra.domain.errors.StorageException
-import me.juangoncalves.mentra.domain.models.Currency
-import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
-import org.hamcrest.Matchers.closeTo
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -61,11 +57,9 @@ class WalletLocalDataSourceImplTest {
         // Assert
         val savedBtcWallet = result.find { it.coinSymbol == "BTC" }
         val savedEthWallet = result.find { it.coinSymbol == "ETH" }
-        assertEquals(2, result.size)
-        assertNotNull(savedBtcWallet)
-        assertNotNull(savedEthWallet)
-        assertThat(savedBtcWallet!!.amount, closeTo(0.53, 0.0001))
-        assertThat(savedEthWallet!!.amount, closeTo(1.0, 0.0001))
+        result.size shouldBe 2
+        savedBtcWallet!!.amount shouldBeCloseTo 0.53
+        savedEthWallet!!.amount shouldBeCloseTo 1.0
     }
 
     @Test(expected = StorageException::class)
@@ -94,9 +88,9 @@ class WalletLocalDataSourceImplTest {
         // Assert
         val storedWallets = walletDao.getAll()
         val storedWallet = storedWallets.first()
-        assertEquals(1, storedWallets.size)
-        assertEquals("BTC", storedWallet.coinSymbol)
-        assertThat(storedWallet.amount, closeTo(0.876, 0.0001))
+        storedWallets.size shouldBe 1
+        storedWallet.coinSymbol shouldBe "BTC"
+        storedWallet.amount shouldBeCloseTo 0.876
     }
 
     @Test(expected = StorageException::class)
@@ -128,10 +122,10 @@ class WalletLocalDataSourceImplTest {
             val result = sut.findByCoin(Bitcoin)
 
             // Assert
-            assertEquals(2, result.size)
-            result.forEach { assertEquals("BTC", it.coinSymbol) }
-            assertThat(result[0].amount, closeTo(0.22, 0.0001))
-            assertThat(result[1].amount, closeTo(1.233, 0.0001))
+            result.size shouldBe 2
+            result.forEach { it.coinSymbol shouldBe "BTC" }
+            result[0].amount shouldBeCloseTo 0.22
+            result[1].amount shouldBeCloseTo 1.233
         }
 
     @Test(expected = StorageException::class)
@@ -155,7 +149,7 @@ class WalletLocalDataSourceImplTest {
         val model = WalletModel("BTC", 0.22, 1)
         walletDao.insertAll(model)
         val wallet = Wallet(Bitcoin, model.amount, model.id)
-        val newValue = Price(Currency.USD, 1235.11, LocalDateTime.now())
+        val newValue = 1235.11.toPrice()
 
         // Act
         sut.updateValue(wallet, newValue)
@@ -163,7 +157,8 @@ class WalletLocalDataSourceImplTest {
         // Assert
         val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
         assertEquals(1, valueHistory.size)
-        assertThat(valueHistory.first().valueInUSD, closeTo(1235.11, 0.0001))
+        valueHistory.size shouldBe 1
+        valueHistory.first().valueInUSD shouldBeCloseTo 1235.11
     }
 
     @Test
@@ -174,16 +169,16 @@ class WalletLocalDataSourceImplTest {
             walletDao.insertAll(model)
             val wallet = Wallet(Bitcoin, model.amount, model.id)
             val repeatedDay = LocalDate.of(2020, 5, 10)
-            walletValueDao.insert(WalletValueModel(wallet.id, 144.45, repeatedDay))
-            val newValue = Price(Currency.USD, 432.11, repeatedDay.atStartOfDay())
+            walletValueDao.insert(WalletValueModel(wallet.id, 144.45.toBigDecimal(), repeatedDay))
+            val newValue = 432.11.toPrice(timestamp = repeatedDay.atStartOfDay())
 
             // Act
             sut.updateValue(wallet, newValue)
 
             // Assert
             val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
-            assertEquals(1, valueHistory.size)
-            assertThat(valueHistory.first().valueInUSD, closeTo(432.11, 0.0001))
+            valueHistory.size shouldBe 1
+            valueHistory.first().valueInUSD shouldBeCloseTo 432.11
         }
 
     @Test(expected = StorageException::class)
@@ -191,7 +186,7 @@ class WalletLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 3.21, 1)
-            val newValue = Price(Currency.USD, 1235.11, LocalDateTime.now())
+            val newValue = 1235.11.toPrice()
             walletValueDao = mockk()
             coEvery { walletValueDao.insert(any()) } throws SQLiteException()
             initializeSut()
@@ -213,7 +208,7 @@ class WalletLocalDataSourceImplTest {
 
         // Assert
         val foundWallet = walletDao.getAll().find { it.coinSymbol == "ETH" }
-        assertNull(foundWallet)
+        foundWallet shouldBe null
     }
 
     /*

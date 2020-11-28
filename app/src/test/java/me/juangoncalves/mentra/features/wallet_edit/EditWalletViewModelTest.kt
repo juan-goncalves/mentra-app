@@ -9,14 +9,13 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.errors.StorageFailure
+import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.DisplayError
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.closeTo
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +32,7 @@ class EditWalletViewModelTest {
     @get:Rule val instantExecutorRule = InstantTaskExecutorRule()
 
     @MockK lateinit var updateWalletMock: UpdateWallet
-    @MockK lateinit var estimateObserver: Observer<Double>
+    @MockK lateinit var estimateObserver: Observer<Price>
     @MockK lateinit var inputWarningObserver: Observer<Int?>
     @MockK lateinit var saveButtonStateObserver: Observer<Boolean>
     @MockK lateinit var dismissObserver: Observer<Notification>
@@ -71,14 +70,14 @@ class EditWalletViewModelTest {
     fun `estimatedValueStream emits the wallet value after initialization`() {
         // Arrange
         val args = bundleOf(BundleKeys.Wallet to fakeWallet)
-        val captor = slot<Double>()
+        val captor = slot<Price>()
 
         // Act
         sut.initialize(args)
 
         // Assert
         verify(exactly = 1) { estimateObserver.onChanged(capture(captor)) }
-        assertThat(captor.captured, closeTo(fakeWallet.value, 0.0001))
+        captor.captured.value shouldBeCloseTo fakeWallet.value.value.toDouble()
     }
 
     @Test
@@ -90,35 +89,35 @@ class EditWalletViewModelTest {
         sut.initialize(args)
 
         // Assert
-        fakeWallet equals sut.wallet
+        fakeWallet shouldBe sut.wallet
     }
 
     @Test
     fun `estimatedValueStream emits the correct estimation when the amount input changes`() {
         // Arrange
         initSutWithFakeWallet()
-        val captor = slot<Double>()
+        val captor = slot<Price>()
 
         // Act
         sut.amountInputChanged("1.0")
 
         // Assert
         verify(exactly = 2) { estimateObserver.onChanged(capture(captor)) }
-        captor.captured closeTo 11384.23
+        captor.captured.value shouldBeCloseTo 11384.23
     }
 
     @Test
     fun `estimatedValueStream emits 0 when the input amount is invalid`() {
         // Arrange
         initSutWithFakeWallet()
-        val captor = slot<Double>()
+        val captor = slot<Price>()
 
         // Act
         sut.amountInputChanged("invalid")
 
         // Assert
         verify(exactly = 2) { estimateObserver.onChanged(capture(captor)) }
-        captor.captured closeTo 0.0
+        captor.captured.value shouldBeCloseTo 0.0
     }
 
     @Test
@@ -132,7 +131,7 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 2) { inputWarningObserver.onChanged(captureNullable(captor)) }
-        captor.last() equals R.string.required_field
+        captor.last() shouldBe R.string.required_field
     }
 
     @Test
@@ -146,7 +145,7 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 2) { inputWarningObserver.onChanged(captureNullable(captor)) }
-        captor.last() equals R.string.invalid_amount_warning
+        captor.last() shouldBe R.string.invalid_amount_warning
     }
 
     @Test
@@ -160,7 +159,7 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 2) { inputWarningObserver.onChanged(captureNullable(captor)) }
-        captor.last() equals R.string.invalid_number
+        captor.last() shouldBe R.string.invalid_number
     }
 
     @Test
@@ -178,7 +177,7 @@ class EditWalletViewModelTest {
             inputWarningObserver.onChanged(captureNullable(captor))
         }
 
-        captor.last() equals null
+        captor.last() shouldBe null
     }
 
     @Test
@@ -192,7 +191,7 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 2) { saveButtonStateObserver.onChanged(capture(captor)) }
-        captor.last() equals true
+        captor.last() shouldBe true
     }
 
     @Test
@@ -206,7 +205,7 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 2) { saveButtonStateObserver.onChanged(capture(captor)) }
-        captor.last() equals false
+        captor.last() shouldBe false
     }
 
     @Test
@@ -220,7 +219,7 @@ class EditWalletViewModelTest {
 
         // Assert
         verify(exactly = 2) { saveButtonStateObserver.onChanged(capture(captor)) }
-        captor.last() equals false
+        captor.last() shouldBe false
     }
 
     @Test
@@ -248,7 +247,7 @@ class EditWalletViewModelTest {
 
         // Assert
         coVerify { updateWalletMock.invoke(capture(captor)) }
-        captor.captured.newAmount closeTo 3.456
+        captor.captured.newAmount shouldBeCloseTo 3.456
     }
 
     @Test
@@ -261,7 +260,7 @@ class EditWalletViewModelTest {
         sut.saveSelected()
 
         // Assert
-        sut.savedUpdates equals true
+        sut.savedUpdates shouldBe true
     }
 
     @Test
@@ -293,9 +292,9 @@ class EditWalletViewModelTest {
     private val fakeWallet = WalletListViewState.Wallet(
         id = 1,
         iconUrl = "https://someurl.com/img.png",
-        value = 0.2312 * 11384.23,
-        amountOfCoin = 0.2312,
-        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23)
+        value = (0.2312 * 11384.23).toPrice(),
+        amountOfCoin = 0.2312.toBigDecimal(),
+        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23.toPrice())
     )
 
     private fun initSutWithFakeWallet() {

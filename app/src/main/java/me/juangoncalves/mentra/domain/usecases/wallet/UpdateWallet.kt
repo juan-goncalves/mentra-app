@@ -9,13 +9,14 @@ import me.juangoncalves.mentra.extensions.Left
 import me.juangoncalves.mentra.extensions.isLeft
 import me.juangoncalves.mentra.extensions.requireLeft
 import me.juangoncalves.mentra.extensions.requireRight
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class UpdateWallet @Inject constructor(
     private val walletRepository: WalletRepository
 ) : UseCase<UpdateWallet.Params, Unit> {
 
-    class Params(val walletId: Long, val newAmount: Double)
+    class Params(val walletId: Long, val newAmount: BigDecimal)
 
     override suspend fun invoke(params: Params): Either<Failure, Unit> {
         val result = walletRepository.findWalletById(params.walletId)

@@ -11,6 +11,8 @@ import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.domain.usecases.VoidUseCase
 import me.juangoncalves.mentra.domain.usecases.wallet.RefreshWalletValue
 import me.juangoncalves.mentra.extensions.*
+import java.time.LocalDateTime
+import java.util.*
 import javax.inject.Inject
 
 class RefreshPortfolioValue @Inject constructor(
@@ -31,9 +33,16 @@ class RefreshPortfolioValue @Inject constructor(
                 if (refreshResult.isLeft()) {
                     return@withContext Price.None to refreshResult.requireLeft()
                 }
-                total += refreshResult.requireRight().value
+                total += refreshResult.requireRight().value.toDouble()
             }
-            total.toPrice() to null
+
+            val totalPrice = Price(
+                total.toBigDecimal(),
+                Currency.getInstance("USD"),
+                LocalDateTime.now()
+            )
+
+            totalPrice to null
         }
 
         if (totalCalculationFailure != null) return Left(totalCalculationFailure)

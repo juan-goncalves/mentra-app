@@ -2,15 +2,19 @@ package me.juangoncalves.mentra.domain.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.*
 
 @Parcelize
 data class Price(
+    val value: BigDecimal,
     val currency: Currency,
-    val value: Double,
-    val date: LocalDateTime
+    val timestamp: LocalDateTime
 ) : Parcelable {
+
     companion object {
-        val None: Price = Price(Currency.USD, -1.0, LocalDateTime.now())
+        val None: Price = Price(BigDecimal(-1), Currency.getInstance("USD"), LocalDateTime.now())
     }
+
 }

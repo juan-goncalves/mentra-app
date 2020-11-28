@@ -38,21 +38,22 @@ class TimeChartMapper @Inject constructor(
         withContext(defaultDispatcher) {
             prices.map { price ->
                 when (granularity) {
-                    TimeGranularity.Daily -> dateFormatter.format(price.date.toLocalDate()) ?: ""
+                    TimeGranularity.Daily -> dateFormatter.format(price.timestamp.toLocalDate())
+                        ?: ""
                     TimeGranularity.Weekly -> {
-                        val month = price.date.month.getDisplayName(
+                        val month = price.timestamp.month.getDisplayName(
                             TextStyle.SHORT,
                             Locale.getDefault()
                         )
-                        val week = price.date.get(weekFields.weekOfMonth())
-                        "$month ${price.date.year} - W$week"
+                        val week = price.timestamp.get(weekFields.weekOfMonth())
+                        "$month ${price.timestamp.year} - W$week"
                     }
                     TimeGranularity.Monthly -> {
-                        val month = price.date.month.getDisplayName(
+                        val month = price.timestamp.month.getDisplayName(
                             TextStyle.SHORT,
                             Locale.getDefault()
                         )
-                        "$month ${price.date.year}"
+                        "$month ${price.timestamp.year}"
                     }
                 }
             }

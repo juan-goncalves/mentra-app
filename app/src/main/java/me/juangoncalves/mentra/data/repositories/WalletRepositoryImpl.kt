@@ -13,13 +13,13 @@ import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.extensions.Right
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.log.Logger
+import java.util.*
 import javax.inject.Inject
 
 class WalletRepositoryImpl @Inject constructor(
@@ -109,7 +109,11 @@ class WalletRepositoryImpl @Inject constructor(
                 val valueModels = localDataSource.getValueHistory(wallet)
                 val prices = withContext(defaultDispatcher) {
                     valueModels.map { valueModel ->
-                        Price(Currency.USD, valueModel.valueInUSD, valueModel.date.atStartOfDay())
+                        Price(
+                            valueModel.valueInUSD,
+                            Currency.getInstance("USD"),
+                            valueModel.date.atStartOfDay()
+                        )
                     }
                 }
                 Right(prices)

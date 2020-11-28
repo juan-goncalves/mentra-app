@@ -1,6 +1,7 @@
 package me.juangoncalves.mentra.db.models
 
 import androidx.room.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity(
@@ -17,6 +18,6 @@ import java.time.LocalDateTime
 )
 data class CoinPriceModel(
     @ColumnInfo(name = "coin_symbol") val coinSymbol: String,
-    @ColumnInfo(name = "usd_value") val valueInUSD: Double,
+    @ColumnInfo(name = "usd_value") val valueInUSD: BigDecimal,
     @PrimaryKey val timestamp: LocalDateTime = LocalDateTime.now()
 )

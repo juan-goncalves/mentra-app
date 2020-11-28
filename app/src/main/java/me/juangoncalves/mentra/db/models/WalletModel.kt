@@ -1,6 +1,7 @@
 package me.juangoncalves.mentra.db.models
 
 import androidx.room.*
+import java.math.BigDecimal
 
 @Entity(
     tableName = "Wallet",
@@ -16,6 +17,14 @@ import androidx.room.*
 )
 data class WalletModel(
     @ColumnInfo(name = "coin_symbol") val coinSymbol: String,
-    @ColumnInfo(name = "amount") val amount: Double,
+    @ColumnInfo(name = "amount") val amount: BigDecimal,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
-)
+) {
+
+    constructor(
+        coinSymbol: String,
+        amount: Double,
+        id: Long = 0
+    ) : this(coinSymbol, amount.toBigDecimal(), id)
+
+}

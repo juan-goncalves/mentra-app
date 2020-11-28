@@ -13,13 +13,12 @@ import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.di.IoDispatcher
 import me.juangoncalves.mentra.domain.errors.*
 import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.extensions.elapsedMinutes
-import me.juangoncalves.mentra.extensions.toPrice
 import me.juangoncalves.mentra.log.Logger
+import java.util.*
 import javax.inject.Inject
 
 class CoinRepositoryImpl @Inject constructor(
@@ -75,19 +74,17 @@ class CoinRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCoinPrice(coin: Coin, currency: Currency): Either<Failure, Price> =
+    override suspend fun getCoinPrice(coin: Coin): Either<Failure, Price> =
         withContext(ioDispatcher) {
-            return@withContext try {
-                // TODO: Handle currencies
+            try {
                 val cachedPrice = localDataSource.getLastCoinPrice(coin)
-                if (cachedPrice.date.elapsedMinutes() <= 5) {
+                if (cachedPrice.timestamp.elapsedMinutes() <= 5) {
                     Either.Right(cachedPrice)
                 } else {
                     throw PriceCacheMissException(cachedPrice)
                 }
             } catch (cacheException: PriceCacheMissException) {
                 try {
-                    // TODO: Handle currencies
                     val price = remoteDataSource.fetchCoinPrice(coin)
                     // TODO: Handle storage exception
                     localDataSource.storeCoinPrice(coin, price)
@@ -110,10 +107,13 @@ class CoinRepositoryImpl @Inject constructor(
             val coinPricesMap = hashMapOf<Coin, Price>()
 
             prices.forEach { priceModel ->
-                val coin =
-                    localDataSource.findCoinBySymbol(priceModel.coinSymbol) ?: return@forEach
-                coinPricesMap[coin] =
-                    priceModel.valueInUSD.toPrice(timestamp = priceModel.timestamp)
+                val coin = localDataSource.findCoinBySymbol(priceModel.coinSymbol) ?: return@forEach
+
+                coinPricesMap[coin] = Price(
+                    priceModel.valueInUSD,
+                    Currency.getInstance("USD"),
+                    priceModel.timestamp
+                )
             }
 
             coinPricesMap

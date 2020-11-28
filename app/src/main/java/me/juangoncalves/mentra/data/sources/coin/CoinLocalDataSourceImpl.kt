@@ -9,8 +9,8 @@ import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.domain.errors.PriceCacheMissException
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.Price
+import java.util.*
 import javax.inject.Inject
 
 class CoinLocalDataSourceImpl @Inject constructor(
@@ -29,17 +29,19 @@ class CoinLocalDataSourceImpl @Inject constructor(
     override suspend fun clearCoins() = orStorageException { coinDao.clearAll() }
 
     override suspend fun getLastCoinPrice(coin: Coin): Price {
-        val priceModel = orStorageException {
+        val model = orStorageException {
             coinPriceDao.getMostRecentCoinPrice(coin.symbol)
         } ?: throw PriceCacheMissException()
-        return Price(Currency.USD, priceModel.valueInUSD, priceModel.timestamp)
+
+        return Price(model.valueInUSD, Currency.getInstance("USD"), model.timestamp)
     }
 
     override suspend fun storeCoinPrice(coin: Coin, price: Price) {
-        if (price.currency != Currency.USD) {
-            throw IllegalArgumentException("Prices in the database are stored in USD")
+        require(price.currency == Currency.getInstance("USD")) {
+            "Prices in the database are stored in USD"
         }
-        val model = CoinPriceModel(coin.symbol, price.value, price.date)
+
+        val model = CoinPriceModel(coin.symbol, price.value, price.timestamp)
         return orStorageException("Exception when saving coin price.") {
             coinPriceDao.insertCoinPrice(model)
         }

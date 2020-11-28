@@ -11,7 +11,7 @@ import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
-import me.juangoncalves.mentra.extensions.asCurrency
+import me.juangoncalves.mentra.extensions.asCurrencyAmount
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
@@ -43,8 +43,8 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
         holder.binding.apply {
             coinNameTextView.text = wallet.coin.name
             coinAmountTextView.text = wallet.amountOfCoin.asCoinAmount()
-            coinPriceTextView.text = wallet.coin.value.asCurrency(symbol = "$")
-            walletValueTextView.text = wallet.value.asCurrency(symbol = "$")
+            coinPriceTextView.text = wallet.coin.value.asCurrencyAmount()
+            walletValueTextView.text = wallet.value.asCurrencyAmount()
 
             Glide.with(root)
                 .load(wallet.iconUrl)

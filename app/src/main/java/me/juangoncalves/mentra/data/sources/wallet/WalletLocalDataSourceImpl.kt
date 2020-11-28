@@ -36,16 +36,18 @@ class WalletLocalDataSourceImpl @Inject constructor(
         return orStorageException { walletDao.findById(id) }
     }
 
+    // TODO: Refactor to receive a BigDecimal instead of a price (to force / assume it is USD)
     override suspend fun update(wallet: WalletModel, price: Price?) = orStorageException {
         walletDao.update(wallet)
         if (price != null) {
-            val valueModel = WalletValueModel(wallet.id, price.value, price.date.toLocalDate())
+            val valueModel = WalletValueModel(wallet.id, price.value, price.timestamp.toLocalDate())
             walletValueDao.insert(valueModel)
         }
     }
 
+    // TODO: Remove method (use the regular update)
     override suspend fun updateValue(wallet: Wallet, price: Price) {
-        val model = WalletValueModel(wallet.id, price.value, price.date.toLocalDate())
+        val model = WalletValueModel(wallet.id, price.value, price.timestamp.toLocalDate())
         orStorageException("Exception when inserting wallet value.") {
             walletValueDao.insert(model)
         }

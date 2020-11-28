@@ -4,23 +4,25 @@ import either.Either
 import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.domain.models.IconType
 import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.extensions.toPrice
 import java.time.LocalDateTime
+import java.util.*
 
 typealias Right<T> = Either.Right<T>
 typealias Left<T> = Either.Left<T>
+
+val USD: Currency = Currency.getInstance("USD")
+val EUR: Currency = Currency.getInstance("EUR")
 
 val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png", IconType.Unknown)
 val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png", IconType.Unknown)
 val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.png", IconType.Unknown)
 
 val USDPrices = mapOf(
-    Bitcoin to Price(Currency.USD, 9538.423, LocalDateTime.now()),
-    Ethereum to Price(Currency.USD, 242.351, LocalDateTime.now()),
-    Ripple to Price(Currency.USD, 0.2987, LocalDateTime.now())
+    Bitcoin to Price(9538.423.toBigDecimal(), USD, LocalDateTime.now()),
+    Ethereum to Price(242.351.toBigDecimal(), USD, LocalDateTime.now()),
+    Ripple to Price(0.2987.toBigDecimal(), USD, LocalDateTime.now())
 )
 
 val BitcoinModel = CoinModel(
@@ -44,7 +46,10 @@ val BTCWalletModel = WalletModel("BTC", 0.22, 1)
 val ETHWalletModel = WalletModel("ETH", 1.233, 2)
 val XRPWalletModel = WalletModel("XRP", 23.982, 3)
 
-fun Double.toPrice(): Price = Price(Currency.USD, this, LocalDateTime.now())
+fun Double.toPrice(
+    currency: Currency = USD,
+    timestamp: LocalDateTime = LocalDateTime.now()
+): Price = Price(toBigDecimal(), currency, timestamp)
 
 fun <T> T.toRight(): Right<T> = Right(this)
 

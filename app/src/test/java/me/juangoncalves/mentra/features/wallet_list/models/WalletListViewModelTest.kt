@@ -19,6 +19,7 @@ import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.E
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class WalletListViewModelTest {
@@ -67,8 +68,8 @@ class WalletListViewModelTest {
             stateObserver.onChanged(capture(state2))
             ignorePortfolioRefresh()
         }
-        state1.captured.isLoadingWallets equals true
-        state2.captured.isLoadingWallets equals false
+        state1.captured.isLoadingWallets shouldBe true
+        state2.captured.isLoadingWallets shouldBe false
     }
 
     @Test
@@ -88,7 +89,7 @@ class WalletListViewModelTest {
             ignorePortfolioRefresh()
         }
 
-        state.captured.wallets.size equals wallets.size
+        state.captured.wallets.size shouldBe wallets.size
 
         coVerify {
             wallets.forEach { wallet ->
@@ -115,7 +116,7 @@ class WalletListViewModelTest {
             ignorePortfolioRefresh()
         }
 
-        state.captured.isEmpty equals true
+        state.captured.isEmpty shouldBe true
     }
 
     @Test
@@ -135,7 +136,7 @@ class WalletListViewModelTest {
             ignorePortfolioRefresh()
         }
 
-        state.captured.isEmpty equals false
+        state.captured.isEmpty shouldBe false
     }
 
     @Test
@@ -161,8 +162,8 @@ class WalletListViewModelTest {
             stateObserver.onChanged(capture(state2))
         }
 
-        state1.captured.isRefreshingPrices equals true
-        state2.captured.isRefreshingPrices equals false
+        state1.captured.isRefreshingPrices shouldBe true
+        state2.captured.isRefreshingPrices shouldBe false
     }
 
     @Test
@@ -245,7 +246,7 @@ class WalletListViewModelTest {
             ignorePortfolioRefresh()
         }
 
-        (state.captured.error is Error.WalletsNotLoaded) equals true
+        (state.captured.error is Error.WalletsNotLoaded) shouldBe true
     }
 
     @Test
@@ -266,7 +267,7 @@ class WalletListViewModelTest {
             ignorePortfolioRefresh()
         }
 
-        state.captured.isEmpty equals false
+        state.captured.isEmpty shouldBe false
     }
 
     @Test
@@ -299,11 +300,6 @@ class WalletListViewModelTest {
         stateObserver.onChanged(any())
     }
 
-    private fun MockKVerificationScope.ignoreWalletLoad() {
-        stateObserver.onChanged(any())
-        stateObserver.onChanged(any())
-    }
-
     private fun setupSuccessMocks() {
         coEvery { walletListStreamMock.invoke() } returns flowOf(wallets)
         coEvery { activeCoinsPriceStreamMock.invoke() } returns flowOf(prices)
@@ -311,9 +307,9 @@ class WalletListViewModelTest {
         coEvery { uiWalletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
             id = 0,
             iconUrl = "",
-            value = 0.0,
-            coin = WalletListViewState.Coin("", 0.0),
-            amountOfCoin = 0.0
+            value = 0.0.toPrice(),
+            coin = WalletListViewState.Coin("", 0.0.toPrice()),
+            amountOfCoin = BigDecimal.ZERO
         )
     }
 

@@ -36,8 +36,8 @@ class GetPreferredPortfolioValueHistoryStream @Inject constructor(
         val weekFields = WeekFields.of(Locale.getDefault())
 
         val byWeek = associateBy { price ->
-            val week = price.date.get(weekFields.weekOfWeekBasedYear())
-            val year = price.date.get(weekFields.weekBasedYear())
+            val week = price.timestamp.get(weekFields.weekOfWeekBasedYear())
+            val year = price.timestamp.get(weekFields.weekBasedYear())
             Pair(week, year)
         }
 
@@ -46,8 +46,8 @@ class GetPreferredPortfolioValueHistoryStream @Inject constructor(
 
     private suspend fun List<Price>.toMonthly(): List<Price> = withContext(defaultDispatcher) {
         val byMonth = associateBy { price ->
-            val month = price.date.monthValue
-            val year = price.date.year
+            val month = price.timestamp.monthValue
+            val year = price.timestamp.year
             Pair(month, year)
         }
 

@@ -11,16 +11,13 @@ import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.domain.errors.InternetConnectionException
 import me.juangoncalves.mentra.domain.errors.ServerException
-import me.juangoncalves.mentra.domain.models.Currency
 import me.juangoncalves.mentra.log.Logger
 import me.juangoncalves.mentra.network.CryptoCompareResponse
 import me.juangoncalves.mentra.network.CryptoCompareService
 import me.juangoncalves.mentra.network.models.CoinListSchema
 import me.juangoncalves.mentra.network.models.CoinSchema
 import me.juangoncalves.mentra.network.models.PriceSchema
-import org.hamcrest.Matchers.closeTo
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
@@ -111,8 +108,8 @@ class CoinRemoteDataSourceImplTest {
 
             // Assert
             coVerify { apiService.getCoinPrice(Bitcoin.symbol) }
-            assertEquals(result.currency, Currency.USD)
-            assertThat(result.value, closeTo(price.USD, 0.0001))
+            result.currency shouldBe USD
+            result.value shouldBeCloseTo price.USD.toBigDecimal()
         }
 
     @Test(expected = InternetConnectionException::class)

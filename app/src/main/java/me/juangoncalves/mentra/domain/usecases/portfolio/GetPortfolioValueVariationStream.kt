@@ -17,12 +17,13 @@ class GetPortfolioValueVariationStream @Inject constructor(
         portfolioRepository.portfolioDailyValueHistory.map { prices ->
             if (prices.size < 2) return@map ValueVariation.None
 
-            val latestValue = prices[prices.lastIndex]
-            val previousDayValue = prices[prices.lastIndex - 1]
-            val percentChange = latestValue.value / previousDayValue.value - 1
-            val valueDifference = latestValue.value - previousDayValue.value
-
-            ValueVariation(valueDifference.toPrice(), percentChange, timeUnit)
+            val latestValue = prices[prices.lastIndex].value.toDouble()
+            val previousDayValue = prices[prices.lastIndex - 1].value.toDouble()
+            val percentChange = latestValue / previousDayValue - 1
+            val valueDifference = latestValue - previousDayValue
+            // TODO: Handle currencies appropriately
+            val diffPrice = valueDifference.toBigDecimal().toPrice()
+            ValueVariation(diffPrice, percentChange, timeUnit)
         }
 
 }

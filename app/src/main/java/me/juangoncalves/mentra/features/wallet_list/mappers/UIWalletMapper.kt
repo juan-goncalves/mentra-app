@@ -22,8 +22,8 @@ class UIWalletMapper @Inject constructor(
             WalletListViewState.Wallet(
                 id = wallet.id,
                 iconUrl = determinePrimaryIcon(wallet.coin).rightValue ?: "",
-                value = walletValue,
-                coin = WalletListViewState.Coin(wallet.coin.name, coinPrice.value),
+                value = Price(walletValue, coinPrice.currency, coinPrice.timestamp),
+                coin = WalletListViewState.Coin(wallet.coin.name, coinPrice),
                 amountOfCoin = wallet.amount
             )
         }

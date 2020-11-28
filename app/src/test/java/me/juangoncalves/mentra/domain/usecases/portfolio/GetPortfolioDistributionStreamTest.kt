@@ -9,8 +9,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import me.juangoncalves.mentra.*
-import me.juangoncalves.mentra.domain.models.Currency
-import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
@@ -44,32 +42,32 @@ class GetPortfolioDistributionStreamTest {
         coEvery { walletRepositoryMock.getWallets() } returns wallets.toRight()
 
         coEvery { walletRepositoryMock.getWalletValueHistory(wallets[0]) } returns listOf(
-            Price(Currency.USD, 300.0, days[0]),
-            Price(Currency.USD, 150.0, days[1])
+            300.0.toPrice(timestamp = days[0]),
+            150.0.toPrice(timestamp = days[1])
         ).toRight()
 
         coEvery { walletRepositoryMock.getWalletValueHistory(wallets[1]) } returns listOf(
-            Price(Currency.USD, 50.0, days[0]),
-            Price(Currency.USD, 40.0, days[1])
+            50.0.toPrice(timestamp = days[0]),
+            40.0.toPrice(timestamp = days[1])
         ).toRight()
 
         coEvery { walletRepositoryMock.getWalletValueHistory(wallets[2]) } returns listOf(
-            Price(Currency.USD, 10.0, days[0]),
-            Price(Currency.USD, 15.0, days[1])
+            10.0.toPrice(timestamp = days[0]),
+            15.0.toPrice(timestamp = days[1])
         ).toRight()
 
         coEvery { walletRepositoryMock.getWalletValueHistory(wallets[3]) } returns listOf(
-            Price(Currency.USD, 140.0, days[0]),
-            Price(Currency.USD, 60.0, days[1])
+            140.0.toPrice(timestamp = days[0]),
+            60.0.toPrice(timestamp = days[1])
         ).toRight()
 
         // Act
         val result = sut().first()
 
         // Assert
-        result.getOrDefault(Bitcoin, -1.0) closeTo 0.88
-        result.getOrDefault(Ethereum, -1.0) closeTo 0.1
-        result.getOrDefault(Ripple, -1.0) closeTo 0.02
+        result.getOrDefault(Bitcoin, -1.0) shouldBeCloseTo 0.88
+        result.getOrDefault(Ethereum, -1.0) shouldBeCloseTo 0.1
+        result.getOrDefault(Ripple, -1.0) shouldBeCloseTo 0.02
     }
 
     @Test
@@ -79,16 +77,16 @@ class GetPortfolioDistributionStreamTest {
         coEvery { walletRepositoryMock.getWallets() } returns wallets.subList(0, 2).toRight()
         coEvery { walletRepositoryMock.getWalletValueHistory(wallets[1]) } returns Left(mockk())
         coEvery { walletRepositoryMock.getWalletValueHistory(wallets[0]) } returns listOf(
-            Price(Currency.USD, 300.0, days[0]),
-            Price(Currency.USD, 150.0, days[1])
+            300.0.toPrice(timestamp = days[0]),
+            150.0.toPrice(timestamp = days[1])
         ).toRight()
 
         // Act
         val result = sut().first()
 
         // Assert
-        result.getOrDefault(Bitcoin, -1.0) closeTo 1.0
-        result.getOrDefault(Ethereum, -1.0) closeTo 0.0
+        result.getOrDefault(Bitcoin, -1.0) shouldBeCloseTo 1.0
+        result.getOrDefault(Ethereum, -1.0) shouldBeCloseTo 0.0
     }
 
     @Test
@@ -101,7 +99,7 @@ class GetPortfolioDistributionStreamTest {
         val result = sut().first()
 
         // Assert
-        result.size equals 0
+        result.size shouldBe 0
     }
 
     @Test
@@ -110,14 +108,14 @@ class GetPortfolioDistributionStreamTest {
         coEvery { portfolioRepositoryMock.portfolioValue } returns flowOf(0.0.toPrice())
         coEvery { walletRepositoryMock.getWallets() } returns wallets.subList(0, 1).toRight()
         coEvery { walletRepositoryMock.getWalletValueHistory(wallets[0]) } returns listOf(
-            Price(Currency.USD, 0.0, days[0])
+            0.0.toPrice(timestamp = days[0])
         ).toRight()
 
         // Act
         val result = sut().first()
 
         // Assert
-        result.size equals 0
+        result.size shouldBe 0
     }
 
     @Test
@@ -130,7 +128,7 @@ class GetPortfolioDistributionStreamTest {
         val result = sut().first()
 
         // Assert
-        result.size equals 0
+        result.size shouldBe 0
     }
 
     //region Helpers

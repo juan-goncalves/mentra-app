@@ -6,9 +6,7 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import me.juangoncalves.mentra.Bitcoin
-import me.juangoncalves.mentra.MainCoroutineRule
-import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Wallet
@@ -18,9 +16,6 @@ import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
 import me.juangoncalves.mentra.extensions.toLeft
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel.Step
-import me.juangoncalves.mentra.toRight
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.closeTo
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -282,8 +277,8 @@ class WalletCreationViewModelTest {
 
         // Assert
         coVerify { createWalletMock.invoke(capture(captor)) }
-        assertEquals(Bitcoin, captor.captured.coin)
-        assertThat(captor.captured.amount, closeTo(1.0, 0.0001))
+        captor.captured.coin shouldBe Bitcoin
+        captor.captured.amount shouldBeCloseTo 1.0
     }
 
     @Test

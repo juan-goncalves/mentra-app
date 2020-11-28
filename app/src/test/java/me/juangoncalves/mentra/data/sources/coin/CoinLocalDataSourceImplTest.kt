@@ -16,9 +16,6 @@ import me.juangoncalves.mentra.db.daos.CoinPriceDao
 import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.domain.errors.PriceCacheMissException
 import me.juangoncalves.mentra.domain.errors.StorageException
-import me.juangoncalves.mentra.domain.models.Currency
-import me.juangoncalves.mentra.domain.models.Price
-import org.hamcrest.Matchers.closeTo
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -143,14 +140,14 @@ class CoinLocalDataSourceImplTest {
     fun `storeCoinPrice should store the coin price in the database`() = runBlocking {
         // Arrange
         coinDao.insertAll(BitcoinModel)
-        val price = Price(Currency.USD, 8765.321, LocalDateTime.now())
+        val price = 8765.321.toPrice()
 
         // Act
         sut.storeCoinPrice(Bitcoin, price)
 
         // Assert
         val latestPrice = coinPriceDao.getCoinPriceHistory(Bitcoin.symbol).first()
-        assertThat(latestPrice.valueInUSD, closeTo(price.value, 0.0001))
+        latestPrice.valueInUSD shouldBeCloseTo price.value
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -158,7 +155,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Arrange
             coinDao.insertAll(BitcoinModel)
-            val price = Price(Currency.EUR, 8765.321, LocalDateTime.now())
+            val price = 8765.321.toPrice(currency = EUR)
 
             // Act
             sut.storeCoinPrice(Bitcoin, price)
@@ -168,7 +165,7 @@ class CoinLocalDataSourceImplTest {
     fun `storeCoinPrice should throw a StorageException if the coin is not in the database`() =
         runBlocking {
             // Arrange
-            val price = Price(Currency.USD, 8765.321, LocalDateTime.now())
+            val price = 8765.321.toPrice()
 
             // Act
             sut.storeCoinPrice(Bitcoin, price)
@@ -180,9 +177,9 @@ class CoinLocalDataSourceImplTest {
             // Arrange
             coinDao.insertAll(BitcoinModel)
             val prices = arrayOf(
-                CoinPriceModel("BTC", 20.5, LocalDateTime.of(2020, 6, 23, 5, 30)),
-                CoinPriceModel("BTC", 738.5, LocalDateTime.of(2020, 8, 13, 9, 30)),
-                CoinPriceModel("BTC", 245.5, LocalDateTime.of(2019, 1, 23, 5, 30))
+                CoinPriceModel("BTC", 20.5.toBigDecimal(), LocalDateTime.of(2020, 6, 23, 5, 30)),
+                CoinPriceModel("BTC", 738.5.toBigDecimal(), LocalDateTime.of(2020, 8, 13, 9, 30)),
+                CoinPriceModel("BTC", 245.5.toBigDecimal(), LocalDateTime.of(2019, 1, 23, 5, 30))
             )
             prices.forEach { coinPriceDao.insertCoinPrice(it) }
 
@@ -190,8 +187,8 @@ class CoinLocalDataSourceImplTest {
             val result = sut.getLastCoinPrice(Bitcoin)
 
             // Assert
-            assertThat(result.value, closeTo(738.5, 0.0001))
-            assertEquals(result.currency, Currency.USD)
+            result.value shouldBeCloseTo 738.5.toBigDecimal()
+            result.currency shouldBe USD
         }
 
     @Test(expected = PriceCacheMissException::class)

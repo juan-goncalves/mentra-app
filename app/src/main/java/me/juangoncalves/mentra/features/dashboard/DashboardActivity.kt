@@ -17,8 +17,6 @@ import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.features.stats.ui.StatsFragment
 import me.juangoncalves.mentra.features.wallet_list.ui.WalletListFragment
-import kotlin.math.absoluteValue
-import kotlin.math.sign
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -54,10 +52,7 @@ class DashboardActivity : FragmentActivity() {
 
     private fun initObservers() {
         viewModel.portfolioValue.observe(this) { price ->
-            binding.portfolioValueTextView.text = price.value.asCurrency(
-                symbol = "$",
-                forcedDecimalPlaces = 2
-            )
+            binding.portfolioValueTextView.text = price.asCurrencyAmount(forcedDecimalPlaces = 2)
         }
 
         viewModel.lastDayValueChange.observe(this) { (amountDiff, percentChange) ->
@@ -66,7 +61,7 @@ class DashboardActivity : FragmentActivity() {
             binding.portfolioChangeTextView.text = getString(
                 R.string.last_day_change,
                 sign,
-                amountDiff.value.absoluteValue.asCurrency(symbol = "$", forcedDecimalPlaces = 2),
+                amountDiff.asCurrencyAmount(absolute = true, forcedDecimalPlaces = 2),
                 percentChange.asPercentage()
             )
 
@@ -89,12 +84,12 @@ class DashboardActivity : FragmentActivity() {
 
     private fun getIconParametersForSign(amountDiff: Price): Triple<String, Drawable?, Int> {
         return when {
-            amountDiff.value.sign > 0 -> Triple(
+            amountDiff.value.signum() > 0 -> Triple(
                 "+",
                 AppCompatResources.getDrawable(this, R.drawable.ic_arrow_up_20),
                 getColor(R.color.screaming_green)
             )
-            amountDiff.value.sign < 0 -> Triple(
+            amountDiff.value.signum() < 0 -> Triple(
                 "-",
                 AppCompatResources.getDrawable(this, R.drawable.ic_arrow_down_20),
                 getColor(R.color.tobasco)

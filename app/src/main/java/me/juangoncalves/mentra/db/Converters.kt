@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.db
 
 import androidx.room.TypeConverter
 import me.juangoncalves.mentra.domain.models.IconType
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -48,4 +49,14 @@ class Converters {
             else -> null
         }
     }
+
+    @TypeConverter
+    fun bigDecimalToString(value: BigDecimal?): String? = value?.toString()
+
+    @TypeConverter
+    fun stringToBigDecimal(value: String?): BigDecimal? {
+        if (value == null) return null
+        return BigDecimal(value)
+    }
+
 }

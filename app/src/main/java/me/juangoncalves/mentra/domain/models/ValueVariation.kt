@@ -1,6 +1,8 @@
 package me.juangoncalves.mentra.domain.models
 
 import me.juangoncalves.mentra.extensions.toPrice
+import java.math.BigDecimal
+
 
 data class ValueVariation(
     val difference: Price,
@@ -13,7 +15,7 @@ data class ValueVariation(
     }
 
     companion object {
-        val None = ValueVariation(0.0.toPrice(), 0.0, TimeUnit.Daily)
+        val None = ValueVariation(BigDecimal.ZERO.toPrice(), 0.0, TimeUnit.Daily)
     }
 
 }

@@ -5,6 +5,7 @@ import me.juangoncalves.mentra.extensions.asCurrency
 
 class ValueAxisFormatter : ValueFormatter() {
 
-    override fun getFormattedValue(value: Float): String = value.toDouble().asCurrency("$")
+    // TODO: Handle different currencies
+    override fun getFormattedValue(value: Float): String = value.toBigDecimal().asCurrency("$")
 
 }

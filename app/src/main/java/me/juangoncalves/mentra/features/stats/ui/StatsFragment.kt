@@ -122,7 +122,7 @@ class StatsFragment : Fragment() {
             }
 
             setVisibleXRangeMaximum(5f)
-            moveViewToX(entries.last().x)
+            entries.lastOrNull()?.let { last -> moveViewToX(last.x) }
         }
     }
 
