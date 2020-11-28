@@ -1,6 +1,5 @@
 package me.juangoncalves.mentra.data.repositories
 
-import either.Either
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,9 +9,9 @@ import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.domain.errors.*
+import me.juangoncalves.mentra.extensions.leftValue
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.log.Logger
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -21,20 +20,24 @@ import java.time.LocalDateTime
 @ExperimentalCoroutinesApi
 class CoinRepositoryImplTest {
 
+    //region Rules
     @get:Rule val mainCoroutineRule = MainCoroutineRule()
+    //endregion
 
+    //region Mocks
     @MockK lateinit var loggerMock: Logger
-    @MockK lateinit var localDataSource: CoinLocalDataSource
-    @MockK lateinit var remoteDataSource: CoinRemoteDataSource
+    @MockK lateinit var localSourceMock: CoinLocalDataSource
+    @MockK lateinit var remoteSourceMock: CoinRemoteDataSource
+    //endregion
 
-    private lateinit var coinRepository: CoinRepositoryImpl
+    private lateinit var sut: CoinRepositoryImpl
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true, relaxed = true)
-        coinRepository = CoinRepositoryImpl(
-            remoteDataSource,
-            localDataSource,
+        sut = CoinRepositoryImpl(
+            remoteSourceMock,
+            localSourceMock,
             CoinMapper(),
             loggerMock,
             mainCoroutineRule.dispatcher
@@ -46,96 +49,90 @@ class CoinRepositoryImplTest {
         runBlockingTest {
             // Arrange
             val coins = listOf(Bitcoin, Ethereum, Ripple)
-            coEvery { remoteDataSource.fetchCoins() } returns coins
-            coEvery { localDataSource.getStoredCoins() } returns emptyList()
+            coEvery { remoteSourceMock.fetchCoins() } returns coins
+            coEvery { localSourceMock.getStoredCoins() } returns emptyList()
 
             // Act
-            val result = coinRepository.getCoins()
+            val result = sut.getCoins()
 
             // Assert
-            val resultValue = (result as Right).value
-            coVerify { remoteDataSource.fetchCoins() }
-            coVerify { localDataSource.storeCoins(coins) }
-            assertEquals(coins, resultValue)
+            result.rightValue shouldBe coins
+            coVerify { remoteSourceMock.fetchCoins() }
+            coVerify { localSourceMock.storeCoins(coins) }
         }
 
     @Test
     fun `getCoins returns the cached coins when the cache is populated`() = runBlockingTest {
         // Arrange
         val models = listOf(BitcoinModel, RippleModel, EthereumModel)
-        coEvery { localDataSource.getStoredCoins() } returns models
+        coEvery { localSourceMock.getStoredCoins() } returns models
 
         // Act
-        val result = coinRepository.getCoins()
+        val result = sut.getCoins()
 
         // Assert
-        val resultValue = (result as Either.Right).value
-        coVerify { localDataSource.getStoredCoins() }
-        verify { remoteDataSource wasNot Called }
-        assertEquals(listOf(Bitcoin, Ripple, Ethereum), resultValue)
+        result.rightValue shouldBe listOf(Bitcoin, Ripple, Ethereum)
+        coVerify { localSourceMock.getStoredCoins() }
+        verify { remoteSourceMock wasNot Called }
     }
 
     @Test
     fun `getCoins returns a ServerFailure when the remote data source throws a ServerException`() =
         runBlockingTest {
             // Arrange
-            coEvery { remoteDataSource.fetchCoins() } throws ServerException()
-            coEvery { localDataSource.getStoredCoins() } returns emptyList()
+            coEvery { remoteSourceMock.fetchCoins() } throws ServerException()
+            coEvery { localSourceMock.getStoredCoins() } returns emptyList()
 
             // Act
-            val result = coinRepository.getCoins()
+            val result = sut.getCoins()
 
             // Assert
-            val failure = (result as Left).value
-            assertTrue(failure is ServerFailure)
+            result.leftValue shouldBeA ServerFailure::class
         }
 
     @Test
     fun `getCoins should return a InternetConnectionFailure if there's no internet connection while trying to fetch coins`() =
         runBlockingTest {
             // Arrange
-            coEvery { remoteDataSource.fetchCoins() } throws InternetConnectionException()
-            coEvery { localDataSource.getStoredCoins() } returns emptyList()
+            coEvery { remoteSourceMock.fetchCoins() } throws InternetConnectionException()
+            coEvery { localSourceMock.getStoredCoins() } returns emptyList()
 
             // Act
-            val result = coinRepository.getCoins()
+            val result = sut.getCoins()
 
             // Assert
-            val failure = (result as Left).value
-            assertTrue(failure is InternetConnectionFailure)
+            result.leftValue shouldBeA InternetConnectionFailure::class
         }
 
     @Test
     fun `getCoins tries to fetch coins from the network when a StorageException is thrown and logs the situation`() =
         runBlockingTest {
             // Arrange
-            coEvery { remoteDataSource.fetchCoins() } returns listOf(Bitcoin, Ethereum)
-            coEvery { localDataSource.getStoredCoins() } throws StorageException()
+            coEvery { remoteSourceMock.fetchCoins() } returns listOf(Bitcoin, Ethereum)
+            coEvery { localSourceMock.getStoredCoins() } throws StorageException()
 
             // Act
-            val result = coinRepository.getCoins()
+            val result = sut.getCoins()
 
             // Assert
-            val value = (result as Right).value
+            result.rightValue shouldBe listOf(Bitcoin, Ethereum)
             coVerify { loggerMock.warning(any(), any()) }
-            assertEquals(listOf(Bitcoin, Ethereum), value)
         }
 
     @Test
     fun `getCoins returns the network fetched coins when a StorageException is thrown while caching them`() =
         runBlockingTest {
             // Arrange
-            coEvery { remoteDataSource.fetchCoins() } returns listOf(Bitcoin)
-            coEvery { localDataSource.getStoredCoins() } returns emptyList()
-            coEvery { localDataSource.storeCoins(any()) } throws StorageException()
+            coEvery { remoteSourceMock.fetchCoins() } returns listOf(Bitcoin)
+            coEvery { localSourceMock.getStoredCoins() } returns emptyList()
+            coEvery { localSourceMock.storeCoins(any()) } throws StorageException()
 
             // Act
-            val result = coinRepository.getCoins()
+            val result = sut.getCoins()
 
             // Assert
-            val value = (result as Either.Right).value
+            result.rightValue shouldBe listOf(Bitcoin)
             coVerify { loggerMock.warning(any(), any()) }
-            assertEquals(listOf(Bitcoin), value)
         }
 
     @Test
@@ -143,17 +140,17 @@ class CoinRepositoryImplTest {
         runBlockingTest {
             // Arrange
             val price = 9532.472.toPrice()
-            coEvery { localDataSource.getLastCoinPrice(Bitcoin) } throws PriceCacheMissException()
-            coEvery { remoteDataSource.fetchCoinPrice(Bitcoin) } returns price
+            coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } throws PriceCacheMissException()
+            coEvery { remoteSourceMock.fetchCoinPrice(Bitcoin) } returns price
 
             // Act
-            val result = coinRepository.getCoinPrice(Bitcoin)
+            val result = sut.getCoinPrice(Bitcoin)
 
             // Assert
             result.rightValue shouldBe price
-            coVerify { localDataSource.getLastCoinPrice(Bitcoin) }
-            coVerify { remoteDataSource.fetchCoinPrice(Bitcoin) }
-            coVerify { localDataSource.storeCoinPrice(Bitcoin, price) }
+            coVerify { localSourceMock.getLastCoinPrice(Bitcoin) }
+            coVerify { remoteSourceMock.fetchCoinPrice(Bitcoin) }
+            coVerify { localSourceMock.storeCoinPrice(Bitcoin, price) }
         }
 
     @Test
@@ -161,15 +158,15 @@ class CoinRepositoryImplTest {
         runBlockingTest {
             // Arrange
             val price = 321.98.toPrice(timestamp = LocalDateTime.now().minusMinutes(2))
-            coEvery { localDataSource.getLastCoinPrice(Bitcoin) } returns price
+            coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } returns price
 
             // Act
-            val result = coinRepository.getCoinPrice(Bitcoin)
+            val result = sut.getCoinPrice(Bitcoin)
 
             // Assert
             result.rightValue shouldBe price
-            verify { remoteDataSource wasNot Called }
-            coVerify { localDataSource.getLastCoinPrice(Bitcoin) }
+            verify { remoteSourceMock wasNot Called }
+            coVerify { localSourceMock.getLastCoinPrice(Bitcoin) }
         }
 
     @Test
@@ -178,17 +175,17 @@ class CoinRepositoryImplTest {
             // Arrange
             val localPrice = 321.98.toPrice(timestamp = LocalDateTime.now().minusHours(1))
             val remotePrice = 500.32.toPrice()
-            coEvery { localDataSource.getLastCoinPrice(Bitcoin) } returns localPrice
-            coEvery { remoteDataSource.fetchCoinPrice(Bitcoin) } returns remotePrice
+            coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } returns localPrice
+            coEvery { remoteSourceMock.fetchCoinPrice(Bitcoin) } returns remotePrice
 
             // Act
-            val result = coinRepository.getCoinPrice(Bitcoin)
+            val result = sut.getCoinPrice(Bitcoin)
 
             // Assert
             result.rightValue shouldBe remotePrice
-            coVerify { localDataSource.getLastCoinPrice(Bitcoin) }
-            coVerify { remoteDataSource.fetchCoinPrice(Bitcoin) }
-            coVerify { localDataSource.storeCoinPrice(Bitcoin, remotePrice) }
+            coVerify { localSourceMock.getLastCoinPrice(Bitcoin) }
+            coVerify { remoteSourceMock.fetchCoinPrice(Bitcoin) }
+            coVerify { localSourceMock.storeCoinPrice(Bitcoin, remotePrice) }
         }
 
     @Test
@@ -196,31 +193,33 @@ class CoinRepositoryImplTest {
         runBlockingTest {
             // Arrange
             val localPrice = 0.123.toPrice(timestamp = LocalDateTime.now().minusHours(2))
-            coEvery { remoteDataSource.fetchCoinPrice(Ripple) } throws ServerException()
-            coEvery { localDataSource.getLastCoinPrice(Ripple) } returns localPrice
+            coEvery { remoteSourceMock.fetchCoinPrice(Ripple) } throws ServerException()
+            coEvery { localSourceMock.getLastCoinPrice(Ripple) } returns localPrice
 
             // Act
-            val result = coinRepository.getCoinPrice(Ripple)
+            val result = sut.getCoinPrice(Ripple)
 
             // Assert
-            val failure = (result as Left).value as FetchPriceFailure
-            assertNotNull(failure.storedPrice)
-            assertEquals(failure.storedPrice, localPrice)
+            result.leftValue shouldBeA FetchPriceFailure::class
+            (result.leftValue as FetchPriceFailure).storedPrice shouldBe localPrice
         }
 
     @Test
     fun `getCoinPrice returns a FetchPriceError without a price when a ServerException is thrown and there isn't a stored coin price`() =
         runBlockingTest {
             // Arrange
-            coEvery { remoteDataSource.fetchCoinPrice(Ripple) } throws ServerException()
-            coEvery { localDataSource.getLastCoinPrice(Ripple) } throws PriceCacheMissException()
+            coEvery { remoteSourceMock.fetchCoinPrice(Ripple) } throws ServerException()
+            coEvery { localSourceMock.getLastCoinPrice(Ripple) } throws PriceCacheMissException()
 
             // Act
-            val result = coinRepository.getCoinPrice(Ripple)
+            val result = sut.getCoinPrice(Ripple)
 
             // Assert
-            val failure = (result as Left).value as FetchPriceFailure
-            assertNull(failure.storedPrice)
+            result.leftValue shouldBeA FetchPriceFailure::class
+            (result.leftValue as FetchPriceFailure).storedPrice shouldBe null
         }
+
+    //region Helpers
+    //endregion
 
 }

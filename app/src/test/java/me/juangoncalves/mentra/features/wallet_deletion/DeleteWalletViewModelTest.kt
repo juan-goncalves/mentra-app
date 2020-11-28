@@ -29,12 +29,16 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE, application = Application::class)
 class DeleteWalletViewModelTest {
 
+    //region Rules
     @get:Rule val mainCoroutineRule = MainCoroutineRule()
     @get:Rule val instantExecutorRule = InstantTaskExecutorRule()
+    //endregion
 
+    //region Mocks
     @MockK lateinit var deleteWalletMock: DeleteWallet
     @MockK lateinit var dismissObserver: Observer<Notification>
     @MockK lateinit var fleetingErrorObserver: Observer<Event<DisplayError>>
+    //endregion
 
     private lateinit var sut: DeleteWalletViewModel
 
@@ -53,12 +57,17 @@ class DeleteWalletViewModelTest {
 
         // Act
         sut.initialize(args)
+
+        // Assert
     }
 
     @Test(expected = IllegalStateException::class)
     fun `initialize without arguments throws a IllegalStateException`() {
+        // Arrange
         // Act
         sut.initialize(null)
+
+        // Assert
     }
 
     @Test
@@ -137,6 +146,7 @@ class DeleteWalletViewModelTest {
         verify(exactly = 1) { dismissObserver.onChanged(any()) }
     }
 
+    //region Helpers
     private val fakeWallet = WalletListViewState.Wallet(
         id = 1,
         iconUrl = "https://someurl.com/img.png",
@@ -149,5 +159,6 @@ class DeleteWalletViewModelTest {
         val args = bundleOf(BundleKeys.Wallet to fakeWallet)
         sut.initialize(args)
     }
+    //endregion
 
 }

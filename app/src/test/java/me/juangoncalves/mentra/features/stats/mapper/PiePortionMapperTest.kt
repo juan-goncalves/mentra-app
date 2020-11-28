@@ -1,26 +1,15 @@
 package me.juangoncalves.mentra.features.stats.mapper
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
-import me.juangoncalves.mentra.Bitcoin
-import me.juangoncalves.mentra.Ethereum
-import me.juangoncalves.mentra.MainCoroutineRule
-import me.juangoncalves.mentra.Ripple
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.closeTo
+import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.*
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class PiePortionMapperTest {
 
     //region Rules
-    @get:Rule val mainCoroutineRule = MainCoroutineRule()
-    @get:Rule val instantExecutorRule = InstantTaskExecutorRule()
     //endregion
 
     //region Mocks
@@ -30,12 +19,12 @@ class PiePortionMapperTest {
 
     @Before
     fun setUp() {
-        sut = PiePortionMapper(mainCoroutineRule.dispatcher)
+        sut = PiePortionMapper()
     }
 
     @Test
     fun `map converts the coin-value map into an appropriate array of pie portions`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             val data = mapOf(
                 Bitcoin to 0.3,
@@ -50,13 +39,10 @@ class PiePortionMapperTest {
             val xrpPortion = result.find { it.text == Ripple.symbol }
 
             // Assert
-            assertEquals(3, result.size)
-            assertNotNull(btcPortion)
-            assertNotNull(ethPortion)
-            assertNotNull(xrpPortion)
-            assertThat(btcPortion!!.percentage, closeTo(0.3, 0.001))
-            assertThat(ethPortion!!.percentage, closeTo(0.1, 0.001))
-            assertThat(xrpPortion!!.percentage, closeTo(0.6, 0.001))
+            result.size shouldBe 3
+            btcPortion!!.percentage shouldBeCloseTo 0.3
+            ethPortion!!.percentage shouldBeCloseTo 0.1
+            xrpPortion!!.percentage shouldBeCloseTo 0.6
         }
 
     //region Helpers

@@ -17,7 +17,6 @@ import me.juangoncalves.mentra.network.CryptoCompareService
 import me.juangoncalves.mentra.network.models.CoinListSchema
 import me.juangoncalves.mentra.network.models.CoinSchema
 import me.juangoncalves.mentra.network.models.PriceSchema
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
@@ -25,8 +24,13 @@ import java.net.UnknownHostException
 
 class CoinRemoteDataSourceImplTest {
 
-    @MockK lateinit var apiService: CryptoCompareService
-    @MockK lateinit var logger: Logger
+    //region Rules
+    //endregion
+
+    //region Mocks
+    @MockK lateinit var apiServiceMock: CryptoCompareService
+    @MockK lateinit var loggerMock: Logger
+    //endregion
 
     private lateinit var sut: CoinRemoteDataSourceImpl
 
@@ -34,9 +38,9 @@ class CoinRemoteDataSourceImplTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         sut = CoinRemoteDataSourceImpl(
-            apiService,
+            apiServiceMock,
             CoinMapper(),
-            logger
+            loggerMock
         )
     }
 
@@ -46,13 +50,13 @@ class CoinRemoteDataSourceImplTest {
             // Arrange
             val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
             val coinListSchema = adapter.fromJson(fixture("/coin_list.json"))!!
-            coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
+            coEvery { apiServiceMock.listCoins() } returns Response.success(coinListSchema)
 
             // Act
             val result = sut.fetchCoins()
 
             // Assert
-            assertEquals(result, listOf(Bitcoin, Ethereum, Ripple))
+            result shouldBe listOf(Bitcoin, Ethereum, Ripple)
         }
 
     @Test(expected = ServerException::class)
@@ -61,7 +65,7 @@ class CoinRemoteDataSourceImplTest {
             // Arrange
             val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
             val coinListSchema = adapter.fromJson(fixture("/coin_list_error.json"))!!
-            coEvery { apiService.listCoins() } returns Response.success(coinListSchema)
+            coEvery { apiServiceMock.listCoins() } returns Response.success(coinListSchema)
 
             // Act
             sut.fetchCoins()
@@ -73,7 +77,7 @@ class CoinRemoteDataSourceImplTest {
     @Test(expected = ServerException::class)
     fun `fetchCoins should throw a ServerException if the response body is null`() = runBlocking {
         // Arrange
-        coEvery { apiService.listCoins() } returns Response.success(null)
+        coEvery { apiServiceMock.listCoins() } returns Response.success(null)
 
         // Act
         sut.fetchCoins()
@@ -86,7 +90,7 @@ class CoinRemoteDataSourceImplTest {
     fun `fetchCoins should throw a InternetConnectionException if the communication with the remote source fails`() =
         runBlocking {
             // Arrange
-            coEvery { apiService.listCoins() } throws UnknownHostException()
+            coEvery { apiServiceMock.listCoins() } throws UnknownHostException()
 
             // Act
             sut.fetchCoins()
@@ -101,13 +105,13 @@ class CoinRemoteDataSourceImplTest {
             // Arrange
             val adapter = moshi.adapter(PriceSchema::class.java)
             val price = adapter.fromJson(fixture("/btc_price.json"))!!
-            coEvery { apiService.getCoinPrice(any()) } returns Response.success(price)
+            coEvery { apiServiceMock.getCoinPrice(any()) } returns Response.success(price)
 
             // Act
             val result = sut.fetchCoinPrice(Bitcoin)
 
             // Assert
-            coVerify { apiService.getCoinPrice(Bitcoin.symbol) }
+            coVerify { apiServiceMock.getCoinPrice(Bitcoin.symbol) }
             result.currency shouldBe USD
             result.value shouldBeCloseTo price.USD.toBigDecimal()
         }
@@ -116,7 +120,7 @@ class CoinRemoteDataSourceImplTest {
     fun `fetchCoinPrice should throw a InternetConnectionException if the communication with the remote source fails`() =
         runBlocking {
             // Arrange
-            coEvery { apiService.getCoinPrice(any()) } throws UnknownHostException()
+            coEvery { apiServiceMock.getCoinPrice(any()) } throws UnknownHostException()
 
             // Act
             sut.fetchCoinPrice(Ethereum)
@@ -129,7 +133,7 @@ class CoinRemoteDataSourceImplTest {
     fun `fetchCoinPrice should throw a ServerException if the response body is null`() =
         runBlocking {
             // Arrange
-            coEvery { apiService.getCoinPrice(any()) } returns Response.success(null)
+            coEvery { apiServiceMock.getCoinPrice(any()) } returns Response.success(null)
 
             // Act
             sut.fetchCoinPrice(Bitcoin)
@@ -142,7 +146,7 @@ class CoinRemoteDataSourceImplTest {
     fun `fetchCoinPrice should throw a ServerException if the response is not successful`() =
         runBlocking {
             // Arrange
-            coEvery { apiService.getCoinPrice(any()) } returns Response.error(500, mockk())
+            coEvery { apiServiceMock.getCoinPrice(any()) } returns Response.error(500, mockk())
 
             // Act
             sut.fetchCoinPrice(Bitcoin)
@@ -151,11 +155,11 @@ class CoinRemoteDataSourceImplTest {
             Unit
         }
 
-
-    // Helpers
-
+    //region Helpers
     private val coinListSchemaMoshiType = Types.newParameterizedType(
         CryptoCompareResponse::class.java,
         Types.newParameterizedType(Map::class.java, String::class.java, CoinSchema::class.java)
     )
+    //endregion
+
 }

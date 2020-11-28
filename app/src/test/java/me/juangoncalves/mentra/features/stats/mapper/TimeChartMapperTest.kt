@@ -3,18 +3,15 @@ package me.juangoncalves.mentra.features.stats.mapper
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
-import me.juangoncalves.mentra.MainCoroutineRule
+import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.at
 import me.juangoncalves.mentra.domain.models.TimeGranularity
 import me.juangoncalves.mentra.domain.usecases.preference.GetTimeUnitPreference
+import me.juangoncalves.mentra.shouldBe
+import me.juangoncalves.mentra.shouldBeCloseTo
 import me.juangoncalves.mentra.toRight
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.closeTo
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
 
@@ -22,7 +19,6 @@ import java.time.LocalDateTime
 class TimeChartMapperTest {
 
     //region Rules
-    @get:Rule val mainCoroutineRule = MainCoroutineRule()
     //endregion
 
     //region Mocks
@@ -34,11 +30,11 @@ class TimeChartMapperTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = TimeChartMapper(getTimeUnitPreferenceMock, mainCoroutineRule.dispatcher)
+        sut = TimeChartMapper(getTimeUnitPreferenceMock)
     }
 
     @Test
-    fun `returns the appropriate labels for the received daily history`() = runBlockingTest {
+    fun `returns the appropriate labels for the received daily history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
         val prices = listOf(
@@ -52,14 +48,16 @@ class TimeChartMapperTest {
         val result = sut.map(prices)
 
         // Assert
-        assertEquals("10/20/20", result.labels[0])
-        assertEquals("10/21/20", result.labels[1])
-        assertEquals("10/22/20", result.labels[2])
-        assertEquals("10/23/20", result.labels[3])
+        with(result) {
+            labels[0] shouldBe "10/20/20"
+            labels[1] shouldBe "10/21/20"
+            labels[2] shouldBe "10/22/20"
+            labels[3] shouldBe "10/23/20"
+        }
     }
 
     @Test
-    fun `returns the appropriate entries for the received daily history`() = runBlockingTest {
+    fun `returns the appropriate entries for the received daily history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
         val prices = listOf(
@@ -73,14 +71,16 @@ class TimeChartMapperTest {
         val result = sut.map(prices)
 
         // Assert
-        assertThat(result.entries[0].y.toDouble(), closeTo(10.0, 0.0001))
-        assertThat(result.entries[1].y.toDouble(), closeTo(15.0, 0.0001))
-        assertThat(result.entries[2].y.toDouble(), closeTo(13.0, 0.0001))
-        assertThat(result.entries[3].y.toDouble(), closeTo(17.0, 0.0001))
+        with(result) {
+            entries[0].y.toDouble() shouldBeCloseTo 10.0
+            entries[1].y.toDouble() shouldBeCloseTo 15.0
+            entries[2].y.toDouble() shouldBeCloseTo 13.0
+            entries[3].y.toDouble() shouldBeCloseTo 17.0
+        }
     }
 
     @Test
-    fun `returns the time granularity value available at the time`() = runBlockingTest {
+    fun `returns the time granularity value available at the time`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
         val prices = listOf(
@@ -94,11 +94,11 @@ class TimeChartMapperTest {
         val result = sut.map(prices)
 
         // Assert
-        assertEquals(TimeGranularity.Daily, result.granularity)
+        result.granularity shouldBe TimeGranularity.Daily
     }
 
     @Test
-    fun `returns the appropriate labels for the weekly history`() = runBlockingTest {
+    fun `returns the appropriate labels for the weekly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Weekly.toRight()
         val prices = listOf(
@@ -111,14 +111,16 @@ class TimeChartMapperTest {
         val result = sut.map(prices)
 
         // Assert
-        assertEquals(3, result.entries.size)
-        assertThat(result.entries[0].y.toDouble(), closeTo(11.0, 0.0001))
-        assertThat(result.entries[1].y.toDouble(), closeTo(21.0, 0.0001))
-        assertThat(result.entries[2].y.toDouble(), closeTo(27.0, 0.0001))
+        with(result) {
+            entries.size shouldBe 3
+            entries[0].y.toDouble() shouldBeCloseTo 11.0
+            entries[1].y.toDouble() shouldBeCloseTo 21.0
+            entries[2].y.toDouble() shouldBeCloseTo 27.0
+        }
     }
 
     @Test
-    fun `returns the appropriate entries for the weekly history`() = runBlockingTest {
+    fun `returns the appropriate entries for the weekly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Weekly.toRight()
         val prices = listOf(
@@ -131,14 +133,16 @@ class TimeChartMapperTest {
         val result = sut.map(prices)
 
         // Assert
-        assertEquals(3, result.entries.size)
-        assertEquals("Oct 2020 - W3", result.labels[0])
-        assertEquals("Oct 2020 - W4", result.labels[1])
-        assertEquals("Oct 2020 - W5", result.labels[2])
+        with(result) {
+            entries.size shouldBe 3
+            labels[0] shouldBe "Oct 2020 - W3"
+            labels[1] shouldBe "Oct 2020 - W4"
+            labels[2] shouldBe "Oct 2020 - W5"
+        }
     }
 
     @Test
-    fun `returns the appropriate entries for the monthly history`() = runBlockingTest {
+    fun `returns the appropriate entries for the monthly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
         val prices = listOf(
@@ -151,14 +155,16 @@ class TimeChartMapperTest {
         val result = sut.map(prices)
 
         // Assert
-        assertEquals(3, result.entries.size)
-        assertThat(result.entries[0].y.toDouble(), closeTo(11.0, 0.0001))
-        assertThat(result.entries[1].y.toDouble(), closeTo(21.0, 0.0001))
-        assertThat(result.entries[2].y.toDouble(), closeTo(27.0, 0.0001))
+        with(result) {
+            entries.size shouldBe 3
+            entries[0].y.toDouble() shouldBeCloseTo 11.0
+            entries[1].y.toDouble() shouldBeCloseTo 21.0
+            entries[2].y.toDouble() shouldBeCloseTo 27.0
+        }
     }
 
     @Test
-    fun `returns the appropriate labels for the monthly history`() = runBlockingTest {
+    fun `returns the appropriate labels for the monthly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
         val prices = listOf(
@@ -171,15 +177,17 @@ class TimeChartMapperTest {
         val result = sut.map(prices)
 
         // Assert
-        assertEquals(3, result.entries.size)
-        assertEquals("Nov 2020", result.labels[0])
-        assertEquals("Dec 2020", result.labels[1])
-        assertEquals("Jan 2021", result.labels[2])
+        with(result) {
+            entries.size shouldBe 3
+            labels[0] shouldBe "Nov 2020"
+            labels[1] shouldBe "Dec 2020"
+            labels[2] shouldBe "Jan 2021"
+        }
     }
 
     @Test
     fun `returns an empty list of labels and entries when the price history is empty`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
 
@@ -187,8 +195,10 @@ class TimeChartMapperTest {
             val result = sut.map(emptyList())
 
             // Assert
-            assertEquals(0, result.labels.size)
-            assertEquals(0, result.entries.size)
+            with(result) {
+                labels.size shouldBe 0
+                entries.size shouldBe 0
+            }
         }
 
     //region Helpers

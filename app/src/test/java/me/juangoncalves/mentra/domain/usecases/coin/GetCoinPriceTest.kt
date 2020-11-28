@@ -7,23 +7,27 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.errors.PriceNotFound
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
+import me.juangoncalves.mentra.extensions.leftValue
 import me.juangoncalves.mentra.extensions.requireLeft
 import me.juangoncalves.mentra.extensions.requireRight
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
 class GetCoinPriceTest {
 
-    @MockK lateinit var coinRepositoryMock: CoinRepository
+    //region Rules
+    //endregion
 
-    private lateinit var getCoinPrice: GetCoinPrice
+    //region Mocks
+    @MockK lateinit var coinRepositoryMock: CoinRepository
+    //endregion
+
+    private lateinit var sut: GetCoinPrice
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        getCoinPrice = GetCoinPrice(coinRepositoryMock)
+        sut = GetCoinPrice(coinRepositoryMock)
     }
 
     @Test
@@ -33,7 +37,7 @@ class GetCoinPriceTest {
         coEvery { coinRepositoryMock.getCoinPrice(Bitcoin) } returns fakeResult
 
         // Act
-        val result = getCoinPrice(Bitcoin)
+        val result = sut(Bitcoin)
 
         // Assert
         with(result.requireRight()) {
@@ -49,11 +53,14 @@ class GetCoinPriceTest {
         coEvery { coinRepositoryMock.getCoinPrice(Ethereum) } returns Left(failure)
 
         // Act
-        val result = getCoinPrice(Ethereum)
+        val result = sut(Ethereum)
 
         // Assert
-        assertTrue(result.requireLeft() is PriceNotFound)
-        assertEquals((result.requireLeft() as PriceNotFound).coin, Ethereum)
+        result.leftValue shouldBeA PriceNotFound::class
+        (result.requireLeft() as PriceNotFound).coin shouldBe Ethereum
     }
+
+    //region Helpers
+    //endregion
 
 }

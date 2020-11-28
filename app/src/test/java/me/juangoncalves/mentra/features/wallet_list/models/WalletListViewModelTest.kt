@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -139,10 +138,7 @@ class WalletListViewModelTest {
         state.captured.isEmpty shouldBe false
     }
 
-    @Test
-    fun `the prices are refreshed when the wallet list changes`() {
-        // TODO: Implement
-    }
+    // TODO: Implement `prices are refreshed when the wallet list changes` test case
 
     @Test
     fun `viewStateStream emits the correct price refresh progress updates when refreshSelected is called`() {
@@ -183,7 +179,7 @@ class WalletListViewModelTest {
             stateObserver.onChanged(capture(state))
         }
 
-        assertTrue(state.captured.error is Error.PricesNotRefreshed)
+        state.captured.error shouldBeA Error.PricesNotRefreshed::class
     }
 
     @Test
@@ -203,7 +199,7 @@ class WalletListViewModelTest {
             stateObserver.onChanged(capture(state))
         }
 
-        assertTrue(state.captured.error is Error.None)
+        state.captured.error shouldBeA Error.None::class
     }
 
     @Test
@@ -225,7 +221,7 @@ class WalletListViewModelTest {
             stateObserver.onChanged(capture(state))
         }
 
-        assertTrue(state.captured.error is Error.WalletsNotLoaded)
+        state.captured.error shouldBeA Error.WalletsNotLoaded::class
     }
 
     @Test
@@ -246,7 +242,7 @@ class WalletListViewModelTest {
             ignorePortfolioRefresh()
         }
 
-        (state.captured.error is Error.WalletsNotLoaded) shouldBe true
+        state.captured.error shouldBeA Error.WalletsNotLoaded::class
     }
 
     @Test
@@ -287,7 +283,7 @@ class WalletListViewModelTest {
             stateObserver.onChanged(capture(state))
         }
 
-        assertTrue(state.captured.error is Error.WalletsNotLoaded)
+        state.captured.error shouldBeA Error.WalletsNotLoaded::class
     }
 
     //region Helpers

@@ -15,26 +15,27 @@ import me.juangoncalves.mentra.domain.repositories.CoinRepository
 import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.extensions.leftValue
 import me.juangoncalves.mentra.extensions.requireRight
-import org.junit.Assert.assertTrue
+import me.juangoncalves.mentra.extensions.toLeft
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
 
 class RefreshWalletValueTest {
 
-    @MockK private lateinit var coinRepositoryMock: CoinRepository
-    @MockK private lateinit var walletRepositoryMock: WalletRepository
+    //region Rules
+    //endregion
+
+    //region Mocks
+    @MockK lateinit var coinRepoMock: CoinRepository
+    @MockK lateinit var walletRepoMock: WalletRepository
+    //endregion
 
     private lateinit var sut: RefreshWalletValue
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut =
-            RefreshWalletValue(
-                coinRepositoryMock,
-                walletRepositoryMock
-            )
+        sut = RefreshWalletValue(coinRepoMock, walletRepoMock)
     }
 
     @Test
@@ -43,10 +44,8 @@ class RefreshWalletValueTest {
         val wallet = Wallet(Ripple, 125.22, 39)
         val ts = LocalDateTime.now()
         val ripplePrice = 1.20.toPrice(timestamp = ts)
-        coEvery { coinRepositoryMock.getCoinPrice(Ripple) } returns Right(
-            ripplePrice
-        )
-        coEvery { walletRepositoryMock.updateWalletValue(any(), any()) } returns Right(Unit)
+        coEvery { coinRepoMock.getCoinPrice(Ripple) } returns ripplePrice.toRight()
+        coEvery { walletRepoMock.updateWalletValue(any(), any()) } returns Unit.toRight()
 
         // Act
         val result = sut(wallet)
@@ -66,16 +65,14 @@ class RefreshWalletValueTest {
         val wallet = Wallet(Ethereum, 2.16, 15)
         val ts = LocalDateTime.now()
         val ethPrice = 381.20.toPrice(timestamp = ts)
-        coEvery { coinRepositoryMock.getCoinPrice(Ethereum) } returns Right(
-            ethPrice
-        )
-        coEvery { walletRepositoryMock.updateWalletValue(any(), capture(slot)) } returns Right(Unit)
+        coEvery { coinRepoMock.getCoinPrice(Ethereum) } returns ethPrice.toRight()
+        coEvery { walletRepoMock.updateWalletValue(any(), capture(slot)) } returns Unit.toRight()
 
         // Act
         sut(wallet)
 
         // Assert
-        coVerify { walletRepositoryMock.updateWalletValue(wallet, any()) }
+        coVerify { walletRepoMock.updateWalletValue(wallet, any()) }
         with(slot.captured) {
             value shouldBeCloseTo 823.392
             currency shouldBe USD
@@ -87,35 +84,30 @@ class RefreshWalletValueTest {
     fun `returns a FetchPriceFailure if the coin price is not found`() = runBlocking {
         // Arrange
         val wallet = Wallet(Ethereum, 2.16, 15)
-        coEvery { coinRepositoryMock.getCoinPrice(any()) } returns Left(FetchPriceFailure())
+        coEvery { coinRepoMock.getCoinPrice(any()) } returns Left(FetchPriceFailure())
 
         // Act
         val result = sut(wallet)
 
         // Assert
-        assertTrue(result is Left)
-        assertTrue(result.leftValue is FetchPriceFailure)
+        result.leftValue shouldBeA FetchPriceFailure::class
     }
 
     @Test
     fun `returns a StorageFailure if the updated wallet value can't be saved`() = runBlocking {
         // Arrange
         val wallet = Wallet(Ethereum, 2.16, 15)
-
-        coEvery {
-            coinRepositoryMock.getCoinPrice(Ethereum)
-        } returns Right(USDPrices[Ethereum]!!)
-
-        coEvery {
-            walletRepositoryMock.updateWalletValue(any(), any())
-        } returns Left(StorageFailure())
+        coEvery { coinRepoMock.getCoinPrice(Ethereum) } returns Right(USDPrices[Ethereum]!!)
+        coEvery { walletRepoMock.updateWalletValue(any(), any()) } returns StorageFailure().toLeft()
 
         // Act
         val result = sut(wallet)
 
         // Assert
-        assertTrue(result is Left)
-        assertTrue(result.leftValue is StorageFailure)
+        result.leftValue shouldBeA StorageFailure::class
     }
 
+    //region Helpers
+    //endregion
+    
 }

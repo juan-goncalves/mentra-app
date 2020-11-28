@@ -1,11 +1,10 @@
 package me.juangoncalves.mentra.domain.usecases.portfolio
 
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.TimeGranularity
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
@@ -16,8 +15,7 @@ import javax.inject.Inject
 
 class GetPreferredPortfolioValueHistoryStream @Inject constructor(
     private val portfolioRepository: PortfolioRepository,
-    private val preferenceRepository: PreferenceRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val preferenceRepository: PreferenceRepository
 ) {
 
     operator fun invoke(): Flow<List<Price>> {
@@ -32,7 +30,7 @@ class GetPreferredPortfolioValueHistoryStream @Inject constructor(
             }
     }
 
-    private suspend fun List<Price>.toWeekly(): List<Price> = withContext(defaultDispatcher) {
+    private suspend fun List<Price>.toWeekly(): List<Price> = withContext(Dispatchers.Default) {
         val weekFields = WeekFields.of(Locale.getDefault())
 
         val byWeek = associateBy { price ->
@@ -44,7 +42,7 @@ class GetPreferredPortfolioValueHistoryStream @Inject constructor(
         byWeek.values.toList()
     }
 
-    private suspend fun List<Price>.toMonthly(): List<Price> = withContext(defaultDispatcher) {
+    private suspend fun List<Price>.toMonthly(): List<Price> = withContext(Dispatchers.Default) {
         val byMonth = associateBy { price ->
             val month = price.timestamp.monthValue
             val year = price.timestamp.year

@@ -1,32 +1,28 @@
 package me.juangoncalves.mentra.domain.usecases.coin
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
-import me.juangoncalves.mentra.Left
-import me.juangoncalves.mentra.MainCoroutineRule
-import me.juangoncalves.mentra.Right
+import kotlinx.coroutines.runBlocking
+import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.errors.StorageFailure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
+import me.juangoncalves.mentra.extensions.leftValue
 import me.juangoncalves.mentra.extensions.requireRight
+import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.extensions.toLeft
+import me.juangoncalves.mentra.shouldBe
+import me.juangoncalves.mentra.shouldBeA
 import me.juangoncalves.mentra.toRight
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class FindCoinsByNameTest {
 
     //region Rules
-    @get:Rule val mainCoroutineRule = MainCoroutineRule()
-    @get:Rule val instantExecutorRule = InstantTaskExecutorRule()
     //endregion
 
     //region Mocks
@@ -38,12 +34,12 @@ class FindCoinsByNameTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
-        sut = FindCoinsByName(coinRepositoryMock, mainCoroutineRule.dispatcher)
+        sut = FindCoinsByName(coinRepositoryMock)
     }
 
     @Test
     fun `returns the coins matching the query sorted in descending order by the closest match`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             coEvery { coinRepositoryMock.getCoins() } returns availableCoins.toRight()
 
@@ -51,19 +47,19 @@ class FindCoinsByNameTest {
             val result = sut("bit")
 
             // Assert
-            val matchingCoins = result.requireRight()
-            assertTrue(result is Right)
-            assertEquals(3, matchingCoins.size)
-            // First result is "BitRow" as its the closest match to "bit" by its length
-            assertEquals(availableCoins[1], matchingCoins[0])
-            // Second result is "Bitcoin" as is longer than "BitRow"
-            assertEquals(availableCoins[0], matchingCoins[1])
-            // Final result is "Bitcoin Gold" as its the longest of the results
-            assertEquals(availableCoins[4], matchingCoins[2])
+            with(result.requireRight()) {
+                size shouldBe 3
+                // First result is "BitRow" as its the closest match to "bit" by its length
+                get(0) shouldBe availableCoins[1]
+                // Second result is "Bitcoin" as is longer than "BitRow"
+                get(1) shouldBe availableCoins[0]
+                // Final result is "Bitcoin Gold" as its the longest of the results
+                get(2) shouldBe availableCoins[4]
+            }
         }
 
     @Test
-    fun `ignores starting and ending spaces in the query string`() = runBlockingTest {
+    fun `ignores starting and ending spaces in the query string`() = runBlocking {
         // Arrange
         coEvery { coinRepositoryMock.getCoins() } returns availableCoins.toRight()
 
@@ -71,19 +67,19 @@ class FindCoinsByNameTest {
         val result = sut("   bit  ")
 
         // Assert
-        val matchingCoins = result.requireRight()
-        assertTrue(result is Right)
-        assertEquals(3, matchingCoins.size)
-        // First result is "BitRow" as its the closest match to "bit" by its length
-        assertEquals(availableCoins[1], matchingCoins[0])
-        // Second result is "Bitcoin" as is longer than "BitRow"
-        assertEquals(availableCoins[0], matchingCoins[1])
-        // Final result is "Bitcoin Gold" as its the longest of the results
-        assertEquals(availableCoins[4], matchingCoins[2])
+        with(result.requireRight()) {
+            size shouldBe 3
+            // First result is "BitRow" as its the closest match to "bit" by its length
+            get(0) shouldBe availableCoins[1]
+            // Second result is "Bitcoin" as is longer than "BitRow"
+            get(1) shouldBe availableCoins[0]
+            // Final result is "Bitcoin Gold" as its the longest of the results
+            get(2) shouldBe availableCoins[4]
+        }
     }
 
     @Test
-    fun `ignores casing in the query and coin names`() = runBlockingTest {
+    fun `ignores casing in the query and coin names`() = runBlocking {
         // Arrange
         coEvery { coinRepositoryMock.getCoins() } returns availableCoins.toRight()
 
@@ -91,20 +87,20 @@ class FindCoinsByNameTest {
         val result = sut("BiT")
 
         // Assert
-        val matchingCoins = result.requireRight()
-        assertTrue(result is Right)
-        assertEquals(3, matchingCoins.size)
-        // First result is "BitRow" as its the closest match to "bit" by its length
-        assertEquals(availableCoins[1], matchingCoins[0])
-        // Second result is "Bitcoin" as is longer than "BitRow"
-        assertEquals(availableCoins[0], matchingCoins[1])
-        // Final result is "Bitcoin Gold" as its the longest of the results
-        assertEquals(availableCoins[4], matchingCoins[2])
+        with(result.requireRight()) {
+            size shouldBe 3
+            // First result is "BitRow" as its the closest match to "bit" by its length
+            get(0) shouldBe availableCoins[1]
+            // Second result is "Bitcoin" as is longer than "BitRow"
+            get(1) shouldBe availableCoins[0]
+            // Final result is "Bitcoin Gold" as its the longest of the results
+            get(2) shouldBe availableCoins[4]
+        }
     }
 
     @Test
     fun `returns the complete list of available coins if the query is empty`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             coEvery { coinRepositoryMock.getCoins() } returns availableCoins.toRight()
 
@@ -112,12 +108,12 @@ class FindCoinsByNameTest {
             val result = sut("")
 
             // Assert
-            assertEquals(availableCoins, result.requireRight())
+            result.rightValue shouldBe availableCoins
         }
 
     @Test
     fun `returns the complete list of available coins if the query length is 1`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             coEvery { coinRepositoryMock.getCoins() } returns availableCoins.toRight()
 
@@ -125,12 +121,12 @@ class FindCoinsByNameTest {
             val result = sut("b")
 
             // Assert
-            assertEquals(availableCoins, result.requireRight())
+            result.rightValue shouldBe availableCoins
         }
 
     @Test
     fun `returns the complete list of available coins if the query length is 2`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             coEvery { coinRepositoryMock.getCoins() } returns availableCoins.toRight()
 
@@ -138,12 +134,12 @@ class FindCoinsByNameTest {
             val result = sut("bl")
 
             // Assert
-            assertEquals(availableCoins, result.requireRight())
+            result.rightValue shouldBe availableCoins
         }
 
     @Test
     fun `returns a failure if there's an error getting the list of available coins`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             coEvery { coinRepositoryMock.getCoins() } returns StorageFailure().toLeft()
 
@@ -151,7 +147,7 @@ class FindCoinsByNameTest {
             val result = sut("some query")
 
             // Assert
-            assertTrue(result is Left)
+            result.leftValue shouldBeA Failure::class
         }
 
     //region Helpers

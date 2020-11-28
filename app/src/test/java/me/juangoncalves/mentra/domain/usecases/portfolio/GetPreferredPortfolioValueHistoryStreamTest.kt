@@ -1,25 +1,21 @@
 package me.juangoncalves.mentra.domain.usecases.portfolio
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.test.runBlockingTest
-import me.juangoncalves.mentra.MainCoroutineRule
+import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.at
 import me.juangoncalves.mentra.domain.models.TimeGranularity.*
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain.repositories.PreferenceRepository
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.lessThanOrEqualTo
+import me.juangoncalves.mentra.shouldBe
+import me.juangoncalves.mentra.shouldBeLessThanOrEqualTo
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
 
@@ -27,8 +23,6 @@ import java.time.LocalDateTime
 class GetPreferredPortfolioValueHistoryStreamTest {
 
     //region Rules
-    @get:Rule val mainCoroutineRule = MainCoroutineRule()
-    @get:Rule val instantExecutorRule = InstantTaskExecutorRule()
     //endregion
 
     //region Mocks
@@ -43,14 +37,13 @@ class GetPreferredPortfolioValueHistoryStreamTest {
         MockKAnnotations.init(this, relaxUnitFun = true)
         sut = GetPreferredPortfolioValueHistoryStream(
             portfolioRepositoryMock,
-            prefRepositoryMock,
-            mainCoroutineRule.dispatcher
+            prefRepositoryMock
         )
     }
 
     @Test
     fun `emits the daily price history when the preference is set to Daily`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             val prices = listOf(
                 10 at LocalDateTime.of(2020, 10, 20, 10, 23),
@@ -65,12 +58,12 @@ class GetPreferredPortfolioValueHistoryStreamTest {
             val result = sut().single()
 
             // Assert
-            assertEquals(prices, result)
+            result shouldBe prices
         }
 
     @Test
     fun `builds the weekly history using the week's latest day value`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             val prices = listOf(
                 // Week 1
@@ -91,14 +84,14 @@ class GetPreferredPortfolioValueHistoryStreamTest {
             val result = sut().single()
 
             // Assert
-            assertEquals(prices[2], result[0])
-            assertEquals(prices[4], result[1])
-            assertEquals(prices[6], result[2])
+            result[0] shouldBe prices[2]
+            result[1] shouldBe prices[4]
+            result[2] shouldBe prices[6]
         }
 
     @Test
     fun `builds the monthly history using the month's latest day value`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             val prices = listOf(
                 // Month 1
@@ -119,14 +112,14 @@ class GetPreferredPortfolioValueHistoryStreamTest {
             val result = sut().single()
 
             // Assert
-            assertEquals(prices[2], result[0])
-            assertEquals(prices[4], result[1])
-            assertEquals(prices[6], result[2])
+            result[0] shouldBe prices[2]
+            result[1] shouldBe prices[4]
+            result[2] shouldBe prices[6]
         }
 
     @Test
     fun `emits a new price history when the time unit preference changes`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             val prices = listOf(
                 10 at LocalDateTime.of(2020, 10, 20, 10, 23),
@@ -144,13 +137,13 @@ class GetPreferredPortfolioValueHistoryStreamTest {
 
             // Assert
             result.collectIndexed { index, _ ->
-                assertThat(index + 1, lessThanOrEqualTo(2))
+                index + 1 shouldBeLessThanOrEqualTo 2
             }
         }
 
     @Test
     fun `ignores time unit updates if the actual value does not change`() =
-        runBlockingTest {
+        runBlocking {
             // Arrange
             val prices = listOf(
                 10 at LocalDateTime.of(2020, 10, 20, 10, 23),
@@ -168,7 +161,7 @@ class GetPreferredPortfolioValueHistoryStreamTest {
 
             // Assert
             result.collectIndexed { index, _ ->
-                assertThat(index + 1, lessThanOrEqualTo(1))
+                index + 1 shouldBeLessThanOrEqualTo 1
             }
         }
 

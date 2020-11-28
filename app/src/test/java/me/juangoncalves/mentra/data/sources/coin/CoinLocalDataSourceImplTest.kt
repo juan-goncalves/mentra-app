@@ -17,23 +17,26 @@ import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.domain.errors.PriceCacheMissException
 import me.juangoncalves.mentra.domain.errors.StorageException
 import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.io.IOException
 import java.time.LocalDateTime
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
 class CoinLocalDataSourceImplTest {
 
+    //region Rules
+    //endregion
+
+    //region Mocks
+    //endregion
+
     private lateinit var coinDao: CoinDao
     private lateinit var coinPriceDao: CoinPriceDao
     private lateinit var db: AppDatabase
-
     private lateinit var sut: CoinLocalDataSourceImpl
 
     @Before
@@ -46,7 +49,6 @@ class CoinLocalDataSourceImplTest {
     }
 
     @After
-    @Throws(IOException::class)
     fun closeDb() {
         db.close()
     }
@@ -60,7 +62,7 @@ class CoinLocalDataSourceImplTest {
         val result = sut.getStoredCoins()
 
         // Assert
-        assertEquals(3, result.size)
+        result.size shouldBe 3
     }
 
     @Test(expected = StorageException::class)
@@ -87,7 +89,7 @@ class CoinLocalDataSourceImplTest {
 
         // Assert
         val stored = coinDao.getAll()
-        assertEquals(0, stored.size)
+        stored.size shouldBe 0
     }
 
     @Test(expected = StorageException::class)
@@ -116,9 +118,9 @@ class CoinLocalDataSourceImplTest {
             // Assert
             val stored = coinDao.getAll()
             val symbols = coins.map { it.symbol }.toHashSet()
-            assertEquals(3, stored.size)
+            stored.size shouldBe 3
             stored.forEach {
-                assertTrue(symbols.contains(it.symbol))
+                symbols.contains(it.symbol) shouldBe true
             }
         }
 
@@ -159,6 +161,8 @@ class CoinLocalDataSourceImplTest {
 
             // Act
             sut.storeCoinPrice(Bitcoin, price)
+
+            // Assert
         }
 
     @Test(expected = StorageException::class)
@@ -169,6 +173,8 @@ class CoinLocalDataSourceImplTest {
 
             // Act
             sut.storeCoinPrice(Bitcoin, price)
+
+            // Assert
         }
 
     @Test
@@ -196,6 +202,7 @@ class CoinLocalDataSourceImplTest {
         runBlocking {
             // Act
             sut.getLastCoinPrice(Bitcoin)
+
             // Assert
             Unit
         }
@@ -224,8 +231,7 @@ class CoinLocalDataSourceImplTest {
         val result = sut.findCoinBySymbol("BTC")
 
         // Assert
-        assertNotNull(result)
-        assertEquals(result, Bitcoin)
+        result shouldBe Bitcoin
     }
 
     @Test
@@ -237,7 +243,7 @@ class CoinLocalDataSourceImplTest {
         val result = sut.findCoinBySymbol("NONE")
 
         // Assert
-        assertNull(result)
+        result shouldBe null
     }
 
     @Test(expected = StorageException::class)
@@ -254,5 +260,8 @@ class CoinLocalDataSourceImplTest {
             // Assert
             Unit
         }
+
+    //region Helpers
+    //endregion
 
 }

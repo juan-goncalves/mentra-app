@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.db.AppDatabase
@@ -16,7 +17,6 @@ import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.db.models.WalletValueModel
 import me.juangoncalves.mentra.domain.errors.StorageException
 import me.juangoncalves.mentra.domain.models.Wallet
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,14 +24,20 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.time.LocalDate
 
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
 class WalletLocalDataSourceImplTest {
 
+    //region Rules
+    //endregion
+
+    //region Mocks
+    //endregion
+
     private lateinit var walletDao: WalletDao
     private lateinit var walletValueDao: WalletValueDao
     private lateinit var db: AppDatabase
-
     private lateinit var sut: WalletLocalDataSourceImpl
 
     @Before
@@ -106,7 +112,6 @@ class WalletLocalDataSourceImplTest {
             sut.save(wallet)
 
             // Assert
-            Unit
         }
 
     @Test
@@ -155,10 +160,10 @@ class WalletLocalDataSourceImplTest {
         sut.updateValue(wallet, newValue)
 
         // Assert
-        val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
-        assertEquals(1, valueHistory.size)
-        valueHistory.size shouldBe 1
-        valueHistory.first().valueInUSD shouldBeCloseTo 1235.11
+        with(walletValueDao.getWalletValueHistory(wallet.id)) {
+            size shouldBe 1
+            first().valueInUSD shouldBeCloseTo 1235.11
+        }
     }
 
     @Test
@@ -176,9 +181,10 @@ class WalletLocalDataSourceImplTest {
             sut.updateValue(wallet, newValue)
 
             // Assert
-            val valueHistory = walletValueDao.getWalletValueHistory(wallet.id)
-            valueHistory.size shouldBe 1
-            valueHistory.first().valueInUSD shouldBeCloseTo 432.11
+            with(walletValueDao.getWalletValueHistory(wallet.id)) {
+                size shouldBe 1
+                first().valueInUSD shouldBeCloseTo 432.11
+            }
         }
 
     @Test(expected = StorageException::class)
@@ -195,7 +201,6 @@ class WalletLocalDataSourceImplTest {
             sut.updateValue(wallet, newValue)
 
             // Assert
-            Unit
         }
 
     @Test
@@ -219,6 +224,8 @@ class WalletLocalDataSourceImplTest {
                      4. exceptions
     */
 
+
+    //region Helpers
     private fun initializeSut() {
         sut = WalletLocalDataSourceImpl(walletDao, walletValueDao)
     }
@@ -226,5 +233,6 @@ class WalletLocalDataSourceImplTest {
     private fun insertDefaultCoins() = runBlocking {
         db.coinDao().insertAll(BitcoinModel, EthereumModel, RippleModel)
     }
+    //endregion
 
 }

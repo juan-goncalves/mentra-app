@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
@@ -296,7 +295,7 @@ class WalletCreationViewModelTest {
 
         // Assert
         verifySequence { observer.onChanged(capture(captor)) }
-        assertEquals(R.string.create_wallet_error, captor.captured.content)
+        captor.captured.content shouldBe R.string.create_wallet_error
     }
 
     @Test

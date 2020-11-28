@@ -7,8 +7,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -18,6 +16,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import me.juangoncalves.mentra.MainCoroutineRule
 import me.juangoncalves.mentra.data.repositories.SharedPreferencesRepository.Keys.ValueChartTimeGranularity
 import me.juangoncalves.mentra.domain.models.TimeGranularity
+import me.juangoncalves.mentra.shouldBe
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -53,13 +52,13 @@ class SharedPreferencesRepositoryTest {
     @Test
     fun `updateTimeUnitPreference saves the received value into the appropriate key`() =
         runBlockingTest {
+            // Arrange
             // Act
             sut.updateTimeUnitPreference(TimeGranularity.Monthly)
 
             // Assert
             val stored = sharedPrefs.getString(ValueChartTimeGranularity, "NONE")
-            assertNotNull(stored)
-            assertEquals("Monthly", stored)
+            stored shouldBe "Monthly"
         }
 
     @Test
@@ -72,7 +71,7 @@ class SharedPreferencesRepositoryTest {
             val result = sut.valueChartTimeUnitStream.first()
 
             // Assert
-            assertEquals(TimeGranularity.Monthly, result)
+            result shouldBe TimeGranularity.Monthly
         }
 
     @Test
@@ -91,8 +90,8 @@ class SharedPreferencesRepositoryTest {
             sut.updateTimeUnitPreference(TimeGranularity.Daily)
 
             // Assert
-            assertEquals(TimeGranularity.Monthly, results[0])
-            assertEquals(TimeGranularity.Daily, results[1])
+            results[0] shouldBe TimeGranularity.Monthly
+            results[1] shouldBe TimeGranularity.Daily
         }
 
     @Test
@@ -105,7 +104,7 @@ class SharedPreferencesRepositoryTest {
             val result = sut.valueChartTimeUnitStream.first()
 
             // Assert
-            assertEquals(TimeGranularity.Daily, result)
+            result shouldBe TimeGranularity.Daily
         }
 
     //region Helpers

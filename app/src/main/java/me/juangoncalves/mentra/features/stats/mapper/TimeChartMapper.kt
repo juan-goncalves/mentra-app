@@ -1,9 +1,8 @@
 package me.juangoncalves.mentra.features.stats.mapper
 
 import com.github.mikephil.charting.data.Entry
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.TimeGranularity
 import me.juangoncalves.mentra.domain.usecases.preference.GetTimeUnitPreference
@@ -17,8 +16,7 @@ import java.util.*
 import javax.inject.Inject
 
 class TimeChartMapper @Inject constructor(
-    private val getTimeUnitPreference: GetTimeUnitPreference,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val getTimeUnitPreference: GetTimeUnitPreference
 ) {
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
@@ -34,33 +32,32 @@ class TimeChartMapper @Inject constructor(
     private suspend fun generateLabels(
         prices: List<Price>,
         granularity: TimeGranularity
-    ): List<String> =
-        withContext(defaultDispatcher) {
-            prices.map { price ->
-                when (granularity) {
-                    TimeGranularity.Daily -> dateFormatter.format(price.timestamp.toLocalDate())
-                        ?: ""
-                    TimeGranularity.Weekly -> {
-                        val month = price.timestamp.month.getDisplayName(
-                            TextStyle.SHORT,
-                            Locale.getDefault()
-                        )
-                        val week = price.timestamp.get(weekFields.weekOfMonth())
-                        "$month ${price.timestamp.year} - W$week"
-                    }
-                    TimeGranularity.Monthly -> {
-                        val month = price.timestamp.month.getDisplayName(
-                            TextStyle.SHORT,
-                            Locale.getDefault()
-                        )
-                        "$month ${price.timestamp.year}"
-                    }
+    ): List<String> = withContext(Dispatchers.Default) {
+        prices.map { price ->
+            when (granularity) {
+                TimeGranularity.Daily -> dateFormatter.format(price.timestamp.toLocalDate())
+                    ?: ""
+                TimeGranularity.Weekly -> {
+                    val month = price.timestamp.month.getDisplayName(
+                        TextStyle.SHORT,
+                        Locale.getDefault()
+                    )
+                    val week = price.timestamp.get(weekFields.weekOfMonth())
+                    "$month ${price.timestamp.year} - W$week"
+                }
+                TimeGranularity.Monthly -> {
+                    val month = price.timestamp.month.getDisplayName(
+                        TextStyle.SHORT,
+                        Locale.getDefault()
+                    )
+                    "$month ${price.timestamp.year}"
                 }
             }
         }
+    }
 
     private suspend fun generateEntries(prices: List<Price>): List<Entry> =
-        withContext(defaultDispatcher) {
+        withContext(Dispatchers.Default) {
             prices.mapIndexed { index, price ->
                 Entry(index.toFloat(), price.value.toFloat())
             }

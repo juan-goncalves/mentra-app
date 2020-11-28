@@ -1,9 +1,8 @@
 package me.juangoncalves.mentra.domain.usecases.coin
 
 import either.Either
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.repositories.CoinRepository
@@ -16,14 +15,13 @@ import java.util.*
 import javax.inject.Inject
 
 class FindCoinsByName @Inject constructor(
-    private val coinRepository: CoinRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val coinRepository: CoinRepository
 ) : UseCase<String, List<Coin>> {
 
     private var allCoins: List<Coin>? = null
 
     override suspend fun invoke(params: String): Either<Failure, List<Coin>> =
-        withContext(defaultDispatcher) {
+        withContext(Dispatchers.Default) {
             val query = params.trim().toLowerCase(Locale.ROOT)
 
             val coins = when (val safeCoins = allCoins) {

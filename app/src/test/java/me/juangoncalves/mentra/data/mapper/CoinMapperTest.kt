@@ -4,12 +4,24 @@ import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.IconType
 import me.juangoncalves.mentra.network.models.CoinSchema
-import org.junit.Assert.assertEquals
+import me.juangoncalves.mentra.shouldBe
+import org.junit.Before
 import org.junit.Test
 
 class CoinMapperTest {
 
-    private val sut: CoinMapper = CoinMapper()
+    //region Rules
+    //endregion
+
+    //region Mocks
+    //endregion
+
+    private lateinit var sut: CoinMapper
+
+    @Before
+    fun setUp() {
+        sut = CoinMapper()
+    }
 
     @Test
     fun `map should return the invalid coin object if the schema does not have a symbol`() {
@@ -24,7 +36,7 @@ class CoinMapperTest {
         val result = sut.map(schema)
 
         // Assert
-        assertEquals(Coin.Invalid, result)
+        result shouldBe Coin.Invalid
     }
 
     @Test
@@ -40,7 +52,7 @@ class CoinMapperTest {
         val result = sut.map(schema)
 
         // Assert
-        assertEquals(Coin.Invalid, result)
+        result shouldBe Coin.Invalid
     }
 
     @Test
@@ -59,9 +71,9 @@ class CoinMapperTest {
         val result = sut.map(schema)
 
         // Assert
-        assertEquals("BTC", result.symbol)
-        assertEquals("Bitcoin", result.name)
-        assertEquals("/btc.png", result.imageUrl)
+        result.symbol shouldBe "BTC"
+        result.name shouldBe "Bitcoin"
+        result.imageUrl shouldBe "/btc.png"
     }
 
     @Test
@@ -73,9 +85,9 @@ class CoinMapperTest {
         val result = sut.map(coin)
 
         // Assert
-        assertEquals("BTC", result.symbol)
-        assertEquals("Bitcoin", result.name)
-        assertEquals("http://hola.com/btc.png", result.imageUrl)
+        result.symbol shouldBe "BTC"
+        result.name shouldBe "Bitcoin"
+        result.imageUrl shouldBe "http://hola.com/btc.png"
     }
 
     @Test
@@ -87,9 +99,12 @@ class CoinMapperTest {
         val result = sut.map(model)
 
         // Assert
-        assertEquals("BTC", result.symbol)
-        assertEquals("Bitcoin", result.name)
-        assertEquals("http://hola.com/btc.png", result.imageUrl)
+        result.symbol shouldBe "BTC"
+        result.name shouldBe "Bitcoin"
+        result.imageUrl shouldBe "http://hola.com/btc.png"
     }
+
+    //region Helpers
+    //endregion
 
 }

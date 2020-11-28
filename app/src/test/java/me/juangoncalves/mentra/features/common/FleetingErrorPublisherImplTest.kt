@@ -24,10 +24,14 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FleetingErrorPublisherImplTest {
 
+    //region Rules
     @get:Rule val coroutineRule = MainCoroutineRule()
     @get:Rule val instantExecutorRule = InstantTaskExecutorRule()
+    //endregion
 
+    //region Mocks
     @MockK lateinit var observer: Observer<Event<DisplayError>>
+    //endregion
 
     private lateinit var sut: FleetingErrorPublisherImpl
 
@@ -72,6 +76,7 @@ class FleetingErrorPublisherImplTest {
         verify(exactly = 0) { observer.onChanged(any()) }
     }
 
+    //region Helpers
     private val failingUseCaseFake = object : VoidUseCase<String> {
         override suspend fun invoke(): Either<Failure, String> = Left(StorageFailure())
     }
@@ -79,5 +84,6 @@ class FleetingErrorPublisherImplTest {
     private val successfulUseCaseFake = object : VoidUseCase<String> {
         override suspend fun invoke(): Either<Failure, String> = Right("Success")
     }
+    //endregion
 
 }
