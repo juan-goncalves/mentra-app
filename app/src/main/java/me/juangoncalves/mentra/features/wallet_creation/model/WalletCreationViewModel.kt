@@ -54,9 +54,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     }
 
     fun submitQuery(query: String) {
-        val workInProgress = filterJob?.isActive ?: false
-        if (workInProgress) filterJob?.cancel()
-
+        filterJob?.cancel()
         filterJob = viewModelScope.launch {
             val result = findCoinsByName(query)
             result.rightValue?.let { filteredCoins ->

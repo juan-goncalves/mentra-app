@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.domain.usecases.coin
 
 import either.Either
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Coin
@@ -36,8 +37,15 @@ class FindCoinsByName @Inject constructor(
                 return@withContext coins.toRight()
             }
 
-            coins.filter { coin -> coin.name.toLowerCase(Locale.ROOT).contains(query) }
-                .sortedBy { match -> match.name.length - params.length }
+            coins
+                .filter { coin ->
+                    ensureActive()
+                    coin.name.toLowerCase(Locale.ROOT).contains(query)
+                }
+                .sortedBy { match ->
+                    ensureActive()
+                    match.name.length - params.length
+                }
                 .toRight()
         }
 
