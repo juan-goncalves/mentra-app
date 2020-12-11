@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
@@ -29,6 +30,10 @@ class CoinAmountInputFragment : Fragment() {
 
     private var _binding: CoinAmountInputFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private val crossFadeFactory = DrawableCrossFadeFactory.Builder()
+        .setCrossFadeEnabled(true)
+        .build()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,8 +106,9 @@ class CoinAmountInputFragment : Fragment() {
 
         Glide.with(this)
             .load(selectedCoin.imageUrl)
+            .placeholder(R.drawable.coin_placeholder)
             .circleCrop()
-            .transition(DrawableTransitionOptions.withCrossFade())
+            .transition(DrawableTransitionOptions.withCrossFade(crossFadeFactory))
             .error(R.drawable.coin_placeholder)
             .into(binding.selectedCoinImageView)
 
