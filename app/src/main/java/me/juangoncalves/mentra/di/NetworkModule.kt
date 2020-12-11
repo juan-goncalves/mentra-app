@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import me.juangoncalves.mentra.network.CryptoCompareService
 import me.juangoncalves.mentra.network.CryptoIconsService
+import me.juangoncalves.mentra.network.ExchangeRateService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -47,6 +48,17 @@ object NetworkModule {
             .client(httpClient)
             .build()
             .create(CryptoIconsService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExchangeRateService(httpClient: OkHttpClient): ExchangeRateService {
+        return Retrofit.Builder()
+            .baseUrl("https://api.exchangeratesapi.io/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .client(httpClient)
+            .build()
+            .create(ExchangeRateService::class.java)
     }
 
 }

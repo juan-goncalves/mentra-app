@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.ValueVariation
+import me.juangoncalves.mentra.domain.usecases.currency.ExchangePriceStream
+import me.juangoncalves.mentra.domain.usecases.currency.ExchangeVariationStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueVariationStream
 import me.juangoncalves.mentra.features.common.DisplayError
@@ -15,7 +17,9 @@ import me.juangoncalves.mentra.features.common.Event
 
 class DashboardViewModel @ViewModelInject constructor(
     getPortfolioValue: GetPortfolioValueStream,
-    getPortfolioValueVariation: GetPortfolioValueVariationStream
+    getPortfolioValueVariation: GetPortfolioValueVariationStream,
+    exchangeExchangePriceStream: ExchangePriceStream,
+    exchangeExchangeVariationStream: ExchangeVariationStream
 ) : ViewModel() {
 
     val portfolioValue: LiveData<Price> get() = _portfolioValue
@@ -27,10 +31,19 @@ class DashboardViewModel @ViewModelInject constructor(
     private val _error: MutableLiveData<DisplayError> = MutableLiveData()
     private val _openedTab: MutableLiveData<Tab> = MutableLiveData(Tab.STATS)
     private val _closeEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
-    private val _portfolioValue: LiveData<Price> = getPortfolioValue().asLiveData()
+
+    private val _portfolioValue: LiveData<Price> = with(exchangeExchangePriceStream) {
+        getPortfolioValue()
+            .exchangeWhenPreferredCurrencyChanges()
+            .asLiveData()
+    }
 
     private val _lastDayValueChange: LiveData<ValueVariation> =
-        getPortfolioValueVariation(ValueVariation.TimeUnit.Daily).asLiveData()
+        with(exchangeExchangeVariationStream) {
+            getPortfolioValueVariation()
+                .exchangeWhenPreferredCurrencyChanges()
+                .asLiveData()
+        }
 
     fun openStatsSelected() {
         _openedTab.value = Tab.STATS
@@ -52,3 +65,4 @@ class DashboardViewModel @ViewModelInject constructor(
     enum class Tab { STATS, WALLETS }
 
 }
+

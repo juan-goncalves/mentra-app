@@ -1,9 +1,8 @@
 package me.juangoncalves.mentra.domain.usecases.portfolio
 
 import either.Either
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.domain.errors.Failure
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
@@ -11,12 +10,11 @@ import me.juangoncalves.mentra.domain.repositories.WalletRepository
 import me.juangoncalves.mentra.domain.usecases.VoidUseCase
 import me.juangoncalves.mentra.domain.usecases.wallet.RefreshWalletValue
 import me.juangoncalves.mentra.extensions.*
-import java.time.LocalDateTime
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 
 class RefreshPortfolioValue @Inject constructor(
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val walletRepository: WalletRepository,
     private val portfolioRepository: PortfolioRepository,
     private val refreshWalletValue: RefreshWalletValue
@@ -26,22 +24,17 @@ class RefreshPortfolioValue @Inject constructor(
         val getWalletsResult = walletRepository.getWallets()
         val wallets = getWalletsResult.rightValue ?: return Left(getWalletsResult.requireLeft())
 
-        val (total, totalCalculationFailure) = withContext(defaultDispatcher) {
-            var total = 0.0
+        val (total, totalCalculationFailure) = withContext(Dispatchers.Default) {
+            var total = BigDecimal.ZERO
             for (wallet in wallets) {
                 val refreshResult = refreshWalletValue(wallet)
                 if (refreshResult.isLeft()) {
                     return@withContext Price.None to refreshResult.requireLeft()
                 }
-                total += refreshResult.requireRight().value.toDouble()
+                total += refreshResult.requireRight().value
             }
 
-            val totalPrice = Price(
-                total.toBigDecimal(),
-                Currency.getInstance("USD"),
-                LocalDateTime.now()
-            )
-
+            val totalPrice = total.toPrice(currency = Currency.getInstance("USD"))
             totalPrice to null
         }
 

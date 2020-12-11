@@ -12,9 +12,11 @@ import me.juangoncalves.mentra.db.models.*
         CoinPriceModel::class,
         WalletModel::class,
         WalletValueModel::class,
-        PortfolioValueModel::class
+        PortfolioValueModel::class,
+        CurrencyEntity::class,
+        ExchangeRateEntity::class
     ],
-    version = 14,
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -29,5 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletValueDao(): WalletValueDao
 
     abstract fun portfolioDao(): PortfolioDao
+
+    abstract fun exchangeRateDao(): CurrencyDao
 
 }

@@ -32,4 +32,8 @@ abstract class RepositoryModule {
     @Singleton
     abstract fun bindPreferenceRepository(impl: SharedPreferencesRepository): PreferenceRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindCurrencyRepository(impl: CurrencyRepositoryImpl): CurrencyRepository
+
 }

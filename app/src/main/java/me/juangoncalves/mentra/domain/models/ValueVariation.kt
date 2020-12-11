@@ -6,16 +6,11 @@ import java.math.BigDecimal
 
 data class ValueVariation(
     val difference: Price,
-    val percentageChange: Double,
-    val timeUnit: TimeUnit
+    val percentageChange: Double
 ) {
 
-    enum class TimeUnit {
-        Daily, Weekly, Monthly
-    }
-
     companion object {
-        val None = ValueVariation(BigDecimal.ZERO.toPrice(), 0.0, TimeUnit.Daily)
+        val None = ValueVariation(BigDecimal.ZERO.toPrice(), 0.0)
     }
 
 }

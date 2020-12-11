@@ -16,14 +16,14 @@ import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
-import me.juangoncalves.mentra.features.wallet_list.mappers.UIWalletMapper
+import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 
 class WalletListViewModel @ViewModelInject constructor(
     private val activeCoinsPriceStream: GetActiveCoinsPriceStream,
     private val walletListStream: GetWalletListStream,
     private val refreshPortfolioValue: RefreshPortfolioValue,
-    private val walletListMapper: UIWalletMapper
+    private val walletListMapper: WalletMapper
 ) : ViewModel() {
 
     val viewStateStream = MutableLiveData<WalletListViewState>(WalletListViewState())

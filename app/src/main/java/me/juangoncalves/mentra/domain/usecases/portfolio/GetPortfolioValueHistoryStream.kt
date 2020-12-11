@@ -13,7 +13,7 @@ import java.time.temporal.WeekFields
 import java.util.*
 import javax.inject.Inject
 
-class GetPreferredPortfolioValueHistoryStream @Inject constructor(
+class GetPortfolioValueHistoryStream @Inject constructor(
     private val portfolioRepository: PortfolioRepository,
     private val preferenceRepository: PreferenceRepository
 ) {

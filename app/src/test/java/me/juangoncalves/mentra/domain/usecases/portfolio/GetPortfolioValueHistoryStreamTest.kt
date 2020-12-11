@@ -20,7 +20,7 @@ import org.junit.Test
 import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
-class GetPreferredPortfolioValueHistoryStreamTest {
+class GetPortfolioValueHistoryStreamTest {
 
     //region Rules
     //endregion
@@ -30,12 +30,12 @@ class GetPreferredPortfolioValueHistoryStreamTest {
     @MockK lateinit var prefRepositoryMock: PreferenceRepository
     //endregion
 
-    private lateinit var sut: GetPreferredPortfolioValueHistoryStream
+    private lateinit var sut: GetPortfolioValueHistoryStream
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = GetPreferredPortfolioValueHistoryStream(
+        sut = GetPortfolioValueHistoryStream(
             portfolioRepositoryMock,
             prefRepositoryMock
         )

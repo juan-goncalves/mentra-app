@@ -13,7 +13,7 @@ import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
-import me.juangoncalves.mentra.features.wallet_list.mappers.UIWalletMapper
+import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 import org.junit.Before
 import org.junit.Rule
@@ -33,7 +33,7 @@ class WalletListViewModelTest {
     @MockK lateinit var walletListStreamMock: GetWalletListStream
     @MockK lateinit var refreshPortfolioValueMock: RefreshPortfolioValue
     @MockK lateinit var stateObserver: Observer<WalletListViewState>
-    @MockK lateinit var uiWalletMapper: UIWalletMapper
+    @MockK lateinit var walletMapper: WalletMapper
     //endregion
 
     private lateinit var sut: WalletListViewModel
@@ -45,7 +45,7 @@ class WalletListViewModelTest {
             activeCoinsPriceStreamMock,
             walletListStreamMock,
             refreshPortfolioValueMock,
-            uiWalletMapper
+            walletMapper
         )
         sut.viewStateStream.observeForever(stateObserver)
     }
@@ -92,7 +92,7 @@ class WalletListViewModelTest {
 
         coVerify {
             wallets.forEach { wallet ->
-                uiWalletMapper.map(wallet, prices[wallet.coin]!!)
+                walletMapper.map(wallet, prices[wallet.coin]!!)
             }
         }
     }
@@ -300,7 +300,7 @@ class WalletListViewModelTest {
         coEvery { walletListStreamMock.invoke() } returns flowOf(wallets)
         coEvery { activeCoinsPriceStreamMock.invoke() } returns flowOf(prices)
         coEvery { refreshPortfolioValueMock.invoke() } returns 10.0.toPrice().toRight()
-        coEvery { uiWalletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
+        coEvery { walletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
             id = 0,
             iconUrl = "",
             value = 0.0.toPrice(),

@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.TimeGranularity
+import me.juangoncalves.mentra.domain.usecases.preference.GetCurrencyPreference
 import me.juangoncalves.mentra.domain.usecases.preference.GetTimeUnitPreference
 import me.juangoncalves.mentra.extensions.rightValue
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
@@ -16,7 +17,8 @@ import java.util.*
 import javax.inject.Inject
 
 class TimeChartMapper @Inject constructor(
-    private val getTimeUnitPreference: GetTimeUnitPreference
+    private val getTimeUnitPreference: GetTimeUnitPreference,
+    private val getCurrencyPreference: GetCurrencyPreference
 ) {
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
@@ -26,7 +28,8 @@ class TimeChartMapper @Inject constructor(
         val granularity = getTimeUnitPreference(Unit).rightValue ?: TimeGranularity.Daily
         val labels = generateLabels(prices, granularity)
         val entries = generateEntries(prices)
-        return TimeChartData(entries, labels, granularity)
+        val currency = getCurrencyPreference.execute()
+        return TimeChartData(entries, labels, granularity, currency)
     }
 
     private suspend fun generateLabels(

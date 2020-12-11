@@ -8,8 +8,9 @@ import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.domain.models.TimeGranularity
+import me.juangoncalves.mentra.domain.usecases.currency.ExchangePriceStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioDistributionStream
-import me.juangoncalves.mentra.domain.usecases.portfolio.GetPreferredPortfolioValueHistoryStream
+import me.juangoncalves.mentra.domain.usecases.portfolio.GetPortfolioValueHistoryStream
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain.usecases.preference.GetTimeUnitPreferenceStream
 import me.juangoncalves.mentra.domain.usecases.preference.UpdatePortfolioValueTimeGranularity
@@ -22,18 +23,23 @@ import me.juangoncalves.mentra.features.stats.mapper.TimeChartMapper
 import me.juangoncalves.pie.PiePortion
 
 class StatsViewModel @ViewModelInject constructor(
-    getPreferredPortfolioValueHistory: GetPreferredPortfolioValueHistoryStream,
+    getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
     getTimeUnitPreferenceStream: GetTimeUnitPreferenceStream,
+    exchangePriceStream: ExchangePriceStream,
     private val refreshPortfolioValue: RefreshPortfolioValue,
     private val updatePortfolioValueTimeGranularity: UpdatePortfolioValueTimeGranularity,
     private val timeChartMapper: TimeChartMapper,
     private val piePortionMapper: PiePortionMapper
-) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+) : ViewModel(),
+    FleetingErrorPublisher by FleetingErrorPublisherImpl() {
 
-    val valueChartData: LiveData<TimeChartData> = getPreferredPortfolioValueHistory()
-        .toTimeChartData()
-        .asLiveData()
+    val valueChartData: LiveData<TimeChartData> = with(exchangePriceStream) {
+        getPortfolioValueHistory()
+            .exchangeWhenPreferredCurrencyChanges()
+            .toTimeChartData()
+            .asLiveData()
+    }
 
     val pieChartData: LiveData<Array<PiePortion>> = getPortfolioDistribution()
         .toPiePortions()

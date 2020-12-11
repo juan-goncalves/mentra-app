@@ -5,12 +5,10 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.at
+import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.models.TimeGranularity
+import me.juangoncalves.mentra.domain.usecases.preference.GetCurrencyPreference
 import me.juangoncalves.mentra.domain.usecases.preference.GetTimeUnitPreference
-import me.juangoncalves.mentra.shouldBe
-import me.juangoncalves.mentra.shouldBeCloseTo
-import me.juangoncalves.mentra.toRight
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
@@ -23,6 +21,7 @@ class TimeChartMapperTest {
 
     //region Mocks
     @MockK lateinit var getTimeUnitPreferenceMock: GetTimeUnitPreference
+    @MockK lateinit var getCurrencyPreferenceMock: GetCurrencyPreference
     //endregion
 
     private lateinit var sut: TimeChartMapper
@@ -30,13 +29,14 @@ class TimeChartMapperTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = TimeChartMapper(getTimeUnitPreferenceMock)
+        sut = TimeChartMapper(getTimeUnitPreferenceMock, getCurrencyPreferenceMock)
     }
 
     @Test
     fun `returns the appropriate labels for the received daily history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
+        coEvery { getCurrencyPreferenceMock.execute() } returns USD
         val prices = listOf(
             10 at LocalDateTime.of(2020, 10, 20, 10, 23),
             15 at LocalDateTime.of(2020, 10, 21, 7, 12),
@@ -60,6 +60,7 @@ class TimeChartMapperTest {
     fun `returns the appropriate entries for the received daily history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
+        coEvery { getCurrencyPreferenceMock.execute() } returns USD
         val prices = listOf(
             10 at LocalDateTime.of(2020, 10, 20, 10, 23),
             15 at LocalDateTime.of(2020, 10, 21, 7, 12),
@@ -83,6 +84,7 @@ class TimeChartMapperTest {
     fun `returns the time granularity value available at the time`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
+        coEvery { getCurrencyPreferenceMock.execute() } returns USD
         val prices = listOf(
             10 at LocalDateTime.of(2020, 10, 20, 10, 23),
             15 at LocalDateTime.of(2020, 10, 21, 7, 12),
@@ -101,6 +103,7 @@ class TimeChartMapperTest {
     fun `returns the appropriate labels for the weekly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Weekly.toRight()
+        coEvery { getCurrencyPreferenceMock.execute() } returns USD
         val prices = listOf(
             11 at LocalDateTime.of(2020, 10, 11, 1, 15),
             21 at LocalDateTime.of(2020, 10, 21, 1, 15),
@@ -123,6 +126,7 @@ class TimeChartMapperTest {
     fun `returns the appropriate entries for the weekly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Weekly.toRight()
+        coEvery { getCurrencyPreferenceMock.execute() } returns USD
         val prices = listOf(
             11 at LocalDateTime.of(2020, 10, 11, 1, 15),
             21 at LocalDateTime.of(2020, 10, 21, 1, 15),
@@ -145,6 +149,7 @@ class TimeChartMapperTest {
     fun `returns the appropriate entries for the monthly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
+        coEvery { getCurrencyPreferenceMock.execute() } returns USD
         val prices = listOf(
             11 at LocalDateTime.of(2020, 11, 11, 1, 15),
             21 at LocalDateTime.of(2020, 12, 21, 1, 15),
@@ -167,6 +172,7 @@ class TimeChartMapperTest {
     fun `returns the appropriate labels for the monthly history`() = runBlocking {
         // Arrange
         coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
+        coEvery { getCurrencyPreferenceMock.execute() } returns USD
         val prices = listOf(
             11 at LocalDateTime.of(2020, 11, 11, 1, 15),
             21 at LocalDateTime.of(2020, 12, 21, 1, 15),
@@ -190,6 +196,7 @@ class TimeChartMapperTest {
         runBlocking {
             // Arrange
             coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
+            coEvery { getCurrencyPreferenceMock.execute() } returns USD
 
             // Act
             val result = sut.map(emptyList())

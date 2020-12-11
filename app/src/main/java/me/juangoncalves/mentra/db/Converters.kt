@@ -6,6 +6,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.*
 
 class Converters {
 
@@ -57,6 +58,15 @@ class Converters {
     fun stringToBigDecimal(value: String?): BigDecimal? {
         if (value == null) return null
         return BigDecimal(value)
+    }
+
+    @TypeConverter
+    fun currencyToString(value: Currency?): String? = value?.currencyCode
+
+    @TypeConverter
+    fun stringToCurrency(value: String?): Currency? {
+        if (value == null) return null
+        return Currency.getInstance(value)
     }
 
 }

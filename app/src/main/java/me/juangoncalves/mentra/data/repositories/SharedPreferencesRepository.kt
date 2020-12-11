@@ -4,10 +4,12 @@ import android.content.SharedPreferences
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.di.IoDispatcher
 import me.juangoncalves.mentra.domain.models.TimeGranularity
 import me.juangoncalves.mentra.domain.repositories.PreferenceRepository
+import java.util.*
 import javax.inject.Inject
 
 class SharedPreferencesRepository @Inject constructor(
@@ -21,6 +23,10 @@ class SharedPreferencesRepository @Inject constructor(
 
     override val valueChartTimeUnitStream: Flow<TimeGranularity>
         get() = _valueChartTimeGranularityStream
+
+    // TODO: Remove hardcoded value
+    override val currencyStream: Flow<Currency>
+        get() = flowOf(Currency.getInstance("EUR"))
 
     override suspend fun updateTimeUnitPreference(value: TimeGranularity) =
         withContext(ioDispatcher) {

@@ -13,6 +13,7 @@ import me.juangoncalves.mentra.extensions.toPrice
 import me.juangoncalves.mentra.features.common.*
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import java.math.BigDecimal
+import java.util.*
 
 class EditWalletViewModel @ViewModelInject constructor(
     private val updateWallet: UpdateWallet
@@ -35,6 +36,7 @@ class EditWalletViewModel @ViewModelInject constructor(
     private val _estimatedValue: MutableLiveData<Price> = MutableLiveData()
 
     private var _updatedAmount: BigDecimal? = null
+    private val _currency: Currency get() = wallet.value.currency
 
     fun initialize(args: Bundle?) {
         wallet = args?.getParcelable(BundleKeys.Wallet)
@@ -63,11 +65,11 @@ class EditWalletViewModel @ViewModelInject constructor(
 
     fun amountInputChanged(text: CharSequence?) {
         val (validationMessageId, parsedAmount) = validateAndParseAmountInput(text)
+        val estimation = parsedAmount * wallet.coin.value.value
         _amountInputValidation.value = validationMessageId
         _saveButtonEnabled.value =
             validationMessageId == null && parsedAmount != wallet.amountOfCoin
-        // TODO: Use the preferred user currency
-        _estimatedValue.value = (parsedAmount * wallet.coin.value.value).toPrice()
+        _estimatedValue.value = estimation.toPrice(currency = _currency)
         _updatedAmount = parsedAmount
     }
 

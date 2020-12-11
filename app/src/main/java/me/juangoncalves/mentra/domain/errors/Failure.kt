@@ -18,3 +18,7 @@ class InternetConnectionFailure : Failure()
 class FetchPriceFailure(val storedPrice: Price? = null) : Failure()
 
 class NotFoundFailure : Failure()
+
+class ExchangeRateNotAvailable : Failure()
+
+class CurrenciesNotAvailable : Failure()

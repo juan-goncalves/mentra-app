@@ -23,6 +23,7 @@ import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.extensions.styleByTheme
 import me.juangoncalves.mentra.features.stats.model.StatsViewModel
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
+import java.util.*
 
 
 @AndroidEntryPoint
@@ -94,7 +95,7 @@ class StatsFragment : Fragment() {
     }
 
     private fun updateLineChartData(chartData: TimeChartData) {
-        val (entries, labels, granularity) = chartData
+        val (entries, labels, granularity, currency) = chartData
 
         val applicableChart = when (granularity) {
             TimeGranularity.Daily -> binding.valueLineChart
@@ -107,7 +108,7 @@ class StatsFragment : Fragment() {
         }
 
         val dateAxisFormatter = IndexAxisFormatter(labels)
-        val dataSet = LineDataSet(entries, "value").applyDefaultStyle()
+        val dataSet = LineDataSet(entries, "value").applyDefaultStyle(currency)
         val lineData = LineData(dataSet)
 
         applicableChart.apply {
@@ -177,7 +178,7 @@ class StatsFragment : Fragment() {
         }
     }
 
-    private fun LineDataSet.applyDefaultStyle(): LineDataSet = apply {
+    private fun LineDataSet.applyDefaultStyle(currency: Currency): LineDataSet = apply {
         val colorPrimary = requireContext().getThemeColor(R.attr.colorPrimary)
         mode = LineDataSet.Mode.HORIZONTAL_BEZIER
         color = colorPrimary
@@ -186,7 +187,7 @@ class StatsFragment : Fragment() {
         lineWidth = 3f
         circleRadius = 5f
         valueTextSize = 10f
-        valueFormatter = ValueAxisFormatter()
+        valueFormatter = ValueAxisFormatter(currency)
         setDrawCircleHole(false)
         setCircleColor(colorPrimary)
         setDrawFilled(true)

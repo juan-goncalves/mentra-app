@@ -38,4 +38,7 @@ object DatabaseModule {
     @Provides
     fun providePortfolioDao(database: AppDatabase): PortfolioDao = database.portfolioDao()
 
+    @Provides
+    fun provideExchangeRateDao(database: AppDatabase): CurrencyDao = database.exchangeRateDao()
+
 }
