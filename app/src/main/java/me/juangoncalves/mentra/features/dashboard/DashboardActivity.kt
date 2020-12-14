@@ -43,7 +43,11 @@ class DashboardActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         binding = DashboardActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        configureView()
+        initObservers()
+    }
 
+    private fun configureView() {
         supportFragmentManager.beginTransaction()
             .addIfMissing(binding.fragmentContainer, statsFragment, StatsFragmentTag)
             .addIfMissing(binding.fragmentContainer, walletListFragment, WalletsFragmentTag)
@@ -54,7 +58,9 @@ class DashboardActivity : FragmentActivity() {
             startActivity(intent)
         }
 
-        initObservers()
+        binding.root.onTransitionCompleted { id ->
+            binding.navButton.isClickable = id == R.id.expanded
+        }
     }
 
     private fun initObservers() {
