@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:iconSpaceReserved="false">
+        <ListPreference
+            android:dialogTitle="@string/select_a_currency"
+            app:enabled="false"
+            app:iconSpaceReserved="false"
+            app:key="currency_code"
+            app:title="@string/currency"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="periodic_refresh"
+            android:title="@string/automatically_refresh_prices"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="refresh_coins"
+            app:summary="@string/refreshes_the_list_of_supported_coins"
+            app:title="@string/update_coin_list" />
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="app_version"
+            app:title="@string/app_version" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="build_type"
+            app:title="@string/build_type" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="licenses"
+            app:summary="@string/libraries_used_in_the_project"
+            app:title="@string/open_source_licenses" />
+    </PreferenceCategory>
+</PreferenceScreen>

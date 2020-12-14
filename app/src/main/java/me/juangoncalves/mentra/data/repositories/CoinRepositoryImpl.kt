@@ -35,44 +35,45 @@ class CoinRepositoryImpl @Inject constructor(
     private val _pricesOfCoinsInUse: Flow<Map<Coin, Price>> =
         localDataSource.getActiveCoinPricesStream().associateByCoin()
 
-    override suspend fun getCoins(): Either<Failure, List<Coin>> = withContext(ioDispatcher) {
-        val cachedCoins = try {
-            localDataSource.getStoredCoins()
-        } catch (e: StorageException) {
-            logger.warning(TAG, "Exception while trying to get cached coins.\n$e")
-            null
-        }
-
-        if (cachedCoins != null && cachedCoins.isNotEmpty()) {
-            val coins = cachedCoins
-                .map(coinMapper::map)
-                .filterNot { it == Coin.Invalid }
-            return@withContext Either.Right(coins)
-        }
-
-        return@withContext try {
-            val coins = remoteDataSource.fetchCoins()
-            try {
-                localDataSource.storeCoins(coins)
+    override suspend fun getCoins(forceNonCached: Boolean): Either<Failure, List<Coin>> =
+        withContext(ioDispatcher) {
+            val cachedCoins = try {
+                localDataSource.getStoredCoins()
             } catch (e: StorageException) {
-                logger.warning(TAG, "Exception while trying to cache coins.\n$e")
+                logger.warning(TAG, "Exception while trying to get cached coins.\n$e")
+                null
             }
-            Either.Right(coins)
-        } catch (e: Exception) {
-            val failure = when (e) {
-                is ServerException -> ServerFailure()
-                is InternetConnectionException -> InternetConnectionFailure()
-                else -> {
-                    logger.error(
-                        TAG,
-                        "Unexpected error when fetching coins from the remote source:\n$e"
-                    )
-                    Failure()
+
+            if (cachedCoins != null && cachedCoins.isNotEmpty() && !forceNonCached) {
+                val coins = cachedCoins
+                    .map(coinMapper::map)
+                    .filterNot { it == Coin.Invalid }
+                return@withContext Either.Right(coins)
+            }
+
+            return@withContext try {
+                val coins = remoteDataSource.fetchCoins()
+                try {
+                    localDataSource.storeCoins(coins)
+                } catch (e: StorageException) {
+                    logger.warning(TAG, "Exception while trying to cache coins.\n$e")
                 }
+                Either.Right(coins)
+            } catch (e: Exception) {
+                val failure = when (e) {
+                    is ServerException -> ServerFailure()
+                    is InternetConnectionException -> InternetConnectionFailure()
+                    else -> {
+                        logger.error(
+                            TAG,
+                            "Unexpected error when fetching coins from the remote source:\n$e"
+                        )
+                        Failure()
+                    }
+                }
+                Either.Left(failure)
             }
-            Either.Left(failure)
         }
-    }
 
     override suspend fun getCoinPrice(coin: Coin): Either<Failure, Price> =
         withContext(ioDispatcher) {
@@ -100,7 +101,6 @@ class CoinRepositoryImpl @Inject constructor(
         localDataSource.updateCoin(coin)
         Either.Right(Unit)
     }
-
 
     private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> = debounce(500)
         .map { prices ->

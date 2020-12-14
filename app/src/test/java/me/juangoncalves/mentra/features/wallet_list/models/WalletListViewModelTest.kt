@@ -11,7 +11,9 @@ import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.errors.FetchPriceFailure
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
+import me.juangoncalves.mentra.domain.usecases.currency.ExchangePriceToPreferredCurrency
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
+import me.juangoncalves.mentra.domain.usecases.preference.GetCurrencyPreferenceStream
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
@@ -33,6 +35,8 @@ class WalletListViewModelTest {
     @MockK lateinit var walletListStreamMock: GetWalletListStream
     @MockK lateinit var refreshPortfolioValueMock: RefreshPortfolioValue
     @MockK lateinit var stateObserver: Observer<WalletListViewState>
+    @MockK lateinit var exchangeToPrefCurrencyMock: ExchangePriceToPreferredCurrency
+    @MockK lateinit var currencyPreferenceStreamMock: GetCurrencyPreferenceStream
     @MockK lateinit var walletMapper: WalletMapper
     //endregion
 
@@ -45,6 +49,8 @@ class WalletListViewModelTest {
             activeCoinsPriceStreamMock,
             walletListStreamMock,
             refreshPortfolioValueMock,
+            exchangeToPrefCurrencyMock,
+            currencyPreferenceStreamMock,
             walletMapper
         )
         sut.viewStateStream.observeForever(stateObserver)
@@ -92,7 +98,7 @@ class WalletListViewModelTest {
 
         coVerify {
             wallets.forEach { wallet ->
-                walletMapper.map(wallet, prices[wallet.coin]!!)
+                walletMapper.map(wallet, fakeExchangeResult)
             }
         }
     }
@@ -139,6 +145,8 @@ class WalletListViewModelTest {
     }
 
     // TODO: Implement `prices are refreshed when the wallet list changes` test case
+
+    // TODO: Implement test case to verify that the wallets are updated when the preferred currency changes
 
     @Test
     fun `viewStateStream emits the correct price refresh progress updates when refreshSelected is called`() {
@@ -307,6 +315,8 @@ class WalletListViewModelTest {
             coin = WalletListViewState.Coin("", 0.0.toPrice()),
             amountOfCoin = BigDecimal.ZERO
         )
+        every { currencyPreferenceStreamMock.invoke() } returns flowOf(USD)
+        coEvery { exchangeToPrefCurrencyMock.execute(any()) } returns fakeExchangeResult
     }
 
     private val wallets = listOf(
@@ -320,6 +330,8 @@ class WalletListViewModelTest {
         Ethereum to 398.0.toPrice(),
         Ripple to 0.34.toPrice()
     )
+
+    private val fakeExchangeResult = 0.0.toPrice()
     //endregion
 
 }

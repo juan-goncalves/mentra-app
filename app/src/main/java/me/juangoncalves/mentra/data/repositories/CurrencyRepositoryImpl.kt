@@ -35,7 +35,7 @@ class CurrencyRepositoryImpl @Inject constructor(
                 Price.None -> ExchangeRateNotAvailable().toLeft()
                 else -> {
                     val convertedValue = price.value * exchangeRate.value
-                    Price(convertedValue, exchangeRate.currency, exchangeRate.timestamp).toRight()
+                    Price(convertedValue, exchangeRate.currency, price.timestamp).toRight()
                 }
             }
         }

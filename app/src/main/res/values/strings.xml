@@ -28,9 +28,12 @@
     <string name="price_refresh_error">Error, could not get the latest coin prices</string>
     <string name="whoops_something_went_wrong">Whoops! Something went wrong.</string>
     <string name="error_loading_wallets">An error occurred while trying to load your wallets.</string>
+    <string name="error_loading_currencies">An error occurred trying to get the currency list.</string>
     <string name="empty_wallets_title">Empty in wallets</string>
     <string name="empty_wallets_description">Add a wallet and it will show up here.</string>
     <string name="coin_list_fetch_error">An error occurred while getting the list of supported coins.</string>
+    <string name="coin_list_refresh_error">An error occurred refreshing the list of coins.</string>
+    <string name="coins_updated">The supported coin list has been updated.</string>
     <string name="create_wallet_error">Error, could not save your wallet</string>
     <string name="no_coins_were_found_for_your_search">No coins were found for your search</string>
     <string name="create_wallet_desc_step_1">First, select the wallet\'s coin</string>
@@ -38,4 +41,18 @@
     <string name="daily">Daily</string>
     <string name="weekly">Weekly</string>
     <string name="monthly">Monthly</string>
+    <string name="settings">Settings</string>
+    <string name="select_a_currency">Select a currency</string>
+    <string name="currency">Currency</string>
+    <string name="automatically_refresh_prices">Automatically refresh prices</string>
+    <string name="refreshes_the_list_of_supported_coins">Refreshes the list of supported coins</string>
+    <string name="update_coin_list">Update coin list</string>
+    <string name="app_version">App version</string>
+    <string name="build_type">Build type</string>
+    <string name="libraries_used_in_the_project">Libraries used in the project</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="every_3_hours">Every 3 hours</string>
+    <string name="every_6_hours">Every 6 hours</string>
+    <string name="every_12_hours">Every 12 hours</string>
+    <string name="once_a_day">Once a day</string>
 </resources>

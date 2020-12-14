@@ -10,7 +10,6 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.DeterminePrimaryIcon
-import me.juangoncalves.mentra.domain.usecases.currency.ExchangePriceToPreferredCurrency
 import org.junit.Before
 import org.junit.Test
 
@@ -22,7 +21,6 @@ class WalletMapperTest {
 
     //region Mocks
     @MockK private lateinit var determinePrimaryIconMock: DeterminePrimaryIcon
-    @MockK private lateinit var exchangePriceToPreferredCurrency: ExchangePriceToPreferredCurrency
     //endregion
 
     private lateinit var sut: WalletMapper
@@ -30,7 +28,7 @@ class WalletMapperTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        sut = WalletMapper(determinePrimaryIconMock, exchangePriceToPreferredCurrency)
+        sut = WalletMapper(determinePrimaryIconMock)
     }
 
     @Test
@@ -39,7 +37,6 @@ class WalletMapperTest {
         val wallet = Wallet(Bitcoin, 1.5, 10)
         val btcPrice = 12_431.0.toPrice()
         coEvery { determinePrimaryIconMock.invoke(any()) } returns Right("mock")
-        coEvery { exchangePriceToPreferredCurrency.execute(btcPrice) } returns btcPrice
 
         // Act
         val result = sut.map(wallet, btcPrice)
@@ -63,7 +60,6 @@ class WalletMapperTest {
             val wallet = Wallet(Bitcoin, 1.0, 10)
             val btcPrice = 12_431.0.toPrice()
             coEvery { determinePrimaryIconMock.invoke(any()) } returns Left(mockk())
-            coEvery { exchangePriceToPreferredCurrency.execute(btcPrice) } returns btcPrice
 
             // Act
             val result = sut.map(wallet, btcPrice)

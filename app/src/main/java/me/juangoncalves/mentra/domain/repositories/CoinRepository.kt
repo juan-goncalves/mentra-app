@@ -15,7 +15,7 @@ interface CoinRepository {
      */
     val pricesOfCoinsInUse: Flow<Map<Coin, Price>>
 
-    suspend fun getCoins(): Either<Failure, List<Coin>>
+    suspend fun getCoins(forceNonCached: Boolean = false): Either<Failure, List<Coin>>
 
     /**
      * Obtains and caches the latest price of [coin] in USD, requesting it from the network if there isn't

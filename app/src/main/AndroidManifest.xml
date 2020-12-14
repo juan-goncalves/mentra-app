@@ -19,9 +19,13 @@
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
 
         <activity
+            android:name=".features.settings.ui.SettingsActivity"
+            android:theme="@style/Theme.Mentra.Settings" />
+
+        <activity
             android:name=".features.splash.SplashActivity"
             android:label="@string/app_name"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/Theme.Mentra.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,6 +36,14 @@
         <activity
             android:name=".features.wallet_creation.ui.WalletCreationActivity"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
+
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.Mentra.Licenses" />
+
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/Theme.Mentra.Licenses" />
 
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"

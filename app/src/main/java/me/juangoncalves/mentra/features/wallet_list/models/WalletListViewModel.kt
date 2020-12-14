@@ -5,16 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import either.fold
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain.models.Coin
 import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.models.Wallet
 import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
+import me.juangoncalves.mentra.domain.usecases.currency.ExchangePriceToPreferredCurrency
 import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
+import me.juangoncalves.mentra.domain.usecases.preference.GetCurrencyPreferenceStream
 import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
@@ -23,6 +21,8 @@ class WalletListViewModel @ViewModelInject constructor(
     private val activeCoinsPriceStream: GetActiveCoinsPriceStream,
     private val walletListStream: GetWalletListStream,
     private val refreshPortfolioValue: RefreshPortfolioValue,
+    private val exchangePriceToPreferredCurrency: ExchangePriceToPreferredCurrency,
+    private val getCurrencyPreferenceStream: GetCurrencyPreferenceStream,
     private val walletListMapper: WalletMapper
 ) : ViewModel() {
 
@@ -42,7 +42,8 @@ class WalletListViewModel @ViewModelInject constructor(
 
     private fun loadWallets() = viewModelScope.launch {
         activeCoinsPriceStream()
-            .combine(walletListStream(), ::mergeIntoDisplayWallets)
+            .exchangeToPreferredCurrency()
+            .mergeIntoDisplayWallets()
             .onStart { viewStateStream.value = currentViewState.copy(isLoadingWallets = true) }
             .catch {
                 viewStateStream.value = currentViewState.copy(
@@ -87,11 +88,18 @@ class WalletListViewModel @ViewModelInject constructor(
         )
     }
 
-    private suspend fun mergeIntoDisplayWallets(
-        coinPrices: Map<Coin, Price>,
-        wallets: List<Wallet>
-    ): List<WalletListViewState.Wallet> = wallets.map { wallet ->
-        walletListMapper.map(wallet, coinPrices[wallet.coin] ?: Price.None)
-    }
+    private fun Flow<Map<Coin, Price>>.exchangeToPreferredCurrency() =
+        combine(getCurrencyPreferenceStream()) { originalCoinPrices, _ ->
+            originalCoinPrices.mapValues { (_, originalPrice) ->
+                exchangePriceToPreferredCurrency.execute(originalPrice)
+            }
+        }
+
+    private fun Flow<Map<Coin, Price>>.mergeIntoDisplayWallets() =
+        combine(walletListStream()) { prices, wallets ->
+            wallets.map { wallet ->
+                walletListMapper.map(wallet, prices[wallet.coin] ?: Price.None)
+            }
+        }
 
 }

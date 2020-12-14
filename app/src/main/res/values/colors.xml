@@ -3,12 +3,14 @@
     <!-- Color names generated using: http://chir.ag/projects/name-that-color -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="white_70">#B2FFFFFF</color>
     <color name="medium_purple">#8776E5</color>
     <color name="blue_violet">#544ab2</color>
     <color name="wild_strawberry">#FF3681</color>
     <color name="wild_strawberry_trans">#42FF3681</color>
     <color name="lipstick">#C60055</color>
     <color name="pickled_bluewood">#343E5C</color>
+    <color name="fiord">#414A66</color>
     <color name="kashmir_blue">#506295</color>
     <color name="cello">#213867</color>
     <color name="tundora">#444444</color>

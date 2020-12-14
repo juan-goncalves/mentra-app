@@ -47,13 +47,13 @@
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/pickled_bluewood</item>
-        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="bottomSheetDialogTheme">@style/Theme.Mentra.BottomSheetDialog</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="snackbarButtonStyle">@style/SnackbarButton</item>
+        <item name="snackbarButtonStyle">@style/Theme.Mentra.SnackbarButton</item>
     </style>
 
-    <style name="SplashTheme" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="Theme.Mentra.Splash" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:statusBarColor">@color/pickled_bluewood</item>
         <item name="android:navigationBarColor">@color/pickled_bluewood</item>
         <item name="android:windowLightStatusBar">false</item>
@@ -62,8 +62,31 @@
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
-    <style name="CustomBottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+    <style name="Theme.Mentra.Settings" parent="Theme.Mentra">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white_70</item>
+        <item name="alertDialogTheme">@style/Theme.Mentra.Settings.PreferenceDialog</item>
+        <item name="colorSurface">@color/pickled_bluewood</item>
+        <item name="android:divider">@color/wild_strawberry</item>
+    </style>
+
+    <style name="Theme.Mentra.Licenses" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorPrimary">@color/pickled_bluewood</item>
+        <item name="colorAccent">@color/wild_strawberry</item>
+        <item name="colorSurface">@color/pickled_bluewood</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/pickled_bluewood</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/pickled_bluewood</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+    </style>
+
+    <style name="Theme.Mentra.Settings.PreferenceDialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="dialogCornerRadius">20dp</item>
+        <item name="colorAccent">@color/medium_purple</item>
+    </style>
+
+    <style name="Theme.Mentra.BottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Theme.Mentra.BottomSheet</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">#4A546E</item>
@@ -71,11 +94,12 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">
-        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
+    <style name="Theme.Mentra.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/Theme.Mentra.ShapeAppearanceBottomSheetDialog
+        </item>
     </style>
 
-    <style name="CustomShapeAppearanceBottomSheetDialog">
+    <style name="Theme.Mentra.ShapeAppearanceBottomSheetDialog">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopRight">16dp</item>
         <item name="cornerSizeTopLeft">16dp</item>
@@ -83,7 +107,7 @@
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 
-    <style name="SnackbarButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+    <style name="Theme.Mentra.SnackbarButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:backgroundTint">@android:color/transparent</item>
     </style>
 </resources>

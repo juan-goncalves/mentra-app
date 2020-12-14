@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.features.dashboard
 
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
@@ -15,6 +16,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
 import me.juangoncalves.mentra.domain.models.Price
 import me.juangoncalves.mentra.extensions.*
+import me.juangoncalves.mentra.features.settings.ui.SettingsActivity
 import me.juangoncalves.mentra.features.stats.ui.StatsFragment
 import me.juangoncalves.mentra.features.wallet_list.ui.WalletListFragment
 
@@ -46,6 +48,11 @@ class DashboardActivity : FragmentActivity() {
             .addIfMissing(binding.fragmentContainer, statsFragment, StatsFragmentTag)
             .addIfMissing(binding.fragmentContainer, walletListFragment, WalletsFragmentTag)
             .commit()
+
+        binding.settingsButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
 
         initObservers()
     }
