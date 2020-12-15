@@ -5,13 +5,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.juangoncalves.mentra.domain.errors.Failure
-import me.juangoncalves.mentra.domain.errors.InternetConnectionFailure
-import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
-import me.juangoncalves.mentra.domain.usecases.UseCase
-import me.juangoncalves.mentra.extensions.isLeft
-import me.juangoncalves.mentra.extensions.requireLeft
-import me.juangoncalves.mentra.extensions.requireRight
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionFailure
+import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
+import me.juangoncalves.mentra.domain_layer.extensions.isLeft
+import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
+import me.juangoncalves.mentra.domain_layer.extensions.requireRight
+import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 
 typealias Hook = suspend () -> Unit
 typealias OnSuccess<T> = suspend (T) -> Unit

@@ -14,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.DashboardActivityBinding
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.features.settings.ui.SettingsActivity
 import me.juangoncalves.mentra.features.stats.ui.StatsFragment

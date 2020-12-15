@@ -16,7 +16,7 @@ import me.juangoncalves.mentra.db.models.*
         CurrencyEntity::class,
         ExchangeRateEntity::class
     ],
-    version = 16,
+    version = 17,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

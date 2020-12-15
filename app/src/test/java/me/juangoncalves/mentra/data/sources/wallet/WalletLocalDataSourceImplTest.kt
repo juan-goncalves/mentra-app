@@ -15,8 +15,8 @@ import me.juangoncalves.mentra.db.daos.WalletDao
 import me.juangoncalves.mentra.db.daos.WalletValueDao
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.db.models.WalletValueModel
-import me.juangoncalves.mentra.domain.errors.StorageException
-import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.domain_layer.errors.StorageException
+import me.juangoncalves.mentra.domain_layer.models.Wallet
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

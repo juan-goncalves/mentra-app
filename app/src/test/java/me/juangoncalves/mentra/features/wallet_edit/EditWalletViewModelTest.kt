@@ -8,9 +8,9 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.*
-import me.juangoncalves.mentra.domain.errors.StorageFailure
-import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.usecases.wallet.UpdateWallet
+import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
+import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.DisplayError
 import me.juangoncalves.mentra.features.common.Event
@@ -302,9 +302,12 @@ class EditWalletViewModelTest {
     private val fakeWallet = WalletListViewState.Wallet(
         id = 1,
         iconUrl = "https://someurl.com/img.png",
-        value = (0.2312 * 11384.23).toPrice(),
+        value = WalletListViewState.Price((0.2312 * 11384.23).toBigDecimal(), USD, false),
         amountOfCoin = 0.2312.toBigDecimal(),
-        coin = WalletListViewState.Coin(Bitcoin.name, 11384.23.toPrice())
+        coin = WalletListViewState.Coin(
+            Bitcoin.name,
+            WalletListViewState.Price(11384.23.toBigDecimal(), USD, false)
+        )
     )
 
     private fun initSutWithFakeWallet() {

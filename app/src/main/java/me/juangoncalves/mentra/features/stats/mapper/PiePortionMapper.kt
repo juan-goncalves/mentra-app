@@ -2,7 +2,7 @@ package me.juangoncalves.mentra.features.stats.mapper
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.pie.PiePortion
 import javax.inject.Inject
 

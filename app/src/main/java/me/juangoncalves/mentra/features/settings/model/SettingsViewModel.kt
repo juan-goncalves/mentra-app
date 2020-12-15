@@ -7,10 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.domain.usecases.coin.RefreshSupportedCoins
-import me.juangoncalves.mentra.domain.usecases.currency.GetSupportedCurrencies
-import me.juangoncalves.mentra.extensions.isLeft
-import me.juangoncalves.mentra.extensions.requireRight
+import me.juangoncalves.mentra.domain_layer.extensions.isLeft
+import me.juangoncalves.mentra.domain_layer.extensions.requireRight
+import me.juangoncalves.mentra.domain_layer.usecases.coin.RefreshSupportedCoins
+import me.juangoncalves.mentra.domain_layer.usecases.currency.GetSupportedCurrencies
 import me.juangoncalves.mentra.features.common.Event
 import java.util.*
 

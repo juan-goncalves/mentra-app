@@ -3,9 +3,9 @@ package me.juangoncalves.mentra.data.sources.wallet
 import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.db.models.WalletValueModel
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Wallet
 
 
 interface WalletLocalDataSource {

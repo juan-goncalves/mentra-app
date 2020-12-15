@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra.db
 
 import androidx.room.TypeConverter
-import me.juangoncalves.mentra.domain.models.IconType
+import me.juangoncalves.mentra.domain_layer.models.IconType
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -1,6 +1,6 @@
 package me.juangoncalves.mentra.data.sources.currency
 
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Price
 import java.util.*
 
 interface CurrencyLocalDataSource {

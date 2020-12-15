@@ -3,7 +3,7 @@ package me.juangoncalves.mentra.db.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import me.juangoncalves.mentra.domain.models.IconType
+import me.juangoncalves.mentra.domain_layer.models.IconType
 
 @Entity(tableName = "Coin")
 data class CoinModel(

@@ -5,8 +5,8 @@ import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
-import me.juangoncalves.mentra.extensions.isLeft
+import me.juangoncalves.mentra.domain_layer.extensions.isLeft
+import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
 
 
 class PortfolioSnapshotWorker @WorkerInject constructor(

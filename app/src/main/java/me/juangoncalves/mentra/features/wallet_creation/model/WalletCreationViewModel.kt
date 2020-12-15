@@ -7,14 +7,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.coin.FindCoinsByName
-import me.juangoncalves.mentra.domain.usecases.coin.GetCoins
-import me.juangoncalves.mentra.domain.usecases.wallet.CreateWallet
-import me.juangoncalves.mentra.extensions.isLeft
-import me.juangoncalves.mentra.extensions.requireRight
-import me.juangoncalves.mentra.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.extensions.isLeft
+import me.juangoncalves.mentra.domain_layer.extensions.requireRight
+import me.juangoncalves.mentra.domain_layer.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Wallet
+import me.juangoncalves.mentra.domain_layer.usecases.coin.FindCoinsByName
+import me.juangoncalves.mentra.domain_layer.usecases.coin.GetCoins
+import me.juangoncalves.mentra.domain_layer.usecases.wallet.CreateWallet
 import me.juangoncalves.mentra.features.common.Event
 import java.math.BigDecimal
 

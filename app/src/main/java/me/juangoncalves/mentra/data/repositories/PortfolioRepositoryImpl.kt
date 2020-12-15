@@ -10,11 +10,11 @@ import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data.mapper.PortfolioValueMapper
 import me.juangoncalves.mentra.db.daos.PortfolioDao
 import me.juangoncalves.mentra.di.IoDispatcher
-import me.juangoncalves.mentra.domain.errors.Failure
-import me.juangoncalves.mentra.domain.errors.StorageFailure
-import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.repositories.PortfolioRepository
-import me.juangoncalves.mentra.extensions.Right
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
+import me.juangoncalves.mentra.domain_layer.extensions.Right
+import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.log.Logger
 import javax.inject.Inject

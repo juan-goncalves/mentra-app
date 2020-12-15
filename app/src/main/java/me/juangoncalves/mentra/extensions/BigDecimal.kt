@@ -1,6 +1,6 @@
 package me.juangoncalves.mentra.extensions
 
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Price
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.time.LocalDateTime

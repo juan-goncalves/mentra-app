@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import me.juangoncalves.mentra.domain.usecases.wallet.DeleteWallet
+import me.juangoncalves.mentra.domain_layer.usecases.wallet.DeleteWallet
 import me.juangoncalves.mentra.features.common.*
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 

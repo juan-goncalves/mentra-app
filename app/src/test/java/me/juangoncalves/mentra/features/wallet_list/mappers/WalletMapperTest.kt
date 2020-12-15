@@ -8,8 +8,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
-import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.coin.DeterminePrimaryIcon
+import me.juangoncalves.mentra.domain_layer.models.Wallet
+import me.juangoncalves.mentra.domain_layer.usecases.coin.DeterminePrimaryIcon
 import org.junit.Before
 import org.junit.Test
 

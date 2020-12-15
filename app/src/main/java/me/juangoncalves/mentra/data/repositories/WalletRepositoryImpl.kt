@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.data.repositories
 
 import either.Either
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -9,14 +10,14 @@ import me.juangoncalves.mentra.data.mapper.WalletMapper
 import me.juangoncalves.mentra.data.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.di.DefaultDispatcher
 import me.juangoncalves.mentra.di.IoDispatcher
-import me.juangoncalves.mentra.domain.errors.Failure
-import me.juangoncalves.mentra.domain.errors.StorageFailure
-import me.juangoncalves.mentra.domain.errors.WalletCreationFailure
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.repositories.WalletRepository
-import me.juangoncalves.mentra.extensions.Right
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
+import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
+import me.juangoncalves.mentra.domain_layer.extensions.Right
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Wallet
+import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.log.Logger
 import java.util.*
@@ -36,7 +37,7 @@ class WalletRepositoryImpl @Inject constructor(
     private val _wallets: Flow<List<Wallet>> =
         localDataSource.getWalletsStream().map(walletMapper::map)
 
-    override suspend fun getWallets(): Either<Failure, List<Wallet>> = withContext(ioDispatcher) {
+    override suspend fun getWallets(): Either<Failure, List<Wallet>> = withContext(Dispatchers.IO) {
         handleException {
             val models = localDataSource.getAll()
             val wallets = models.map { walletMapper.map(it) }

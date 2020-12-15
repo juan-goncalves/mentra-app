@@ -8,13 +8,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import me.juangoncalves.mentra.*
-import me.juangoncalves.mentra.domain.errors.FetchPriceFailure
-import me.juangoncalves.mentra.domain.models.Wallet
-import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
-import me.juangoncalves.mentra.domain.usecases.currency.ExchangePriceToPreferredCurrency
-import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
-import me.juangoncalves.mentra.domain.usecases.preference.GetCurrencyPreferenceStream
-import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
+import me.juangoncalves.mentra.domain_layer.errors.FetchPriceFailure
+import me.juangoncalves.mentra.domain_layer.models.Wallet
+import me.juangoncalves.mentra.domain_layer.usecases.coin.GetActiveCoinsPriceStream
+import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceToPreferredCurrency
+import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
+import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreferenceStream
+import me.juangoncalves.mentra.domain_layer.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 import org.junit.Before
@@ -311,8 +311,8 @@ class WalletListViewModelTest {
         coEvery { walletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
             id = 0,
             iconUrl = "",
-            value = 0.0.toPrice(),
-            coin = WalletListViewState.Coin("", 0.0.toPrice()),
+            value = fakeWalletPrice,
+            coin = WalletListViewState.Coin("", fakeWalletPrice),
             amountOfCoin = BigDecimal.ZERO
         )
         every { currencyPreferenceStreamMock.invoke() } returns flowOf(USD)
@@ -332,6 +332,7 @@ class WalletListViewModelTest {
     )
 
     private val fakeExchangeResult = 0.0.toPrice()
+    private val fakeWalletPrice = WalletListViewState.Price(BigDecimal.ZERO, USD, false)
     //endregion
 
 }

@@ -12,7 +12,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinRecommendationItemBinding
-import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Coin
 
 
 class CoinAdapter(

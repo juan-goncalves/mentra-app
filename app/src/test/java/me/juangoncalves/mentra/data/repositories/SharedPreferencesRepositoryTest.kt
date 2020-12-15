@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.MainCoroutineRule
 import me.juangoncalves.mentra.data.repositories.SharedPreferencesRepository.Keys.ValueChartTimeGranularity
-import me.juangoncalves.mentra.domain.models.TimeGranularity
+import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.shouldBe
 import org.junit.Before
 import org.junit.Rule

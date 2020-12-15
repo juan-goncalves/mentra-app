@@ -2,8 +2,8 @@ package me.juangoncalves.mentra.features.wallet_list.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import me.juangoncalves.mentra.domain.models.Price
 import java.math.BigDecimal
+import java.util.*
 
 data class WalletListViewState(
     val isLoadingWallets: Boolean = true,
@@ -25,6 +25,13 @@ data class WalletListViewState(
             fun dismiss() = run { wasDismissed = true }
         }
     }
+
+    @Parcelize
+    data class Price(
+        val value: BigDecimal,
+        val currency: Currency,
+        val isPlaceholder: Boolean
+    ) : Parcelable
 
     @Parcelize
     data class Wallet(

@@ -9,8 +9,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
-import me.juangoncalves.mentra.domain.errors.InternetConnectionException
-import me.juangoncalves.mentra.domain.errors.ServerException
+import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionException
+import me.juangoncalves.mentra.domain_layer.errors.ServerException
 import me.juangoncalves.mentra.log.Logger
 import me.juangoncalves.mentra.network.CryptoCompareResponse
 import me.juangoncalves.mentra.network.CryptoCompareService

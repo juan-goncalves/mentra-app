@@ -11,10 +11,10 @@ import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.db.models.CoinPriceModel
 import me.juangoncalves.mentra.di.IoDispatcher
-import me.juangoncalves.mentra.domain.errors.*
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.repositories.CoinRepository
+import me.juangoncalves.mentra.domain_layer.errors.*
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.extensions.elapsedMinutes
 import me.juangoncalves.mentra.log.Logger

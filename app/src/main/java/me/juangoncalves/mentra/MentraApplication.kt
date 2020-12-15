@@ -7,7 +7,7 @@ import dagger.hilt.android.HiltAndroidApp
 import either.fold
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import me.juangoncalves.mentra.domain.usecases.preference.GetPeriodicRefreshPreference
+import me.juangoncalves.mentra.domain_layer.usecases.preference.GetPeriodicRefreshPreference
 import me.juangoncalves.mentra.workers.PortfolioSnapshotWorker
 import java.time.Duration
 import java.util.concurrent.TimeUnit

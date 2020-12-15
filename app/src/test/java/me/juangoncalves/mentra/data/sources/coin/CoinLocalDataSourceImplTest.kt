@@ -14,8 +14,8 @@ import me.juangoncalves.mentra.db.AppDatabase
 import me.juangoncalves.mentra.db.daos.CoinDao
 import me.juangoncalves.mentra.db.daos.CoinPriceDao
 import me.juangoncalves.mentra.db.models.CoinPriceModel
-import me.juangoncalves.mentra.domain.errors.PriceCacheMissException
-import me.juangoncalves.mentra.domain.errors.StorageException
+import me.juangoncalves.mentra.domain_layer.errors.PriceCacheMissException
+import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

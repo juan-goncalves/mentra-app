@@ -16,7 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinAmountInputFragmentBinding
-import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.applyErrorStyle
 import me.juangoncalves.mentra.extensions.hideKeyboard

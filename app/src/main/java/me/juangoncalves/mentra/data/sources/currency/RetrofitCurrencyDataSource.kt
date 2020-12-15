@@ -3,8 +3,8 @@ package me.juangoncalves.mentra.data.sources.currency
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.domain.errors.InternetConnectionException
-import me.juangoncalves.mentra.domain.errors.ServerException
+import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionException
+import me.juangoncalves.mentra.domain_layer.errors.ServerException
 import me.juangoncalves.mentra.network.ExchangeRateService
 import java.math.BigDecimal
 import java.util.*

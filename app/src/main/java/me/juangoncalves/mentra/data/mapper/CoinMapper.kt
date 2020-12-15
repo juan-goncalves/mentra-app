@@ -1,8 +1,8 @@
 package me.juangoncalves.mentra.data.mapper
 
 import me.juangoncalves.mentra.db.models.CoinModel
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.IconType
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.network.models.CoinSchema
 import javax.inject.Inject
 

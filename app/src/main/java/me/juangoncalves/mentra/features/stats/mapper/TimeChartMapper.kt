@@ -3,11 +3,11 @@ package me.juangoncalves.mentra.features.stats.mapper
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.models.TimeGranularity
-import me.juangoncalves.mentra.domain.usecases.preference.GetCurrencyPreference
-import me.juangoncalves.mentra.domain.usecases.preference.GetTimeUnitPreference
-import me.juangoncalves.mentra.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
+import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreference
+import me.juangoncalves.mentra.domain_layer.usecases.preference.GetTimeUnitPreference
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle

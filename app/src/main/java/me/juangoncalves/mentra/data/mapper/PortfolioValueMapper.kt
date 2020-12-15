@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra.data.mapper
 
 import me.juangoncalves.mentra.db.models.PortfolioValueModel
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Price
 import java.util.*
 import javax.inject.Inject
 

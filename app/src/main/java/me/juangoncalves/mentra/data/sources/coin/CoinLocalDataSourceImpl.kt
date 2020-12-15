@@ -6,10 +6,10 @@ import me.juangoncalves.mentra.db.daos.CoinDao
 import me.juangoncalves.mentra.db.daos.CoinPriceDao
 import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.db.models.CoinPriceModel
-import me.juangoncalves.mentra.domain.errors.PriceCacheMissException
-import me.juangoncalves.mentra.domain.errors.StorageException
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.errors.PriceCacheMissException
+import me.juangoncalves.mentra.domain_layer.errors.StorageException
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
 import java.util.*
 import javax.inject.Inject
 

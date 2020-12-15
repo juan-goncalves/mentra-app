@@ -17,7 +17,7 @@ import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
-import me.juangoncalves.mentra.domain.models.TimeGranularity
+import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.extensions.getThemeColor
 import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.extensions.styleByTheme

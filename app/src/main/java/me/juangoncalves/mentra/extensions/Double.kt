@@ -1,7 +1,6 @@
 package me.juangoncalves.mentra.extensions
 
 import java.text.DecimalFormat
-import kotlin.math.abs
 
 
 fun Double.asPercentage(): String {
@@ -10,5 +9,3 @@ fun Double.asPercentage(): String {
     format.minimumFractionDigits = format.maximumFractionDigits
     return format.format(this * 100) + "%"
 }
-
-infix fun Double.closeTo(other: Double): Boolean = abs(this - other) <= 0.001

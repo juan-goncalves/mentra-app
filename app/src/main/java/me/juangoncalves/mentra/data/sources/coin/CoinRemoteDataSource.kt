@@ -1,9 +1,9 @@
 package me.juangoncalves.mentra.data.sources.coin
 
-import me.juangoncalves.mentra.domain.errors.InternetConnectionException
-import me.juangoncalves.mentra.domain.errors.ServerException
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionException
+import me.juangoncalves.mentra.domain_layer.errors.ServerException
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
 
 interface CoinRemoteDataSource {
 

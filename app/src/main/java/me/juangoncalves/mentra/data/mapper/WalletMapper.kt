@@ -2,7 +2,7 @@ package me.juangoncalves.mentra.data.mapper
 
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.db.models.WalletModel
-import me.juangoncalves.mentra.domain.models.Wallet
+import me.juangoncalves.mentra.domain_layer.models.Wallet
 import javax.inject.Inject
 
 class WalletMapper @Inject constructor(

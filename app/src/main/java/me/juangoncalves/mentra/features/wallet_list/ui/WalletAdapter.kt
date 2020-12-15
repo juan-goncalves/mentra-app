@@ -11,8 +11,9 @@ import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
-import me.juangoncalves.mentra.extensions.asCurrencyAmount
+import me.juangoncalves.mentra.extensions.asCurrency
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
+import java.util.*
 
 class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 
@@ -58,6 +59,18 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
     inner class ViewHolder(val binding: WalletListItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
+    private fun WalletListViewState.Price.asCurrencyAmount(
+        forcedDecimalPlaces: Int? = null,
+        absolute: Boolean = false
+    ): String {
+        val symbol = currency.getSymbol(Locale.getDefault())
+
+        if (isPlaceholder) return "$symbol ---,---.--"
+
+        return value
+            .let { if (absolute) it.abs() else it }
+            .asCurrency(symbol, forcedDecimalPlaces)
+    }
 }
 
 

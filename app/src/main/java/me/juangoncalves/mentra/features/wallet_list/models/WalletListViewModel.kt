@@ -7,13 +7,13 @@ import androidx.lifecycle.viewModelScope
 import either.fold
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
-import me.juangoncalves.mentra.domain.usecases.coin.GetActiveCoinsPriceStream
-import me.juangoncalves.mentra.domain.usecases.currency.ExchangePriceToPreferredCurrency
-import me.juangoncalves.mentra.domain.usecases.portfolio.RefreshPortfolioValue
-import me.juangoncalves.mentra.domain.usecases.preference.GetCurrencyPreferenceStream
-import me.juangoncalves.mentra.domain.usecases.wallet.GetWalletListStream
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.usecases.coin.GetActiveCoinsPriceStream
+import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceToPreferredCurrency
+import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
+import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreferenceStream
+import me.juangoncalves.mentra.domain_layer.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 

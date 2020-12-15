@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.db.daos.CurrencyDao
 import me.juangoncalves.mentra.db.models.CurrencyEntity
 import me.juangoncalves.mentra.db.models.ExchangeRateEntity
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Price
 import java.util.*
 import javax.inject.Inject
 

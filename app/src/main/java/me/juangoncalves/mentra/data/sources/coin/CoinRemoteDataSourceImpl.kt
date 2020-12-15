@@ -1,10 +1,10 @@
 package me.juangoncalves.mentra.data.sources.coin
 
 import me.juangoncalves.mentra.data.mapper.CoinMapper
-import me.juangoncalves.mentra.domain.errors.InternetConnectionException
-import me.juangoncalves.mentra.domain.errors.ServerException
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionException
+import me.juangoncalves.mentra.domain_layer.errors.ServerException
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.log.Logger
 import me.juangoncalves.mentra.network.CryptoCompareResponse.State

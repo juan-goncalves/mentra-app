@@ -11,7 +11,7 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.CoinSelectionFragmentBinding
-import me.juangoncalves.mentra.domain.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 

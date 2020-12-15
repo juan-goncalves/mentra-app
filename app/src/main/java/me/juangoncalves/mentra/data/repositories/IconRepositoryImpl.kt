@@ -1,12 +1,12 @@
 package me.juangoncalves.mentra.data.repositories
 
 import either.Either
-import me.juangoncalves.mentra.domain.errors.Failure
-import me.juangoncalves.mentra.domain.errors.InternetConnectionFailure
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.repositories.IconRepository
-import me.juangoncalves.mentra.extensions.Left
-import me.juangoncalves.mentra.extensions.Right
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionFailure
+import me.juangoncalves.mentra.domain_layer.extensions.Left
+import me.juangoncalves.mentra.domain_layer.extensions.Right
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.repositories.IconRepository
 import me.juangoncalves.mentra.extensions.TAG
 import me.juangoncalves.mentra.log.Logger
 import me.juangoncalves.mentra.network.CryptoIconsService

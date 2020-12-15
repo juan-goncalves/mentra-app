@@ -3,9 +3,9 @@ package me.juangoncalves.mentra
 import either.Either
 import me.juangoncalves.mentra.db.models.CoinModel
 import me.juangoncalves.mentra.db.models.WalletModel
-import me.juangoncalves.mentra.domain.models.Coin
-import me.juangoncalves.mentra.domain.models.IconType
-import me.juangoncalves.mentra.domain.models.Price
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.IconType
+import me.juangoncalves.mentra.domain_layer.models.Price
 import java.time.LocalDateTime
 import java.util.*
 

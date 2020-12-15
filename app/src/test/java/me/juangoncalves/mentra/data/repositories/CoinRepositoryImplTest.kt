@@ -8,9 +8,9 @@ import me.juangoncalves.mentra.*
 import me.juangoncalves.mentra.data.mapper.CoinMapper
 import me.juangoncalves.mentra.data.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data.sources.coin.CoinRemoteDataSource
-import me.juangoncalves.mentra.domain.errors.*
-import me.juangoncalves.mentra.extensions.leftValue
-import me.juangoncalves.mentra.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.errors.*
+import me.juangoncalves.mentra.domain_layer.extensions.leftValue
+import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.log.Logger
 import org.junit.Before
 import org.junit.Rule
