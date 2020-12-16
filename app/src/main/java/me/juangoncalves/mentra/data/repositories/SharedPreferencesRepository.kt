@@ -8,9 +8,9 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
+import me.juangoncalves.mentra.domain_layer.extensions.TAG
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.repositories.PreferenceRepository
-import me.juangoncalves.mentra.extensions.TAG
 import java.time.Duration
 import java.util.*
 import javax.inject.Inject

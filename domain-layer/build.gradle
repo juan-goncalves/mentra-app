@@ -14,9 +14,10 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     api "com.github.adelnizamutdinov:kotlin-either:3.0.0"
     api "com.google.dagger:dagger:$dagger_version"
-    
+
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
+    testImplementation project(path: ':test-utils')
     testImplementation "junit:junit:4.13"
     testImplementation "org.hamcrest:hamcrest-library:2.2"
     testImplementation "io.mockk:mockk:1.10.0"

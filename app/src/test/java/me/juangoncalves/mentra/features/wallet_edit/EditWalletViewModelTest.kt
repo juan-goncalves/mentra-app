@@ -16,6 +16,9 @@ import me.juangoncalves.mentra.features.common.DisplayError
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
+import me.juangoncalves.mentra.test_utils.MainCoroutineRule
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

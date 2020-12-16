@@ -9,7 +9,10 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import me.juangoncalves.mentra.*
+import me.juangoncalves.mentra.Bitcoin
+import me.juangoncalves.mentra.Left
+import me.juangoncalves.mentra.Right
+import me.juangoncalves.mentra.USD
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.DeleteWallet
 import me.juangoncalves.mentra.features.common.BundleKeys
@@ -17,6 +20,8 @@ import me.juangoncalves.mentra.features.common.DisplayError
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
+import me.juangoncalves.mentra.test_utils.MainCoroutineRule
+import me.juangoncalves.mentra.test_utils.shouldBe
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

@@ -12,11 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import me.juangoncalves.mentra.Left
-import me.juangoncalves.mentra.MainCoroutineRule
 import me.juangoncalves.mentra.Right
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.usecases.VoidUseCase
+import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

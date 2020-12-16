@@ -1,9 +1,10 @@
 package me.juangoncalves.mentra.log
 
 import android.util.Log
+import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import javax.inject.Inject
 
-class AndroidLogger @Inject constructor() : Logger {
+class AndroidLogger @Inject constructor() : MentraLogger {
 
     override fun info(tag: String, message: Any?) {
         Log.i(tag, message.toString())

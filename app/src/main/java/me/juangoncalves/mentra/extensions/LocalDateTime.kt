@@ -14,7 +14,3 @@ fun LocalDateTime.daysBetween(other: LocalDateTime): Long {
     val duration = Duration.between(this, other)
     return abs(duration.toDays())
 }
-
-fun LocalDateTime.elapsedMinutes(): Long = this.minutesBetween(LocalDateTime.now())
-
-fun LocalDateTime.elapsedDays(): Long = this.daysBetween(LocalDateTime.now())

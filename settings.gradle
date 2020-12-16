@@ -1,3 +1,7 @@
+include ':android-network'
+include ':android-cache'
+include ':test-utils'
+include ':data-layer'
 include ':domain-layer'
 include ':pie'
 include ':app'

@@ -13,8 +13,8 @@ import me.juangoncalves.mentra.domain_layer.at
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity.*
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain_layer.repositories.PreferenceRepository
-import me.juangoncalves.mentra.domain_layer.shouldBe
-import me.juangoncalves.mentra.domain_layer.shouldBeLessThanOrEqualTo
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeLessThanOrEqualTo
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime

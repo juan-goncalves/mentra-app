@@ -2,7 +2,11 @@ package me.juangoncalves.mentra.features.stats.mapper
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.*
+import me.juangoncalves.mentra.Bitcoin
+import me.juangoncalves.mentra.Ethereum
+import me.juangoncalves.mentra.Ripple
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
 

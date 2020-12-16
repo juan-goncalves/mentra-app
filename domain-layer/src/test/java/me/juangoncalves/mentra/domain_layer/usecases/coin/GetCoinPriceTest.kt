@@ -4,10 +4,16 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.domain_layer.*
+import me.juangoncalves.mentra.domain_layer.Bitcoin
+import me.juangoncalves.mentra.domain_layer.Ethereum
+import me.juangoncalves.mentra.domain_layer.USD
 import me.juangoncalves.mentra.domain_layer.errors.PriceNotFound
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
+import me.juangoncalves.mentra.domain_layer.toPrice
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeA
+import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
 

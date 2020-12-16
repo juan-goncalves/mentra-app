@@ -9,8 +9,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import me.juangoncalves.mentra.log.AndroidLogger
-import me.juangoncalves.mentra.log.Logger
 import javax.inject.Singleton
 
 @Module
@@ -19,7 +19,7 @@ abstract class CommonModule {
 
     @Binds
     @Singleton
-    abstract fun bindLogger(impl: AndroidLogger): Logger
+    abstract fun bindLogger(impl: AndroidLogger): MentraLogger
 
     companion object {
         @Provides

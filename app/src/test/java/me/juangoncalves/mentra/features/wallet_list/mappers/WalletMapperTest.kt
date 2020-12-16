@@ -7,9 +7,14 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.*
+import me.juangoncalves.mentra.Bitcoin
+import me.juangoncalves.mentra.Left
+import me.juangoncalves.mentra.Right
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.usecases.coin.DeterminePrimaryIcon
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
+import me.juangoncalves.mentra.toPrice
 import org.junit.Before
 import org.junit.Test
 

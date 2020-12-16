@@ -17,6 +17,9 @@ import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPrefe
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
+import me.juangoncalves.mentra.test_utils.MainCoroutineRule
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeA
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

@@ -1,8 +1,6 @@
 package me.juangoncalves.mentra
 
 import either.Either
-import me.juangoncalves.mentra.db.models.CoinModel
-import me.juangoncalves.mentra.db.models.WalletModel
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.domain_layer.models.Price
@@ -12,45 +10,19 @@ import java.util.*
 typealias Right<T> = Either.Right<T>
 typealias Left<T> = Either.Left<T>
 
-val USD: Currency = Currency.getInstance("USD")
-val EUR: Currency = Currency.getInstance("EUR")
+internal val USD: Currency = Currency.getInstance("USD")
 
-val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png", IconType.Unknown)
-val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png", IconType.Unknown)
-val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.png", IconType.Unknown)
-
-val USDPrices = mapOf(
-    Bitcoin to Price(9538.423.toBigDecimal(), USD, LocalDateTime.now()),
-    Ethereum to Price(242.351.toBigDecimal(), USD, LocalDateTime.now()),
-    Ripple to Price(0.2987.toBigDecimal(), USD, LocalDateTime.now())
-)
-
-val BitcoinModel = CoinModel(
-    "BTC",
-    "http://url.com/btc.png",
-    "Bitcoin"
-)
-val EthereumModel = CoinModel(
-    "ETH",
-    "http://url.com/eth.png",
-    "Ethereum"
-)
-val RippleModel = CoinModel(
-    "XRP",
-    "http://url.com/xrp.png",
-    "Ripple"
-)
+internal val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png", IconType.Unknown)
+internal val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png", IconType.Unknown)
+internal val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.png", IconType.Unknown)
 
 
-val BTCWalletModel = WalletModel("BTC", 0.22, 1)
-val ETHWalletModel = WalletModel("ETH", 1.233, 2)
-val XRPWalletModel = WalletModel("XRP", 23.982, 3)
-
-fun Double.toPrice(
+internal fun Double.toPrice(
     currency: Currency = USD,
     timestamp: LocalDateTime = LocalDateTime.now()
 ): Price = Price(toBigDecimal(), currency, timestamp)
 
-fun <T> T.toRight(): Right<T> = Right(this)
+internal fun <T> T.toRight(): Right<T> = Right(this)
 
-infix fun Int.at(timestamp: LocalDateTime): Price = this.toDouble().toPrice(timestamp = timestamp)
+internal infix fun Int.at(timestamp: LocalDateTime): Price =
+    this.toDouble().toPrice(timestamp = timestamp)

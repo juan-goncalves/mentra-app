@@ -5,10 +5,14 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.*
+import me.juangoncalves.mentra.USD
+import me.juangoncalves.mentra.at
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreference
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetTimeUnitPreference
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
+import me.juangoncalves.mentra.toRight
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime

@@ -10,8 +10,8 @@ import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
-import me.juangoncalves.mentra.domain_layer.shouldBe
-import me.juangoncalves.mentra.domain_layer.shouldBeA
+import me.juangoncalves.mentra.test_utils.shouldBe
+import me.juangoncalves.mentra.test_utils.shouldBeA
 import org.junit.Before
 import org.junit.Test
 
