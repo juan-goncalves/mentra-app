@@ -5,12 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
-import me.juangoncalves.mentra.domain_layer.errors.OldFailure
-import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
-import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
+import me.juangoncalves.mentra.domain_layer.errors.*
 import me.juangoncalves.mentra.domain_layer.extensions.Right
-import me.juangoncalves.mentra.domain_layer.extensions.TAG
-import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
@@ -20,7 +16,7 @@ import javax.inject.Inject
 
 class WalletRepositoryImpl @Inject constructor(
     private val localDataSource: WalletLocalDataSource,
-    private val logger: MentraLogger
+    private val errorHandler: ErrorHandler
 ) : WalletRepository {
 
     override val wallets: Flow<List<Wallet>>
@@ -28,13 +24,10 @@ class WalletRepositoryImpl @Inject constructor(
 
     private val _wallets: Flow<List<Wallet>> = localDataSource.getWalletsStream()
 
-    override suspend fun getWallets(): Either<OldFailure, List<Wallet>> =
-        withContext(Dispatchers.IO) {
-            handleException {
-                val models = localDataSource.getAll()
-                Either.Right(models)
-            }
-        }
+
+    override suspend fun getWallets(): Either<Failure, List<Wallet>> = errorHandler.runCatching {
+        localDataSource.getAll()
+    }
 
     override suspend fun createWallet(wallet: Wallet): Either<OldFailure, Unit> =
         withContext(Dispatchers.IO) {
@@ -42,7 +35,6 @@ class WalletRepositoryImpl @Inject constructor(
                 localDataSource.save(wallet)
                 Either.Right(Unit)
             } catch (e: Exception) {
-                logger.error(TAG, "Error storing wallet.\n$$e")
                 Either.Left(WalletCreationFailure())
             }
         }
@@ -105,7 +97,6 @@ class WalletRepositoryImpl @Inject constructor(
         return try {
             source.invoke()
         } catch (e: Exception) {
-            logger.error(TAG, "Error communicating with the local database.\n$$e")
             Either.Left(StorageFailure())
         }
     }

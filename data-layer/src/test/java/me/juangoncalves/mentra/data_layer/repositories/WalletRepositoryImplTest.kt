@@ -10,13 +10,9 @@ import me.juangoncalves.mentra.data_layer.Ripple
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.data_layer.toPrice
-import me.juangoncalves.mentra.domain_layer.errors.OldFailure
-import me.juangoncalves.mentra.domain_layer.errors.StorageException
-import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
-import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
+import me.juangoncalves.mentra.domain_layer.errors.*
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
-import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe
@@ -36,7 +32,7 @@ class WalletRepositoryImplTest {
     //region Mocks
     @MockK lateinit var walletLocalSourceMock: WalletLocalDataSource
     @MockK lateinit var coinLocalSourceMock: CoinLocalDataSource
-    @MockK lateinit var loggerMock: MentraLogger
+    @MockK lateinit var errorHandler: ErrorHandler
     //endregion
 
     private lateinit var sut: WalletRepositoryImpl
@@ -44,7 +40,8 @@ class WalletRepositoryImplTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
-        sut = WalletRepositoryImpl(walletLocalSourceMock, loggerMock)
+        sut = WalletRepositoryImpl(walletLocalSourceMock, errorHandler)
+        every { errorHandler.getFailure(any()) } returns Failure.Unknown
     }
 
     @Test
@@ -66,17 +63,16 @@ class WalletRepositoryImplTest {
     }
 
     @Test
-    fun `getWallets returns a StorageFailure when a StorageException is thrown and logs it`() =
+    fun `getWallets returns a Failure if querying the local data source fails`() =
         runBlocking {
             // Arrange
-            coEvery { walletLocalSourceMock.getAll() } throws StorageException()
+            coEvery { walletLocalSourceMock.getAll() } throws RuntimeException()
 
             // Act
             val result = sut.getWallets()
 
             // Assert
-            result.leftValue shouldBeA StorageFailure::class
-            verify { loggerMock.error(any(), any()) }
+            result.leftValue shouldBeA Failure::class
         }
 
     @Test
@@ -107,7 +103,6 @@ class WalletRepositoryImplTest {
 
             // Assert
             result.leftValue shouldBeA WalletCreationFailure::class
-            verify { loggerMock.error(any(), any()) }
         }
 
     @Test
@@ -136,7 +131,6 @@ class WalletRepositoryImplTest {
 
             // Assert
             result.leftValue shouldBeA StorageFailure::class
-            verify { loggerMock.error(any(), any()) }
         }
 
     @Test
@@ -166,7 +160,6 @@ class WalletRepositoryImplTest {
 
             // Assert
             result.leftValue shouldBeA StorageFailure::class
-            verify { loggerMock.error(any(), any()) }
         }
 
     @Test

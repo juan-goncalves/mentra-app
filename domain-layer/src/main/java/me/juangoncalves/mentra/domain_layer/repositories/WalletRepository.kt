@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.domain_layer.repositories
 
 import either.Either
 import kotlinx.coroutines.flow.Flow
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain_layer.models.Coin
@@ -12,7 +13,7 @@ interface WalletRepository {
 
     val wallets: Flow<List<Wallet>>
 
-    suspend fun getWallets(): Either<OldFailure, List<Wallet>>
+    suspend fun getWallets(): Either<Failure, List<Wallet>>
 
     /**
      * Saves the wallet in a persistent storage.

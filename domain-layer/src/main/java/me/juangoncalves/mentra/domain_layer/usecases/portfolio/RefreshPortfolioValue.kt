@@ -22,7 +22,9 @@ class RefreshPortfolioValue @Inject constructor(
 
     override suspend operator fun invoke(): Either<OldFailure, Price> {
         val getWalletsResult = walletRepository.getWallets()
-        val wallets = getWalletsResult.rightValue ?: return Left(getWalletsResult.requireLeft())
+        val wallets = getWalletsResult.rightValue
+            ?: return Left(OldFailure())
+        // TODO: Use the failure from getWalletsResult after its refactored
 
         val (total, totalCalculationFailure) = withContext(Dispatchers.Default) {
             var total = BigDecimal.ZERO
@@ -31,7 +33,7 @@ class RefreshPortfolioValue @Inject constructor(
                 if (refreshResult.isLeft()) {
                     return@withContext Pair<Price, OldFailure>(
                         Price.None,
-                        OldFailure() // TODO: Use the failure from updateResult after its refactored
+                        OldFailure() // TODO: Use the failure from refreshResult after its refactored
                     )
                 }
                 total += refreshResult.requireRight().value
