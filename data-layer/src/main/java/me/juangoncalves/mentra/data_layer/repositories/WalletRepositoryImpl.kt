@@ -3,15 +3,14 @@ package me.juangoncalves.mentra.data_layer.repositories
 import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
-import me.juangoncalves.mentra.domain_layer.errors.*
-import me.juangoncalves.mentra.domain_layer.extensions.Right
+import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.runCatching
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
-import java.util.*
 import javax.inject.Inject
 
 class WalletRepositoryImpl @Inject constructor(
@@ -55,25 +54,9 @@ class WalletRepositoryImpl @Inject constructor(
             localDataSource.update(wallet, price)
         }
 
-    override suspend fun getWalletValueHistory(wallet: Wallet): Either<OldFailure, List<Price>> =
-        withContext(Dispatchers.IO) {
-            handleException {
-                val valueModels = localDataSource.getValueHistory(wallet)
-                val prices = withContext(Dispatchers.Default) {
-                    valueModels.map { valueModel ->
-                        Price(valueModel.value, Currency.getInstance("USD"), valueModel.timestamp)
-                    }
-                }
-                Right(prices)
-            }
+    override suspend fun getWalletValueHistory(wallet: Wallet): Either<Failure, List<Price>> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.getValueHistory(wallet)
         }
-
-    private suspend fun <R> handleException(source: suspend () -> Right<R>): Either<OldFailure, R> {
-        return try {
-            source.invoke()
-        } catch (e: Exception) {
-            Either.Left(StorageFailure())
-        }
-    }
 
 }

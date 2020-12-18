@@ -3,7 +3,6 @@ package me.juangoncalves.mentra.domain_layer.repositories
 import either.Either
 import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.domain_layer.errors.Failure
-import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
@@ -24,6 +23,6 @@ interface WalletRepository {
 
     suspend fun findWalletById(id: Long): Either<Failure, Wallet?>
 
-    suspend fun getWalletValueHistory(wallet: Wallet): Either<OldFailure, List<Price>>
+    suspend fun getWalletValueHistory(wallet: Wallet): Either<Failure, List<Price>>
 
 }

@@ -4,18 +4,16 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.data_layer.Bitcoin
-import me.juangoncalves.mentra.data_layer.Ethereum
-import me.juangoncalves.mentra.data_layer.Ripple
+import me.juangoncalves.mentra.data_layer.*
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
-import me.juangoncalves.mentra.data_layer.toPrice
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
+import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe
@@ -24,6 +22,7 @@ import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class WalletRepositoryImplTest {
@@ -234,12 +233,38 @@ class WalletRepositoryImplTest {
             result.requireLeft() shouldBeA Failure::class
         }
 
-    /*
-        TODO: Test the `getWalletValueHistory` method
-              Cases: 1. returns the expected list of prices (mapped from WalletModels)
-                     2. failure if the wallet doesn't exist?
-                     3. classic failures when a StorageException is thrown
-     */
+    @Test
+    fun `getWalletValueHistory queries the local data source with the received wallet`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 11.234, 32)
+            val history = listOf(
+                Price(1_000.0.toBigDecimal(), USD, LocalDateTime.of(2020, 10, 13, 22, 30)),
+                Price(927.0.toBigDecimal(), USD, LocalDateTime.of(2020, 10, 12, 22, 10))
+            )
+            coEvery { walletLocalSourceMock.getValueHistory(wallet) } returns history
+
+            // Act
+            val result = sut.getWalletValueHistory(wallet)
+
+            // Assert
+            coVerify { walletLocalSourceMock.getValueHistory(wallet) }
+            result.requireRight() shouldBe history
+        }
+
+    @Test
+    fun `getWalletValueHistory returns a failure when the local data source operation fails`() =
+        runBlocking {
+            // Arrange
+            val wallet = Wallet(Bitcoin, 11.234, 32)
+            coEvery { walletLocalSourceMock.getValueHistory(any()) } throws RuntimeException()
+
+            // Act
+            val result = sut.getWalletValueHistory(wallet)
+
+            // Assert
+            result.requireLeft() shouldBeA Failure::class
+        }
 
     //region Helpers
     //endregion
