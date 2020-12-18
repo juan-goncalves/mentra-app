@@ -124,16 +124,16 @@ class WalletRepositoryImplTest {
     }
 
     @Test
-    fun `findWalletsByCoin returns a StorageFailure when a StorageException is thrown and logs it`() =
+    fun `findWalletsByCoin returns a Failure f querying the local data source fails`() =
         runBlocking {
             // Arrange
-            coEvery { walletLocalSourceMock.findByCoin(any()) } throws StorageException()
+            coEvery { walletLocalSourceMock.findByCoin(any()) } throws RuntimeException()
 
             // Act
             val result = sut.findWalletsByCoin(Ripple)
 
             // Assert
-            result.leftValue shouldBeA StorageFailure::class
+            result.leftValue shouldBeA Failure::class
         }
 
     @Test

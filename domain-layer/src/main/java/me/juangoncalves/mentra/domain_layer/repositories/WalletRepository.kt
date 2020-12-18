@@ -18,7 +18,7 @@ interface WalletRepository {
 
     suspend fun deleteWallet(wallet: Wallet): Either<Failure, Unit>
 
-    suspend fun findWalletsByCoin(coin: Coin): Either<OldFailure, List<Wallet>>
+    suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>>
 
     suspend fun findWalletById(id: Long): Either<OldFailure, Wallet?>
 

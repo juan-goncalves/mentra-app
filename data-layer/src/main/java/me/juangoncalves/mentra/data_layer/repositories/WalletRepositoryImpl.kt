@@ -40,12 +40,9 @@ class WalletRepositoryImpl @Inject constructor(
             localDataSource.delete(wallet)
         }
 
-    override suspend fun findWalletsByCoin(coin: Coin): Either<OldFailure, List<Wallet>> =
-        withContext(Dispatchers.IO) {
-            handleException {
-                val models = localDataSource.findByCoin(coin)
-                Either.Right(models)
-            }
+    override suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.findByCoin(coin)
         }
 
     override suspend fun findWalletById(id: Long): Either<OldFailure, Wallet?> =
