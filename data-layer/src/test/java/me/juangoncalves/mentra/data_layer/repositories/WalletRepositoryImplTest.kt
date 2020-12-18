@@ -92,17 +92,17 @@ class WalletRepositoryImplTest {
         }
 
     @Test
-    fun `createWallet returns a WalletCreationFailure when a StorageException is thrown and logs it`() =
+    fun `createWallet returns a Failure when the local data source fails`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45)
-            coEvery { walletLocalSourceMock.save(any()) } throws StorageException()
+            coEvery { walletLocalSourceMock.save(any()) } throws RuntimeException()
 
             // Act
             val result = sut.createWallet(wallet)
 
             // Assert
-            result.leftValue shouldBeA WalletCreationFailure::class
+            result.leftValue shouldBeA Failure::class
         }
 
     @Test

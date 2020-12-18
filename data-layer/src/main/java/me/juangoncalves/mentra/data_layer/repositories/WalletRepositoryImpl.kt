@@ -25,18 +25,14 @@ class WalletRepositoryImpl @Inject constructor(
     private val _wallets: Flow<List<Wallet>> = localDataSource.getWalletsStream()
 
 
-    override suspend fun getWallets(): Either<Failure, List<Wallet>> = errorHandler.runCatching {
-        localDataSource.getAll()
-    }
+    override suspend fun getWallets(): Either<Failure, List<Wallet>> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.getAll()
+        }
 
-    override suspend fun createWallet(wallet: Wallet): Either<OldFailure, Unit> =
-        withContext(Dispatchers.IO) {
-            try {
-                localDataSource.save(wallet)
-                Either.Right(Unit)
-            } catch (e: Exception) {
-                Either.Left(WalletCreationFailure())
-            }
+    override suspend fun createWallet(wallet: Wallet): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.save(wallet)
         }
 
     override suspend fun deleteWallet(wallet: Wallet): Either<OldFailure, Unit> =
