@@ -13,7 +13,6 @@ import me.juangoncalves.mentra.data_layer.toPrice
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.StorageException
-import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
@@ -138,32 +137,32 @@ class WalletRepositoryImplTest {
         }
 
     @Test
-    fun `updateWalletValue uses the local data source to store the received wallet value`() =
+    fun `updateWallet uses the local data source to store the received wallet updates`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Ripple, 20.781, 1)
-            val newPrice = 1.34.toPrice()
+            val price = 1.34.toPrice()
 
             // Act
-            sut.updateWalletValue(wallet, newPrice)
+            sut.updateWallet(wallet, price)
 
             // Assert
-            coVerify { walletLocalSourceMock.updateValue(wallet, newPrice) }
+            coVerify { walletLocalSourceMock.update(wallet, price) }
         }
 
     @Test
-    fun `updateWalletValue returns a StorageFailure when a StorageException is thrown and logs it`() =
+    fun `updateWallet returns a failure when the local data source operation fails`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Ripple, 20.781, 1)
-            val newPrice = 1.34.toPrice()
-            coEvery { walletLocalSourceMock.updateValue(any(), any()) } throws StorageException()
+            val price = 1.34.toPrice()
+            coEvery { walletLocalSourceMock.update(any(), any()) } throws StorageException()
 
             // Act
-            val result = sut.updateWalletValue(wallet, newPrice)
+            val result = sut.updateWallet(wallet, price)
 
             // Assert
-            result.leftValue shouldBeA StorageFailure::class
+            result.leftValue shouldBeA Failure::class
         }
 
     @Test

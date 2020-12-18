@@ -46,7 +46,7 @@ class RefreshWalletValueTest {
         val ts = LocalDateTime.now()
         val ripplePrice = 1.20.toPrice(timestamp = ts)
         coEvery { coinRepoMock.getCoinPrice(Ripple) } returns ripplePrice.toRight()
-        coEvery { walletRepoMock.updateWalletValue(any(), any()) } returns Unit.toRight()
+        coEvery { walletRepoMock.updateWallet(any(), any()) } returns Unit.toRight()
 
         // Act
         val result = sut(wallet)
@@ -67,13 +67,13 @@ class RefreshWalletValueTest {
         val ts = LocalDateTime.now()
         val ethPrice = 381.20.toPrice(timestamp = ts)
         coEvery { coinRepoMock.getCoinPrice(Ethereum) } returns ethPrice.toRight()
-        coEvery { walletRepoMock.updateWalletValue(any(), capture(slot)) } returns Unit.toRight()
+        coEvery { walletRepoMock.updateWallet(any(), capture(slot)) } returns Unit.toRight()
 
         // Act
         sut(wallet)
 
         // Assert
-        coVerify { walletRepoMock.updateWalletValue(wallet, any()) }
+        coVerify { walletRepoMock.updateWallet(wallet, any()) }
         with(slot.captured) {
             value shouldBeCloseTo 823.392
             currency shouldBe USD
@@ -99,7 +99,7 @@ class RefreshWalletValueTest {
         // Arrange
         val wallet = Wallet(Ethereum, 2.16, 15)
         coEvery { coinRepoMock.getCoinPrice(Ethereum) } returns Right(USDPrices[Ethereum]!!)
-        coEvery { walletRepoMock.updateWalletValue(any(), any()) } returns StorageFailure().toLeft()
+        coEvery { walletRepoMock.updateWallet(any(), any()) } returns StorageFailure().toLeft()
 
         // Act
         val result = sut(wallet)

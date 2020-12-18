@@ -24,7 +24,7 @@ class RefreshWalletValue @Inject constructor(
         val (coinPrice, currency, timestamp) = coinPriceResult.rightValue ?: return coinPriceResult
         val walletValue = Price(coinPrice * params.amount, currency, timestamp)
 
-        val updateResult = walletRepository.updateWalletValue(params, walletValue)
+        val updateResult = walletRepository.updateWallet(params, walletValue)
         // TODO: Use the failure from updateResult after its refactored
         updateResult.rightValue ?: return Either.Left(Failure.Unknown)
 

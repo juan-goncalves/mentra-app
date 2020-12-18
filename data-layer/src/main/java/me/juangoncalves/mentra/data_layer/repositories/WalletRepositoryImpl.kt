@@ -50,21 +50,9 @@ class WalletRepositoryImpl @Inject constructor(
             localDataSource.findById(id)
         }
 
-
-    override suspend fun updateWallet(wallet: Wallet, price: Price?): Either<OldFailure, Unit> =
-        withContext(Dispatchers.IO) {
-            handleException {
-                localDataSource.update(wallet, price)
-                Either.Right(Unit)
-            }
-        }
-
-    override suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<OldFailure, Unit> =
-        withContext(Dispatchers.IO) {
-            handleException {
-                localDataSource.updateValue(wallet, price)
-                Either.Right(Unit)
-            }
+    override suspend fun updateWallet(wallet: Wallet, price: Price?): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.update(wallet, price)
         }
 
     override suspend fun getWalletValueHistory(wallet: Wallet): Either<OldFailure, List<Price>> =

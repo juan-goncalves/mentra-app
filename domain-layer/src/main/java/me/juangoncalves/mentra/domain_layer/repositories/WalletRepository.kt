@@ -18,14 +18,12 @@ interface WalletRepository {
 
     suspend fun deleteWallet(wallet: Wallet): Either<Failure, Unit>
 
+    suspend fun updateWallet(wallet: Wallet, price: Price? = null): Either<Failure, Unit>
+
     suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>>
 
     suspend fun findWalletById(id: Long): Either<Failure, Wallet?>
 
-    suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<OldFailure, Unit>
-
     suspend fun getWalletValueHistory(wallet: Wallet): Either<OldFailure, List<Price>>
-
-    suspend fun updateWallet(wallet: Wallet, price: Price? = null): Either<OldFailure, Unit>
 
 }
