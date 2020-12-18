@@ -4,7 +4,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import me.juangoncalves.mentra.data.repositories.SharedPreferencesRepository
 import me.juangoncalves.mentra.data_layer.repositories.*
 import me.juangoncalves.mentra.domain_layer.repositories.*
 import javax.inject.Singleton
@@ -31,7 +30,7 @@ abstract class DomainModule {
 
     @Binds
     @Singleton
-    abstract fun bindPreferenceRepository(impl: SharedPreferencesRepository): PreferenceRepository
+    abstract fun bindPreferenceRepository(impl: PreferenceRepositoryImpl): PreferenceRepository
 
     @Binds
     @Singleton

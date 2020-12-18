@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.android_network.di
+package me.juangoncalves.mentra.di
 
 import dagger.Binds
 import dagger.Module
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(ApplicationComponent::class)
-abstract class RetrofitDataSourcesModule {
+abstract class RemoteDataSourcesModule {
 
     @Binds
     @Singleton

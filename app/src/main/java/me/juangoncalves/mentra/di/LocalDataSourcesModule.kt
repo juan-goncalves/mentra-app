@@ -1,22 +1,33 @@
-package me.juangoncalves.mentra.android_cache.di
+package me.juangoncalves.mentra.di
 
+import android.content.Context
+import androidx.preference.PreferenceManager
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import me.juangoncalves.mentra.android_cache.sources.RoomCoinDataSource
-import me.juangoncalves.mentra.android_cache.sources.RoomCurrencyDataSource
-import me.juangoncalves.mentra.android_cache.sources.RoomPortfolioDataSource
-import me.juangoncalves.mentra.android_cache.sources.RoomWalletDataSource
+import dagger.hilt.android.qualifiers.ApplicationContext
+import me.juangoncalves.mentra.android_cache.sources.*
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.portfolio.PortfolioLocalDataSource
+import me.juangoncalves.mentra.data_layer.sources.preferences.PreferenceLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
 import javax.inject.Singleton
 
 @Module
 @InstallIn(ApplicationComponent::class)
-abstract class RoomDataSourcesModule {
+abstract class LocalDataSourcesModule {
+
+    companion object {
+        @Provides
+        @Singleton
+        fun providePreferenceDataSource(@ApplicationContext context: Context): PreferenceLocalDataSource {
+            val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+            return SharedPreferencesDataSource(sharedPrefs)
+        }
+    }
 
     @Binds
     @Singleton
