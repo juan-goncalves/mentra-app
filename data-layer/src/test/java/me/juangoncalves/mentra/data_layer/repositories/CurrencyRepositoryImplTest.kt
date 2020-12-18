@@ -8,14 +8,19 @@ import me.juangoncalves.mentra.data_layer.EUR
 import me.juangoncalves.mentra.data_layer.USD
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyRemoteDataSource
+import me.juangoncalves.mentra.data_layer.toPrice
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
+import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeA
+import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime.now
 
 class CurrencyRepositoryImplTest {
 
@@ -114,6 +119,112 @@ class CurrencyRepositoryImplTest {
             // Assert
             result.leftValue shouldBeA Failure::class
             coVerify { errorHandlerMock.getFailure(exception) }
+        }
+
+    @Test
+    fun `exchange converts the price using the cached rate if it exists and is not expired`() =
+        runBlocking {
+            // Arrange
+            val original = 10.2.toPrice(currency = USD)
+            coEvery { localDsMock.getExchangeRate(USD, EUR) } returns 1.2.toPrice(currency = EUR)
+
+            // Act
+            val result = sut.exchange(original, EUR)
+
+            // Assert
+            coVerify { remoteDsMock.fetchExchangeRates(any()) wasNot Called }
+            with(result.requireRight() ?: Price.None) {
+                value shouldBeCloseTo 12.24
+                currency shouldBe EUR
+            }
+        }
+
+    @Test
+    fun `exchange fetches the rate from the network and caches it if it's not cached`() =
+        runBlocking {
+            // Arrange
+            val original = 10.2.toPrice(currency = USD)
+            coEvery { localDsMock.getExchangeRate(USD, EUR) } returns null
+            coEvery { remoteDsMock.fetchExchangeRates(USD) } returns mapOf(EUR to 1.2.toBigDecimal())
+
+            // Act
+            val result = sut.exchange(original, EUR)
+
+            // Assert
+            coVerify { localDsMock.saveExchangeRates(USD, any()) }
+            with(result.requireRight() ?: Price.None) {
+                value shouldBeCloseTo 12.24
+                currency shouldBe EUR
+            }
+        }
+
+    @Test
+    fun `exchange fetches the rate from the network and caches it if the cached value expired`() =
+        runBlocking {
+            // Arrange
+            val original = 10.2.toPrice(currency = USD)
+            val expiredRate = 1.2.toPrice(currency = EUR, timestamp = now().minusDays(9))
+            coEvery { localDsMock.getExchangeRate(USD, EUR) } returns expiredRate
+            coEvery { remoteDsMock.fetchExchangeRates(USD) } returns mapOf(EUR to 1.1.toBigDecimal())
+
+            // Act
+            val result = sut.exchange(original, EUR)
+
+            // Assert
+            coVerify { localDsMock.saveExchangeRates(USD, any()) }
+            with(result.requireRight() ?: Price.None) {
+                value shouldBeCloseTo 11.22
+                currency shouldBe EUR
+            }
+        }
+
+    @Test
+    fun `exchange returns a Failure if there's no cached value and the fetch fails`() =
+        runBlocking {
+            // Arrange
+            val original = 10.2.toPrice(currency = USD)
+            coEvery { localDsMock.getExchangeRate(USD, EUR) } throws RuntimeException()
+            coEvery { remoteDsMock.fetchExchangeRates(USD) } throws RuntimeException()
+
+            // Act
+            val result = sut.exchange(original, EUR)
+
+            // Assert
+            result.leftValue shouldBeA Failure::class
+        }
+
+    @Test
+    fun `exchange converts and returns the price using the network rate even if the caching fails`() =
+        runBlocking {
+            // Arrange
+            val original = 10.2.toPrice(currency = USD)
+            coEvery { localDsMock.getExchangeRate(USD, EUR) } returns null
+            coEvery { localDsMock.saveExchangeRates(any(), any()) } throws RuntimeException()
+            coEvery { remoteDsMock.fetchExchangeRates(USD) } returns mapOf(EUR to 1.1.toBigDecimal())
+
+            // Act
+            val result = sut.exchange(original, EUR)
+
+            // Assert
+            with(result.requireRight() ?: Price.None) {
+                value shouldBeCloseTo 11.22
+                currency shouldBe EUR
+            }
+        }
+
+    @Test
+    fun `exchange returns null if the rate is not available in both the cache and network`() =
+        runBlocking {
+            // Arrange
+            val original = 10.2.toPrice(currency = USD)
+            coEvery { localDsMock.getExchangeRate(USD, EUR) } returns null
+            coEvery { remoteDsMock.fetchExchangeRates(USD) } returns mapOf()
+
+            // Act
+            val result = sut.exchange(original, EUR)
+
+            // Assert
+            result.requireRight() shouldBe null
         }
 
     //region Helpers
