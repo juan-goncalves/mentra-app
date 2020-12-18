@@ -35,12 +35,9 @@ class WalletRepositoryImpl @Inject constructor(
             localDataSource.save(wallet)
         }
 
-    override suspend fun deleteWallet(wallet: Wallet): Either<OldFailure, Unit> =
-        withContext(Dispatchers.IO) {
-            handleException {
-                localDataSource.delete(wallet)
-                Either.Right(Unit)
-            }
+    override suspend fun deleteWallet(wallet: Wallet): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.delete(wallet)
         }
 
     override suspend fun findWalletsByCoin(coin: Coin): Either<OldFailure, List<Wallet>> =

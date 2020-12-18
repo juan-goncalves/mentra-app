@@ -10,7 +10,10 @@ import me.juangoncalves.mentra.data_layer.Ripple
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.data_layer.toPrice
-import me.juangoncalves.mentra.domain_layer.errors.*
+import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.StorageException
+import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.models.Wallet
@@ -163,7 +166,7 @@ class WalletRepositoryImplTest {
         }
 
     @Test
-    fun `deleteWallet passes the id of the wallet to delete to the local data source`() =
+    fun `deleteWallet passes the wallet to delete to the local data source`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45, 15)
@@ -178,17 +181,17 @@ class WalletRepositoryImplTest {
         }
 
     @Test
-    fun `deleteWallet returns a failure when the local data source throws an exception`() =
+    fun `deleteWallet returns a failure when the local data source operation fails`() =
         runBlocking {
             // Arrange
             val wallet = Wallet(Bitcoin, 0.45, 15)
-            coEvery { walletLocalSourceMock.delete(any()) } throws Exception()
+            coEvery { walletLocalSourceMock.delete(any()) } throws RuntimeException()
 
             // Act
             val result = sut.deleteWallet(wallet)
 
             // Assert
-            result.leftValue shouldBeA OldFailure::class
+            result.leftValue shouldBeA Failure::class
         }
 
     /*
