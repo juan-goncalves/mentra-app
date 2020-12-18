@@ -13,7 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import me.juangoncalves.mentra.Left
 import me.juangoncalves.mentra.Right
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.usecases.VoidUseCase
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
@@ -78,11 +78,11 @@ class FleetingErrorPublisherImplTest {
 
     //region Helpers
     private val failingUseCaseFake = object : VoidUseCase<String> {
-        override suspend fun invoke(): Either<Failure, String> = Left(StorageFailure())
+        override suspend fun invoke(): Either<OldFailure, String> = Left(StorageFailure())
     }
 
     private val successfulUseCaseFake = object : VoidUseCase<String> {
-        override suspend fun invoke(): Either<Failure, String> = Right("Success")
+        override suspend fun invoke(): Either<OldFailure, String> = Right("Success")
     }
     //endregion
 

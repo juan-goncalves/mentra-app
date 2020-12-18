@@ -3,7 +3,7 @@ package me.juangoncalves.mentra.domain_layer.usecases.coin
 import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.extensions.Right
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
@@ -19,7 +19,7 @@ class DeterminePrimaryIcon @Inject constructor(
     private val iconRepository: IconRepository
 ) : UseCase<Coin, String> {
 
-    override suspend fun invoke(params: Coin): Either<Failure, String> =
+    override suspend fun invoke(params: Coin): Either<OldFailure, String> =
         withContext(Dispatchers.Default) {
             if (params.iconType != IconType.Unknown) return@withContext Right(params.imageUrl)
 

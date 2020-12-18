@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data_layer.sources.portfolio.PortfolioLocalDataSource
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.extensions.Right
 import me.juangoncalves.mentra.domain_layer.extensions.TAG
@@ -33,14 +33,14 @@ class PortfolioRepositoryImpl @Inject constructor(
         portfolioDao.getPortfolioHistoricValuesStream()
             .catch { logger.error(TAG, "Exception getting portfolio value history.\n$it") }
 
-    override suspend fun updatePortfolioValue(value: Price): Either<Failure, Unit> =
+    override suspend fun updatePortfolioValue(value: Price): Either<OldFailure, Unit> =
         withContext(Dispatchers.IO) {
             handleException {
                 portfolioDao.insertValue(value)
             }
         }
 
-    private suspend fun <R> handleException(source: suspend () -> R): Either<Failure, R> {
+    private suspend fun <R> handleException(source: suspend () -> R): Either<OldFailure, R> {
         return try {
             Right(source.invoke())
         } catch (e: Exception) {

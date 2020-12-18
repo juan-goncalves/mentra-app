@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain_layer.extensions.Right
@@ -28,14 +28,15 @@ class WalletRepositoryImpl @Inject constructor(
 
     private val _wallets: Flow<List<Wallet>> = localDataSource.getWalletsStream()
 
-    override suspend fun getWallets(): Either<Failure, List<Wallet>> = withContext(Dispatchers.IO) {
-        handleException {
-            val models = localDataSource.getAll()
-            Either.Right(models)
+    override suspend fun getWallets(): Either<OldFailure, List<Wallet>> =
+        withContext(Dispatchers.IO) {
+            handleException {
+                val models = localDataSource.getAll()
+                Either.Right(models)
+            }
         }
-    }
 
-    override suspend fun createWallet(wallet: Wallet): Either<Failure, Unit> =
+    override suspend fun createWallet(wallet: Wallet): Either<OldFailure, Unit> =
         withContext(Dispatchers.IO) {
             try {
                 localDataSource.save(wallet)
@@ -46,7 +47,7 @@ class WalletRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun deleteWallet(wallet: Wallet): Either<Failure, Unit> =
+    override suspend fun deleteWallet(wallet: Wallet): Either<OldFailure, Unit> =
         withContext(Dispatchers.IO) {
             handleException {
                 localDataSource.delete(wallet)
@@ -54,7 +55,7 @@ class WalletRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun findWalletsByCoin(coin: Coin): Either<Failure, List<Wallet>> =
+    override suspend fun findWalletsByCoin(coin: Coin): Either<OldFailure, List<Wallet>> =
         withContext(Dispatchers.IO) {
             handleException {
                 val models = localDataSource.findByCoin(coin)
@@ -62,7 +63,7 @@ class WalletRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun findWalletById(id: Long): Either<Failure, Wallet?> =
+    override suspend fun findWalletById(id: Long): Either<OldFailure, Wallet?> =
         withContext(Dispatchers.IO) {
             handleException {
                 val model = localDataSource.findById(id) ?: return@handleException Right(null)
@@ -71,7 +72,7 @@ class WalletRepositoryImpl @Inject constructor(
         }
 
 
-    override suspend fun updateWallet(wallet: Wallet, price: Price?): Either<Failure, Unit> =
+    override suspend fun updateWallet(wallet: Wallet, price: Price?): Either<OldFailure, Unit> =
         withContext(Dispatchers.IO) {
             handleException {
                 localDataSource.update(wallet, price)
@@ -79,7 +80,7 @@ class WalletRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<Failure, Unit> =
+    override suspend fun updateWalletValue(wallet: Wallet, price: Price): Either<OldFailure, Unit> =
         withContext(Dispatchers.IO) {
             handleException {
                 localDataSource.updateValue(wallet, price)
@@ -87,7 +88,7 @@ class WalletRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun getWalletValueHistory(wallet: Wallet): Either<Failure, List<Price>> =
+    override suspend fun getWalletValueHistory(wallet: Wallet): Either<OldFailure, List<Price>> =
         withContext(Dispatchers.IO) {
             handleException {
                 val valueModels = localDataSource.getValueHistory(wallet)
@@ -100,7 +101,7 @@ class WalletRepositoryImpl @Inject constructor(
             }
         }
 
-    private suspend fun <R> handleException(source: suspend () -> Right<R>): Either<Failure, R> {
+    private suspend fun <R> handleException(source: suspend () -> Right<R>): Either<OldFailure, R> {
         return try {
             source.invoke()
         } catch (e: Exception) {

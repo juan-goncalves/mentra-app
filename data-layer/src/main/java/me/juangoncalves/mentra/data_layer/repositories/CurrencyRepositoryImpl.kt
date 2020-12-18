@@ -8,7 +8,7 @@ import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyLocalDataSour
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyRemoteDataSource
 import me.juangoncalves.mentra.domain_layer.errors.CurrenciesNotAvailable
 import me.juangoncalves.mentra.domain_layer.errors.ExchangeRateNotAvailable
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.extensions.TAG
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.extensions.toPrice
@@ -26,7 +26,7 @@ class CurrencyRepositoryImpl @Inject constructor(
     private val logger: MentraLogger
 ) : CurrencyRepository {
 
-    override suspend fun exchange(price: Price, target: Currency): Either<Failure, Price> =
+    override suspend fun exchange(price: Price, target: Currency): Either<OldFailure, Price> =
         withContext(Dispatchers.Default) {
             val cachedRate = getCachedExchangeRate(price, target)
 
@@ -44,7 +44,7 @@ class CurrencyRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun getSupportedCurrencies(): Either<Failure, Set<Currency>> =
+    override suspend fun getSupportedCurrencies(): Either<OldFailure, Set<Currency>> =
         withContext(Dispatchers.Default) {
             val cachedCurrencies = getCachedCurrencies()
 

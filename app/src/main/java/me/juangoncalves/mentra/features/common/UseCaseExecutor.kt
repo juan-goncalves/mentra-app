@@ -5,8 +5,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionFailure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
@@ -59,7 +59,7 @@ class UseCaseExecutor<P, R>(val useCase: UseCase<P, R>) {
     }
 
     @StringRes
-    private fun Failure.toStringResource(): Int {
+    private fun OldFailure.toStringResource(): Int {
         return when (this) {
             is InternetConnectionFailure -> me.juangoncalves.mentra.R.string.connection_error
             is WalletCreationFailure -> me.juangoncalves.mentra.R.string.create_wallet_error

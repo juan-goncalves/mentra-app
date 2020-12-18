@@ -1,25 +1,15 @@
 package me.juangoncalves.mentra.domain_layer.errors
 
-import me.juangoncalves.mentra.domain_layer.models.Coin
-import me.juangoncalves.mentra.domain_layer.models.Price
+sealed class Failure {
 
+    object Network : Failure()
 
-open class Failure
+    object NotFound : Failure()
 
-class PriceNotFound(val coin: Coin) : Failure()
+    object ServiceUnavailable : Failure()
 
-class ServerFailure : Failure()
+    object AccessDenied : Failure()
 
-class StorageFailure : Failure()
+    object Unknown : Failure()
 
-class WalletCreationFailure : Failure()
-
-class InternetConnectionFailure : Failure()
-
-class FetchPriceFailure(val storedPrice: Price? = null) : Failure()
-
-class NotFoundFailure : Failure()
-
-class ExchangeRateNotAvailable : Failure()
-
-class CurrenciesNotAvailable : Failure()
+}

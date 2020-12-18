@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra.domain_layer.usecases.wallet
 
 import either.Either
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.extensions.Left
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
@@ -15,7 +15,7 @@ class DeleteWallet @Inject constructor(
 
     class Params(val id: Long)
 
-    override suspend fun invoke(params: Params): Either<Failure, Unit> {
+    override suspend fun invoke(params: Params): Either<OldFailure, Unit> {
         val findWalletResult = walletRepository.findWalletById(params.id)
         val wallet = findWalletResult.rightValue ?: return Left(findWalletResult.requireLeft())
         return walletRepository.deleteWallet(wallet)

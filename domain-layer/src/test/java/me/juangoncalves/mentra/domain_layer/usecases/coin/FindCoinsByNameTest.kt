@@ -5,7 +5,7 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Coin
@@ -143,7 +143,7 @@ class FindCoinsByNameTest {
             val result = sut("some query")
 
             // Assert
-            result.leftValue shouldBeA Failure::class
+            result.leftValue shouldBeA OldFailure::class
         }
 
     //region Helpers

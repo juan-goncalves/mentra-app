@@ -1,8 +1,8 @@
 package me.juangoncalves.mentra.domain_layer.usecases.wallet
 
 import either.Either
-import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.NotFoundFailure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.extensions.Left
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
@@ -18,7 +18,7 @@ class UpdateWallet @Inject constructor(
 
     class Params(val walletId: Long, val newAmount: BigDecimal)
 
-    override suspend fun invoke(params: Params): Either<Failure, Unit> {
+    override suspend fun invoke(params: Params): Either<OldFailure, Unit> {
         val result = walletRepository.findWalletById(params.walletId)
         if (result.isLeft()) return Left(result.requireLeft())
 

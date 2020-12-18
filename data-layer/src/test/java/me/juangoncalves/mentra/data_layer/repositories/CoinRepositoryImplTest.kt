@@ -13,7 +13,6 @@ import me.juangoncalves.mentra.data_layer.toPrice
 import me.juangoncalves.mentra.domain_layer.errors.*
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
-import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeA
@@ -30,9 +29,9 @@ class CoinRepositoryImplTest {
     //endregion
 
     //region Mocks
-    @MockK lateinit var loggerMock: MentraLogger
     @MockK lateinit var localSourceMock: CoinLocalDataSource
     @MockK lateinit var remoteSourceMock: CoinRemoteDataSource
+    @MockK lateinit var errorHandlerMock: ErrorHandler
     //endregion
 
     private lateinit var sut: CoinRepositoryImpl
@@ -40,15 +39,12 @@ class CoinRepositoryImplTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true, relaxed = true)
-        sut = CoinRepositoryImpl(
-            remoteSourceMock,
-            localSourceMock,
-            loggerMock
-        )
+        sut = CoinRepositoryImpl(remoteSourceMock, localSourceMock, errorHandlerMock)
+        every { errorHandlerMock.getFailure(any()) } returns Failure.Unknown
     }
 
     @Test
-    fun `getCoins fetches and caches the coins from the network when the local storage is empty`() =
+    fun `getCoins fetches and caches the coins from the network when the cache is empty`() =
         runBlocking {
             // Arrange
             val coins = listOf(Bitcoin, Ethereum, Ripple)
@@ -65,7 +61,7 @@ class CoinRepositoryImplTest {
         }
 
     @Test
-    fun `getCoins returns the cached coins when the cache is populated`() = runBlocking {
+    fun `getCoins returns the cached coins if they exist`() = runBlocking {
         // Arrange
         val cachedCoins = listOf(Bitcoin, Ripple, Ethereum)
         coEvery { localSourceMock.getStoredCoins() } returns cachedCoins
@@ -80,62 +76,48 @@ class CoinRepositoryImplTest {
     }
 
     @Test
-    fun `getCoins returns a ServerFailure when the remote data source throws a ServerException`() =
+    fun `getCoins returns a Failure when the coin list fetch fails`() =
         runBlocking {
             // Arrange
-            coEvery { remoteSourceMock.fetchCoins() } throws ServerException()
+            val exception = RuntimeException()
+            coEvery { remoteSourceMock.fetchCoins() } throws exception
             coEvery { localSourceMock.getStoredCoins() } returns emptyList()
 
             // Act
             val result = sut.getCoins()
 
             // Assert
-            result.leftValue shouldBeA ServerFailure::class
+            result.leftValue shouldBeA Failure::class
+            coVerify { errorHandlerMock.getFailure(exception) }
         }
 
     @Test
-    fun `getCoins should return a InternetConnectionFailure if there's no internet connection while trying to fetch coins`() =
+    fun `getCoins fetches the list of coins from the network if querying the cache fails`() =
         runBlocking {
             // Arrange
-            coEvery { remoteSourceMock.fetchCoins() } throws InternetConnectionException()
-            coEvery { localSourceMock.getStoredCoins() } returns emptyList()
-
-            // Act
-            val result = sut.getCoins()
-
-            // Assert
-            result.leftValue shouldBeA InternetConnectionFailure::class
-        }
-
-    @Test
-    fun `getCoins tries to fetch coins from the network when a StorageException is thrown and logs the situation`() =
-        runBlocking {
-            // Arrange
+            coEvery { localSourceMock.getStoredCoins() } throws RuntimeException()
             coEvery { remoteSourceMock.fetchCoins() } returns listOf(Bitcoin, Ethereum)
-            coEvery { localSourceMock.getStoredCoins() } throws StorageException()
 
             // Act
             val result = sut.getCoins()
 
             // Assert
             result.rightValue shouldBe listOf(Bitcoin, Ethereum)
-            coVerify { loggerMock.warning(any(), any()) }
         }
 
     @Test
-    fun `getCoins returns the network fetched coins when a StorageException is thrown while caching them`() =
+    fun `getCoins fetches the list of coins from the network and returns them even if the caching fails`() =
         runBlocking {
             // Arrange
             coEvery { remoteSourceMock.fetchCoins() } returns listOf(Bitcoin)
             coEvery { localSourceMock.getStoredCoins() } returns emptyList()
-            coEvery { localSourceMock.storeCoins(any()) } throws StorageException()
+            coEvery { localSourceMock.storeCoins(any()) } throws RuntimeException()
 
             // Act
             val result = sut.getCoins()
 
             // Assert
             result.rightValue shouldBe listOf(Bitcoin)
-            coVerify { loggerMock.warning(any(), any()) }
         }
 
     @Test

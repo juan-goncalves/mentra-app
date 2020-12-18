@@ -10,7 +10,7 @@ import me.juangoncalves.mentra.data_layer.Ripple
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.data_layer.toPrice
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
@@ -195,7 +195,7 @@ class WalletRepositoryImplTest {
             val result = sut.deleteWallet(wallet)
 
             // Assert
-            result.leftValue shouldBeA Failure::class
+            result.leftValue shouldBeA OldFailure::class
         }
 
     /*

@@ -8,8 +8,6 @@ import me.juangoncalves.mentra.data_layer.extensions.elapsedMinutes
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.domain_layer.errors.*
-import me.juangoncalves.mentra.domain_layer.extensions.TAG
-import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
@@ -18,7 +16,7 @@ import javax.inject.Inject
 class CoinRepositoryImpl @Inject constructor(
     private val remoteDataSource: CoinRemoteDataSource,
     private val localDataSource: CoinLocalDataSource,
-    private val logger: MentraLogger
+    private val errorHandler: ErrorHandler
 ) : CoinRepository {
 
     override val pricesOfCoinsInUse: Flow<Map<Coin, Price>>
@@ -28,43 +26,19 @@ class CoinRepositoryImpl @Inject constructor(
         localDataSource.getActiveCoinPricesStream()
 
     override suspend fun getCoins(forceNonCached: Boolean): Either<Failure, List<Coin>> =
-        withContext(Dispatchers.IO) {
-            val cachedCoins = try {
-                localDataSource.getStoredCoins()
-            } catch (e: StorageException) {
-                logger.warning(TAG, "Exception while trying to get cached coins.\n$e")
-                null
-            }
+        errorHandler.runCatching(Dispatchers.IO) {
+            val cachedCoins = ignoreFailure { localDataSource.getStoredCoins() } ?: emptyList()
 
-            if (cachedCoins != null && cachedCoins.isNotEmpty() && !forceNonCached) {
-                return@withContext Either.Right(cachedCoins)
-            }
-
-            return@withContext try {
-                val coins = remoteDataSource.fetchCoins()
-                try {
-                    localDataSource.storeCoins(coins)
-                } catch (e: StorageException) {
-                    logger.warning(TAG, "Exception while trying to cache coins.\n$e")
-                }
-                Either.Right(coins)
-            } catch (e: Exception) {
-                val failure = when (e) {
-                    is ServerException -> ServerFailure()
-                    is InternetConnectionException -> InternetConnectionFailure()
-                    else -> {
-                        logger.error(
-                            TAG,
-                            "Unexpected error when fetching coins from the remote source:\n$e"
-                        )
-                        Failure()
-                    }
-                }
-                Either.Left(failure)
+            if (cachedCoins.isNotEmpty() && !forceNonCached) {
+                cachedCoins
+            } else {
+                val remoteCoins = remoteDataSource.fetchCoins()
+                ignoreFailure { localDataSource.storeCoins(remoteCoins) }
+                remoteCoins
             }
         }
 
-    override suspend fun getCoinPrice(coin: Coin): Either<Failure, Price> =
+    override suspend fun getCoinPrice(coin: Coin): Either<OldFailure, Price> =
         withContext(Dispatchers.IO) {
             try {
                 val cachedPrice = localDataSource.getLastCoinPrice(coin)
@@ -85,7 +59,7 @@ class CoinRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun updateCoin(coin: Coin): Either<Failure, Unit> =
+    override suspend fun updateCoin(coin: Coin): Either<OldFailure, Unit> =
         withContext(Dispatchers.IO) {
             // TODO: Handle exceptions
             localDataSource.updateCoin(coin)

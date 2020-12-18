@@ -2,7 +2,7 @@ package me.juangoncalves.mentra.data_layer.repositories
 
 import either.Either
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinIconDataSource
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.extensions.Left
 import me.juangoncalves.mentra.domain_layer.extensions.Right
 import me.juangoncalves.mentra.domain_layer.extensions.TAG
@@ -16,14 +16,14 @@ class IconRepositoryImpl @Inject constructor(
     private val logger: MentraLogger
 ) : IconRepository {
 
-    override suspend fun getAlternativeIconFor(coin: Coin): Either<Failure, String?> {
+    override suspend fun getAlternativeIconFor(coin: Coin): Either<OldFailure, String?> {
         // TODO: We should use a ErrorHandler
         return try {
             val iconUrl = iconDataSource.getAlternativeIconFor(coin)
             Right(iconUrl)
         } catch (e: Exception) {
             logger.warning(TAG, "Can't to determine if a gradient icon is available for coin")
-            Left(Failure())
+            Left(OldFailure())
         }
     }
 

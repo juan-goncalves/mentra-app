@@ -4,6 +4,7 @@ import either.Either
 import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.FetchPriceFailure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 
@@ -23,8 +24,8 @@ interface CoinRepository {
      * a locally available one from the last 5 minutes. If the network fetch fails, a [FetchPriceFailure]
      * with the most recent cached coin price will be returned.
      */
-    suspend fun getCoinPrice(coin: Coin): Either<Failure, Price>
+    suspend fun getCoinPrice(coin: Coin): Either<OldFailure, Price>
 
-    suspend fun updateCoin(coin: Coin): Either<Failure, Unit>
+    suspend fun updateCoin(coin: Coin): Either<OldFailure, Unit>
 
 }

@@ -3,7 +3,7 @@ package me.juangoncalves.mentra.domain_layer.usecases.portfolio
 import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
@@ -20,7 +20,7 @@ class RefreshPortfolioValue @Inject constructor(
     private val refreshWalletValue: RefreshWalletValue
 ) : VoidUseCase<Price> {
 
-    override suspend operator fun invoke(): Either<Failure, Price> {
+    override suspend operator fun invoke(): Either<OldFailure, Price> {
         val getWalletsResult = walletRepository.getWallets()
         val wallets = getWalletsResult.rightValue ?: return Left(getWalletsResult.requireLeft())
 
@@ -29,7 +29,7 @@ class RefreshPortfolioValue @Inject constructor(
             for (wallet in wallets) {
                 val refreshResult = refreshWalletValue(wallet)
                 if (refreshResult.isLeft()) {
-                    return@withContext Pair<Price, Failure>(
+                    return@withContext Pair<Price, OldFailure>(
                         Price.None,
                         refreshResult.requireLeft()
                     )
