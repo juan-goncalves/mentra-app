@@ -12,8 +12,7 @@ import me.juangoncalves.mentra.error.FleetingError
 import me.juangoncalves.mentra.extensions.applyErrorStyle
 import me.juangoncalves.mentra.extensions.empty
 
-abstract class BaseDialogFragment<VM : BaseViewModel> :
-    BottomSheetDialogFragment() {
+abstract class BaseDialogFragment<VM : BaseViewModel> : BottomSheetDialogFragment() {
 
     protected abstract val viewModel: VM
 

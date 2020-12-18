@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Wallet
@@ -291,7 +291,7 @@ class WalletCreationViewModelTest {
         val captor = slot<Event<Int>>()
         val observer = mockk<Observer<Event<Int>>>(relaxUnitFun = true)
         sut.fleetingErrorStream.observeForever(observer)
-        coEvery { createWalletMock.invoke(any()) } returns WalletCreationFailure().toLeft()
+        coEvery { createWalletMock.invoke(any()) } returns Failure.Unknown.toLeft()
 
         // Act
         sut.selectCoin(Bitcoin)

@@ -33,11 +33,11 @@ class WalletListViewModel @ViewModelInject constructor(
     fun initialize() {
         loadWallets()
 
-//        viewModelScope.launch {
-//            walletListStream().collectLatest {
-//                refreshSelected()
-//            }
-//        }
+        viewModelScope.launch {
+            walletListStream().collectLatest {
+                refreshSelected()
+            }
+        }
     }
 
     private fun loadWallets() = viewModelScope.launch {

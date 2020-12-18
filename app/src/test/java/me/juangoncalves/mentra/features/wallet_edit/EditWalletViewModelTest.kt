@@ -7,12 +7,16 @@ import androidx.lifecycle.Observer
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import me.juangoncalves.mentra.*
-import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
+import me.juangoncalves.mentra.Bitcoin
+import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.Right
+import me.juangoncalves.mentra.USD
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.UpdateWallet
+import me.juangoncalves.mentra.error.FleetingError
 import me.juangoncalves.mentra.features.common.BundleKeys
-import me.juangoncalves.mentra.features.common.DisplayError
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
@@ -42,7 +46,7 @@ class EditWalletViewModelTest {
     @MockK lateinit var inputWarningObserver: Observer<Int?>
     @MockK lateinit var saveButtonStateObserver: Observer<Boolean>
     @MockK lateinit var dismissObserver: Observer<Notification>
-    @MockK lateinit var fleetingErrorObserver: Observer<Event<DisplayError>>
+    @MockK lateinit var fleetingErrorObserver: Observer<Event<FleetingError>>
     //endregion
 
     private lateinit var sut: EditWalletViewModel
@@ -292,7 +296,7 @@ class EditWalletViewModelTest {
     fun `fleetingErrorStream emits an error when the wallet update fails`() {
         // Arrange
         initSutWithFakeWallet()
-        coEvery { updateWalletMock.invoke(any()) } returns Left(StorageFailure())
+        coEvery { updateWalletMock.invoke(any()) } returns Failure.Unknown.toLeft()
 
         // Act
         sut.saveSelected()

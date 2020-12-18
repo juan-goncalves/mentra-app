@@ -52,8 +52,11 @@ class RoomWalletDataSource @Inject constructor(
 
     // TODO: Refactor to receive a BigDecimal instead of a price (to force / assume it is USD)
     override suspend fun update(wallet: Wallet, price: Price?) = orStorageException {
-        val model = walletMapper.map(wallet)
-        walletDao.update(model)
+        val updates = walletMapper.map(wallet)
+        val currentWallet = walletDao.findById(wallet.id) ?: return@orStorageException
+
+        if (currentWallet != updates) walletDao.update(updates)
+
         if (price != null) {
             val valueModel = WalletValueModel(wallet.id, price.value, price.timestamp.toLocalDate())
             walletValueDao.insert(valueModel)
