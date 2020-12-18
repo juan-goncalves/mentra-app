@@ -15,6 +15,7 @@ import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
+import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
@@ -192,6 +193,46 @@ class WalletRepositoryImplTest {
 
             // Assert
             result.leftValue shouldBeA Failure::class
+        }
+
+    @Test
+    fun `findWalletById queries the local data source with the received id`() = runBlocking {
+        // Arrange
+        val wallet = Wallet(Bitcoin, 1.2343, 928)
+        coEvery { walletLocalSourceMock.findById(928) } returns wallet
+
+        // Act
+        val result = sut.findWalletById(928)
+
+        // Assert
+        coVerify { walletLocalSourceMock.findById(928) }
+        result.requireRight() shouldBe wallet
+    }
+
+    @Test
+    fun `findWalletById returns null when there is no matching wallet for the received id`() =
+        runBlocking {
+            // Arrange
+            coEvery { walletLocalSourceMock.findById(any()) } returns null
+
+            // Act
+            val result = sut.findWalletById(928)
+
+            // Assert
+            result.requireRight() shouldBe null
+        }
+
+    @Test
+    fun `findWalletById returns a failure when the local data source operation fails`() =
+        runBlocking {
+            // Arrange
+            coEvery { walletLocalSourceMock.findById(any()) } throws RuntimeException()
+
+            // Act
+            val result = sut.findWalletById(928)
+
+            // Assert
+            result.requireLeft() shouldBeA Failure::class
         }
 
     /*
