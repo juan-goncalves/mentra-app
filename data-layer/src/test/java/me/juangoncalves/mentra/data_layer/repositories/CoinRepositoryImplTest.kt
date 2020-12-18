@@ -15,6 +15,7 @@ import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.PriceCacheMissException
 import me.juangoncalves.mentra.domain_layer.errors.ServerException
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
+import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
@@ -58,6 +59,23 @@ class CoinRepositoryImplTest {
 
             // Act
             val result = sut.getCoins()
+
+            // Assert
+            result.rightValue shouldBe coins
+            coVerify { remoteSourceMock.fetchCoins() }
+            coVerify { localSourceMock.storeCoins(coins) }
+        }
+
+    @Test
+    fun `getCoins fetches and caches the coins from the network when the force flag is set`() =
+        runBlocking {
+            // Arrange
+            val coins = listOf(Bitcoin, Ethereum, Ripple)
+            coEvery { remoteSourceMock.fetchCoins() } returns coins
+            coEvery { localSourceMock.getStoredCoins() } returns listOf(Ripple, Ethereum)
+
+            // Act
+            val result = sut.getCoins(forceNonCached = true)
 
             // Assert
             result.rightValue shouldBe coins
@@ -220,6 +238,30 @@ class CoinRepositoryImplTest {
             // Assert
             result.requireRight().value shouldBeCloseTo 20_000.0
         }
+
+    @Test
+    fun `updateCoin uses the local data source with the received coin`() = runBlocking {
+        // Arrange
+        coEvery { localSourceMock.updateCoin(any()) } just Runs
+
+        // Act
+        sut.updateCoin(Bitcoin)
+
+        // Assert
+        coVerify { localSourceMock.updateCoin(Bitcoin) }
+    }
+
+    @Test
+    fun `updateCoin returns a Failure if the local storage update fails`() = runBlocking {
+        // Arrange
+        coEvery { localSourceMock.updateCoin(any()) } throws RuntimeException()
+
+        // Act
+        val result = sut.updateCoin(Bitcoin)
+
+        // Assert
+        result.requireLeft() shouldBeA Failure::class
+    }
 
     //region Helpers
     //endregion

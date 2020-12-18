@@ -4,7 +4,6 @@ import either.Either
 import kotlinx.coroutines.flow.Flow
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.FetchPriceFailure
-import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 
@@ -26,6 +25,6 @@ interface CoinRepository {
      */
     suspend fun getCoinPrice(coin: Coin): Either<Failure, Price>
 
-    suspend fun updateCoin(coin: Coin): Either<OldFailure, Unit>
+    suspend fun updateCoin(coin: Coin): Either<Failure, Unit>
 
 }

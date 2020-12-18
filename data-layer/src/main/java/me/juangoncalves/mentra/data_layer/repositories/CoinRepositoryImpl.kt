@@ -3,11 +3,13 @@ package me.juangoncalves.mentra.data_layer.repositories
 import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data_layer.extensions.elapsedMinutes
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinRemoteDataSource
-import me.juangoncalves.mentra.domain_layer.errors.*
+import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.ignoreFailure
+import me.juangoncalves.mentra.domain_layer.errors.runCatching
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
@@ -48,11 +50,9 @@ class CoinRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun updateCoin(coin: Coin): Either<OldFailure, Unit> =
-        withContext(Dispatchers.IO) {
-            // TODO: Handle exceptions
+    override suspend fun updateCoin(coin: Coin): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
             localDataSource.updateCoin(coin)
-            Either.Right(Unit)
         }
 
 }
