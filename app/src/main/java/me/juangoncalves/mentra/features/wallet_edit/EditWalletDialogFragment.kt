@@ -10,17 +10,16 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.core.BaseDialogFragment
 import me.juangoncalves.mentra.databinding.EditWalletDialogFragmentBinding
 import me.juangoncalves.mentra.extensions.asCurrencyAmount
-import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
-class EditWalletDialogFragment : BottomSheetDialogFragment() {
+class EditWalletDialogFragment : BaseDialogFragment<EditWalletViewModel>() {
 
     companion object {
         fun newInstance(wallet: WalletListViewState.Wallet): EditWalletDialogFragment {
@@ -30,10 +29,11 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private val viewModel: EditWalletViewModel by viewModels()
+    override val viewModel: EditWalletViewModel get() = _viewModel
+    private val _viewModel: EditWalletViewModel by viewModels()
 
-    private var _binding: EditWalletDialogFragmentBinding? = null
     private val binding get() = _binding!!
+    private var _binding: EditWalletDialogFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +50,7 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initObservers()
         binding.amountEditText.setText(viewModel.wallet.amountOfCoin.toString())
         binding.saveButton.setOnClickListener { viewModel.saveSelected() }
@@ -60,8 +61,6 @@ class EditWalletDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun initObservers() {
-        showSnackbarOnFleetingErrors(viewModel, binding.root)
-
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }

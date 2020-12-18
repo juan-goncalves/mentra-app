@@ -4,14 +4,14 @@ import android.os.Bundle
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.core.BaseViewModel
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.extensions.toPrice
 import me.juangoncalves.mentra.features.common.BundleKeys
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisherImpl
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import java.math.BigDecimal
@@ -19,7 +19,7 @@ import java.util.*
 
 class EditWalletViewModel @ViewModelInject constructor(
     private val updateWallet: UpdateWallet
-) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+) : BaseViewModel() {
 
     val dismissStream: LiveData<Notification> get() = _dismiss
     val saveButtonStateStream: LiveData<Boolean> get() = _saveButtonEnabled
@@ -47,18 +47,13 @@ class EditWalletViewModel @ViewModelInject constructor(
         amountInputChanged(wallet.amountOfCoin.toString())
     }
 
-    fun saveSelected() {
-        val updatedAmount = _updatedAmount ?: return
+    fun saveSelected() = viewModelScope.launch {
+        val updatedAmount = _updatedAmount ?: return@launch
         val params = UpdateWallet.Params(wallet.id, updatedAmount)
-        // TODO: Use new error handler
-//        updateWallet.executor()
-//            .inScope(viewModelScope)
-//            .onSuccess {
-//                savedUpdates = true
-//                _dismiss.postValue(Notification())
-//            }
-//            .onFailurePublishFleetingError()
-//            .run(params)
+        updateWallet.runHandlingFailure(params) {
+            savedUpdates = true
+            _dismiss.postValue(Notification())
+        }
     }
 
     fun cancelSelected() {
