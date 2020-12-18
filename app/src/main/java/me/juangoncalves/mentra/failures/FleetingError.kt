@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.error
+package me.juangoncalves.mentra.failures
 
 import androidx.annotation.StringRes
 

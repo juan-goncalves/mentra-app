@@ -15,7 +15,7 @@ import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.UpdateWallet
-import me.juangoncalves.mentra.error.FleetingError
+import me.juangoncalves.mentra.failures.FleetingError
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.common.Notification

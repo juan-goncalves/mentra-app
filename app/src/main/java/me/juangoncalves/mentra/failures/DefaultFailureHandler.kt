@@ -1,42 +1,29 @@
-package me.juangoncalves.mentra.core
+package me.juangoncalves.mentra.failures
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.domain_layer.extensions.whenLeft
 import me.juangoncalves.mentra.domain_layer.usecases.Interactor
-import me.juangoncalves.mentra.error.FleetingError
 import me.juangoncalves.mentra.extensions.toEvent
 import me.juangoncalves.mentra.features.common.Event
 
+class DefaultFailureHandler : FailureHandler {
 
-abstract class BaseViewModel : ViewModel() {
-
-    val fleetingErrorStream: LiveData<Event<FleetingError>> get() = _fleetingErrorStream
+    override val fleetingErrorStream: LiveData<Event<FleetingError>> get() = _fleetingErrorStream
     private val _fleetingErrorStream: MutableLiveData<Event<FleetingError>> = MutableLiveData()
 
-    fun retryFailedAction(error: FleetingError) {
-        viewModelScope.launch {
-            error.retryAction?.invoke()
-        }
-    }
-
-    suspend fun <Params, Result> Interactor<Params, Result>.runHandlingFailure(
+    override suspend fun <Params, Result> Interactor<Params, Result>.runHandlingFailure(
         params: Params,
         onSuccess: suspend (Result) -> Unit
     ) {
         val operation = invoke(params)
 
         operation.whenLeft { failure ->
-            val error = FleetingError(getErrorMessage(failure)) {
-                runHandlingFailure(params, onSuccess)
-            }
+            val error = FleetingError(getErrorMessage(failure))
             _fleetingErrorStream.postValue(error.toEvent())
         }
 

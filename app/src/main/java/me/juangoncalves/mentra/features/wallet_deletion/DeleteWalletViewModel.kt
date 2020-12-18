@@ -4,17 +4,19 @@ import android.os.Bundle
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import me.juangoncalves.mentra.core.BaseViewModel
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.DeleteWallet
+import me.juangoncalves.mentra.failures.DefaultFailureHandler
+import me.juangoncalves.mentra.failures.FailureHandler
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 class DeleteWalletViewModel @ViewModelInject constructor(
     private val deleteWallet: DeleteWallet
-) : BaseViewModel() {
+) : ViewModel(), FailureHandler by DefaultFailureHandler() {
 
     val dismissStream: LiveData<Notification> get() = _dismissStream
 

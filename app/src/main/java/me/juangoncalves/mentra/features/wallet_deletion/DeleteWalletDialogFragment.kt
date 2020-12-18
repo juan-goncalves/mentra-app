@@ -10,14 +10,14 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
-import me.juangoncalves.mentra.core.BaseDialogFragment
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
+import me.juangoncalves.mentra.failures.FailureHandlingDialogFragment
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
-class DeleteWalletDialogFragment : BaseDialogFragment<DeleteWalletViewModel>() {
+class DeleteWalletDialogFragment : FailureHandlingDialogFragment<DeleteWalletViewModel>() {
 
     companion object {
         fun newInstance(wallet: WalletListViewState.Wallet): DeleteWalletDialogFragment {
@@ -38,6 +38,12 @@ class DeleteWalletDialogFragment : BaseDialogFragment<DeleteWalletViewModel>() {
         viewModel.initialize(arguments)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        configureView()
+        initObservers()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,14 +53,12 @@ class DeleteWalletDialogFragment : BaseDialogFragment<DeleteWalletViewModel>() {
         return binding.root
     }
 
-    override fun configureView() {
+    private fun configureView() {
         binding.deleteButton.setOnClickListener { viewModel.deleteSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
     }
 
-    override fun initObservers() {
-        super.initObservers()
-
+    private fun initObservers() {
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }

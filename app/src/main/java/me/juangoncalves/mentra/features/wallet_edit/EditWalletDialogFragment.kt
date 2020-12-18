@@ -12,15 +12,15 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
-import me.juangoncalves.mentra.core.BaseDialogFragment
 import me.juangoncalves.mentra.databinding.EditWalletDialogFragmentBinding
 import me.juangoncalves.mentra.extensions.asCurrencyAmount
+import me.juangoncalves.mentra.failures.FailureHandlingDialogFragment
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
-class EditWalletDialogFragment : BaseDialogFragment<EditWalletViewModel>() {
+class EditWalletDialogFragment : FailureHandlingDialogFragment<EditWalletViewModel>() {
 
     companion object {
         fun newInstance(wallet: WalletListViewState.Wallet): EditWalletDialogFragment {
@@ -41,6 +41,12 @@ class EditWalletDialogFragment : BaseDialogFragment<EditWalletViewModel>() {
         viewModel.initialize(arguments)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        configureView()
+        initObservers()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,7 +57,7 @@ class EditWalletDialogFragment : BaseDialogFragment<EditWalletViewModel>() {
     }
 
     @SuppressLint("SetTextI18n")
-    override fun configureView() {
+    private fun configureView() {
         binding.amountEditText.setText(viewModel.wallet.amountOfCoin.toString())
         binding.saveButton.setOnClickListener { viewModel.saveSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
@@ -60,9 +66,7 @@ class EditWalletDialogFragment : BaseDialogFragment<EditWalletViewModel>() {
         }
     }
 
-    override fun initObservers() {
-        super.initObservers()
-
+    private fun initObservers() {
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }
