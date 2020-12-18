@@ -5,8 +5,7 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import me.juangoncalves.mentra.domain_layer.errors.OldFailure
-import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
@@ -137,13 +136,13 @@ class FindCoinsByNameTest {
     fun `returns a failure if there's an error getting the list of available coins`() =
         runBlocking {
             // Arrange
-            coEvery { coinRepositoryMock.getCoins() } returns StorageFailure().toLeft()
+            coEvery { coinRepositoryMock.getCoins() } returns Failure.Unknown.toLeft()
 
             // Act
             val result = sut("some query")
 
             // Assert
-            result.leftValue shouldBeA OldFailure::class
+            result.leftValue shouldBeA Failure::class
         }
 
     //region Helpers

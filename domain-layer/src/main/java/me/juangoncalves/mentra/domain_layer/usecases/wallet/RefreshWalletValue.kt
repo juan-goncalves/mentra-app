@@ -2,7 +2,9 @@ package me.juangoncalves.mentra.domain_layer.usecases.wallet
 
 import either.Either
 import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
@@ -25,8 +27,7 @@ class RefreshWalletValue @Inject constructor(
         val walletValue = Price(coinPrice * params.amount, currency, timestamp)
 
         val updateResult = walletRepository.updateWallet(params, walletValue)
-        // TODO: Use the failure from updateResult after its refactored
-        updateResult.rightValue ?: return Either.Left(Failure.Unknown)
+        updateResult.rightValue ?: return updateResult.requireLeft().toLeft()
 
         return Either.Right(walletValue)
     }

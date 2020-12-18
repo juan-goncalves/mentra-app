@@ -7,8 +7,11 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.domain_layer.Bitcoin
 import me.juangoncalves.mentra.domain_layer.Ethereum
 import me.juangoncalves.mentra.domain_layer.USD
-import me.juangoncalves.mentra.domain_layer.errors.PriceNotFound
-import me.juangoncalves.mentra.domain_layer.extensions.*
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.extensions.Right
+import me.juangoncalves.mentra.domain_layer.extensions.leftValue
+import me.juangoncalves.mentra.domain_layer.extensions.requireRight
+import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.domain_layer.toPrice
 import me.juangoncalves.mentra.test_utils.shouldBe
@@ -51,17 +54,15 @@ class GetCoinPriceTest {
     }
 
     @Test
-    fun `should fail if the price of the selected coin is not found`() = runBlocking {
+    fun `should return a Failure if the price of the selected coin is not found`() = runBlocking {
         // Arrange
-        val failure = PriceNotFound(Ethereum)
-        coEvery { coinRepositoryMock.getCoinPrice(Ethereum) } returns Left(failure)
+        coEvery { coinRepositoryMock.getCoinPrice(Ethereum) } returns Failure.Unknown.toLeft()
 
         // Act
         val result = sut(Ethereum)
 
         // Assert
-        result.leftValue shouldBeA PriceNotFound::class
-        (result.requireLeft() as PriceNotFound).coin shouldBe Ethereum
+        result.leftValue shouldBeA Failure::class
     }
 
     //region Helpers

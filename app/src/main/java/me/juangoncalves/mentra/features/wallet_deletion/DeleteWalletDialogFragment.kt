@@ -9,16 +9,15 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.core.BaseDialogFragment
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
-import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
-class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
+class DeleteWalletDialogFragment : BaseDialogFragment<DeleteWalletViewModel>() {
 
     companion object {
         fun newInstance(wallet: WalletListViewState.Wallet): DeleteWalletDialogFragment {
@@ -28,7 +27,8 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private val viewModel: DeleteWalletViewModel by viewModels()
+    override val viewModel: DeleteWalletViewModel get() = _viewModel
+    private val _viewModel: DeleteWalletViewModel by viewModels()
 
     private var _binding: DeleteWalletDialogFragmentBinding? = null
     private val binding get() = _binding!!
@@ -48,14 +48,13 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initObservers()
         binding.deleteButton.setOnClickListener { viewModel.deleteSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
     }
 
     private fun initObservers() {
-        showSnackbarOnFleetingErrors(viewModel, binding.root)
-
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }

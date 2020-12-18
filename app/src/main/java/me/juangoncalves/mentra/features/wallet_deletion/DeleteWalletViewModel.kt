@@ -4,15 +4,17 @@ import android.os.Bundle
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import me.juangoncalves.mentra.core.BaseViewModel
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.DeleteWallet
-import me.juangoncalves.mentra.features.common.*
+import me.juangoncalves.mentra.features.common.BundleKeys
+import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 class DeleteWalletViewModel @ViewModelInject constructor(
     private val deleteWallet: DeleteWallet
-) : ViewModel(), FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+) : BaseViewModel() {
 
     val dismissStream: LiveData<Notification> get() = _dismissStream
 
@@ -29,17 +31,12 @@ class DeleteWalletViewModel @ViewModelInject constructor(
             ?: error("You must provide the wallet to delete")
     }
 
-    fun deleteSelected() {
+    fun deleteSelected() = viewModelScope.launch {
         val params = DeleteWallet.Params(wallet.id)
-
-        deleteWallet.executor()
-            .inScope(viewModelScope)
-            .onSuccess {
-                walletWasDeleted = true
-                _dismissStream.postValue(Notification())
-            }
-            .onFailurePublishFleetingError()
-            .run(params)
+        deleteWallet.runHandlingFailure(params) {
+            walletWasDeleted = true
+            _dismissStream.postValue(Notification())
+        }
     }
 
     fun cancelSelected() {
