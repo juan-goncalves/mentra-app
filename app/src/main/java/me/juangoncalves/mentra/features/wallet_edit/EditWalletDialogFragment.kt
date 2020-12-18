@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.features.wallet_edit
 
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -49,9 +50,8 @@ class EditWalletDialogFragment : BaseDialogFragment<EditWalletViewModel>() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initObservers()
+    @SuppressLint("SetTextI18n")
+    override fun configureView() {
         binding.amountEditText.setText(viewModel.wallet.amountOfCoin.toString())
         binding.saveButton.setOnClickListener { viewModel.saveSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
@@ -60,7 +60,9 @@ class EditWalletDialogFragment : BaseDialogFragment<EditWalletViewModel>() {
         }
     }
 
-    private fun initObservers() {
+    override fun initObservers() {
+        super.initObservers()
+
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }

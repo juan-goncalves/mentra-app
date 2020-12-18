@@ -47,14 +47,14 @@ class DeleteWalletDialogFragment : BaseDialogFragment<DeleteWalletViewModel>() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initObservers()
+    override fun configureView() {
         binding.deleteButton.setOnClickListener { viewModel.deleteSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
     }
 
-    private fun initObservers() {
+    override fun initObservers() {
+        super.initObservers()
+
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }
