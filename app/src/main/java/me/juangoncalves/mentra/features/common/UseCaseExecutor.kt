@@ -11,13 +11,13 @@ import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
-import me.juangoncalves.mentra.domain_layer.usecases.UseCase
+import me.juangoncalves.mentra.domain_layer.usecases.OldUseCase
 
 typealias Hook = suspend () -> Unit
 typealias OnSuccess<T> = suspend (T) -> Unit
 typealias OnFailure = suspend (DisplayError) -> Unit
 
-class UseCaseExecutor<P, R>(val useCase: UseCase<P, R>) {
+class UseCaseExecutor<P, R>(val useCase: OldUseCase<P, R>) {
     private var _before: Hook? = null
     private var _after: Hook? = null
     private var _onSuccess: OnSuccess<R>? = null
@@ -73,4 +73,4 @@ fun <R> UseCaseExecutor<Unit, R>.run() {
     run(Unit)
 }
 
-fun <P, R> UseCase<P, R>.executor(): UseCaseExecutor<P, R> = UseCaseExecutor(this)
+fun <P, R> OldUseCase<P, R>.executor(): UseCaseExecutor<P, R> = UseCaseExecutor(this)

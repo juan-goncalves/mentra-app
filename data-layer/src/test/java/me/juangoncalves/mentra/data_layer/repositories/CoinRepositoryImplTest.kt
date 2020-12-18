@@ -10,12 +10,17 @@ import me.juangoncalves.mentra.data_layer.Ripple
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.data_layer.toPrice
-import me.juangoncalves.mentra.domain_layer.errors.*
+import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.PriceCacheMissException
+import me.juangoncalves.mentra.domain_layer.errors.ServerException
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
+import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeA
+import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,7 +43,7 @@ class CoinRepositoryImplTest {
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true, relaxed = true)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         sut = CoinRepositoryImpl(remoteSourceMock, localSourceMock, errorHandlerMock)
         every { errorHandlerMock.getFailure(any()) } returns Failure.Unknown
     }
@@ -139,7 +144,7 @@ class CoinRepositoryImplTest {
         }
 
     @Test
-    fun `getCoinPrice returns the cached coin price if it was obtained less than 5 minutes ago`() =
+    fun `getCoinPrice returns the cached coin price if it was fetched less than 5 minutes ago`() =
         runBlocking {
             // Arrange
             val price = 321.98.toPrice(timestamp = LocalDateTime.now().minusMinutes(2))
@@ -174,7 +179,7 @@ class CoinRepositoryImplTest {
         }
 
     @Test
-    fun `getCoinPrice returns a FetchPriceError with the most recent stored coin price when a ServerException is thrown`() =
+    fun `getCoinPrice returns a Failure when it has to fetch the coin price and it fails`() =
         runBlocking {
             // Arrange
             val localPrice = 0.123.toPrice(timestamp = LocalDateTime.now().minusHours(2))
@@ -185,23 +190,35 @@ class CoinRepositoryImplTest {
             val result = sut.getCoinPrice(Ripple)
 
             // Assert
-            result.leftValue shouldBeA FetchPriceFailure::class
-            (result.leftValue as FetchPriceFailure).storedPrice shouldBe localPrice
+            result.leftValue shouldBeA Failure::class
         }
 
     @Test
-    fun `getCoinPrice returns a FetchPriceError without a price when a ServerException is thrown and there isn't a stored coin price`() =
+    fun `getCoinPrice fetches the price from the network in USD if querying the cache fails`() =
         runBlocking {
             // Arrange
-            coEvery { remoteSourceMock.fetchCoinPrice(Ripple) } throws ServerException()
-            coEvery { localSourceMock.getLastCoinPrice(Ripple) } throws PriceCacheMissException()
+            coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } throws RuntimeException()
+            coEvery { remoteSourceMock.fetchCoinPrice(Bitcoin) } returns 20_000.0.toPrice()
 
             // Act
-            val result = sut.getCoinPrice(Ripple)
+            val result = sut.getCoinPrice(Bitcoin)
 
             // Assert
-            result.leftValue shouldBeA FetchPriceFailure::class
-            (result.leftValue as FetchPriceFailure).storedPrice shouldBe null
+            result.requireRight().value shouldBeCloseTo 20_000.0
+        }
+
+    @Test
+    fun `getCoinPrice fetches the price from the network and returns it even if the caching fails`() =
+        runBlocking {
+            // Arrange
+            coEvery { localSourceMock.storeCoinPrice(any(), any()) } throws RuntimeException()
+            coEvery { remoteSourceMock.fetchCoinPrice(Bitcoin) } returns 20_000.0.toPrice()
+
+            // Act
+            val result = sut.getCoinPrice(Bitcoin)
+
+            // Assert
+            result.requireRight().value shouldBeCloseTo 20_000.0
         }
 
     //region Helpers

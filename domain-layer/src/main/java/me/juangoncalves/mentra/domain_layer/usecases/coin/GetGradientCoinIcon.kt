@@ -4,12 +4,12 @@ import either.Either
 import me.juangoncalves.mentra.domain_layer.errors.OldFailure
 import me.juangoncalves.mentra.domain_layer.extensions.Right
 import me.juangoncalves.mentra.domain_layer.models.Coin
-import me.juangoncalves.mentra.domain_layer.usecases.UseCase
+import me.juangoncalves.mentra.domain_layer.usecases.OldUseCase
 import java.util.*
 import javax.inject.Inject
 
 
-class GetGradientCoinIcon @Inject constructor() : UseCase<GetGradientCoinIcon.Params, String> {
+class GetGradientCoinIcon @Inject constructor() : OldUseCase<GetGradientCoinIcon.Params, String> {
 
     data class Params(val coin: Coin, val size: Int = 200)
 

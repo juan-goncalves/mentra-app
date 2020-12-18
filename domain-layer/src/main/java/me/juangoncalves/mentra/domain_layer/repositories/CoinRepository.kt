@@ -24,7 +24,7 @@ interface CoinRepository {
      * a locally available one from the last 5 minutes. If the network fetch fails, a [FetchPriceFailure]
      * with the most recent cached coin price will be returned.
      */
-    suspend fun getCoinPrice(coin: Coin): Either<OldFailure, Price>
+    suspend fun getCoinPrice(coin: Coin): Either<Failure, Price>
 
     suspend fun updateCoin(coin: Coin): Either<OldFailure, Unit>
 

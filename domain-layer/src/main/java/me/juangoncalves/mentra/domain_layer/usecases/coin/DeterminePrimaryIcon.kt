@@ -11,13 +11,13 @@ import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.domain_layer.repositories.IconRepository
-import me.juangoncalves.mentra.domain_layer.usecases.UseCase
+import me.juangoncalves.mentra.domain_layer.usecases.OldUseCase
 import javax.inject.Inject
 
 class DeterminePrimaryIcon @Inject constructor(
     private val coinRepository: CoinRepository,
     private val iconRepository: IconRepository
-) : UseCase<Coin, String> {
+) : OldUseCase<Coin, String> {
 
     override suspend fun invoke(params: Coin): Either<OldFailure, String> =
         withContext(Dispatchers.Default) {

@@ -22,13 +22,11 @@ class CoinRepositoryImpl @Inject constructor(
     override val pricesOfCoinsInUse: Flow<Map<Coin, Price>>
         get() = _pricesOfCoinsInUse
 
-    private val _pricesOfCoinsInUse: Flow<Map<Coin, Price>> =
-        localDataSource.getActiveCoinPricesStream()
+    private val _pricesOfCoinsInUse: Flow<Map<Coin, Price>> by lazy { localDataSource.getActiveCoinPricesStream() }
 
     override suspend fun getCoins(forceNonCached: Boolean): Either<Failure, List<Coin>> =
         errorHandler.runCatching(Dispatchers.IO) {
             val cachedCoins = ignoreFailure { localDataSource.getStoredCoins() } ?: emptyList()
-
             if (cachedCoins.isNotEmpty() && !forceNonCached) {
                 cachedCoins
             } else {
@@ -38,24 +36,15 @@ class CoinRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun getCoinPrice(coin: Coin): Either<OldFailure, Price> =
-        withContext(Dispatchers.IO) {
-            try {
-                val cachedPrice = localDataSource.getLastCoinPrice(coin)
-                if (cachedPrice.timestamp.elapsedMinutes() <= 5) {
-                    Either.Right(cachedPrice)
-                } else {
-                    throw PriceCacheMissException(cachedPrice)
-                }
-            } catch (cacheException: PriceCacheMissException) {
-                try {
-                    val price = remoteDataSource.fetchCoinPrice(coin)
-                    // TODO: Handle storage exception
-                    localDataSource.storeCoinPrice(coin, price)
-                    Either.Right(price)
-                } catch (e: Exception) {
-                    Either.Left(FetchPriceFailure(cacheException.latestAvailablePrice))
-                }
+    override suspend fun getCoinPrice(coin: Coin): Either<Failure, Price> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            val cachedPrice = ignoreFailure { localDataSource.getLastCoinPrice(coin) }
+            if (cachedPrice != null && cachedPrice.timestamp.elapsedMinutes() <= 5) {
+                cachedPrice
+            } else {
+                val remotePrice = remoteDataSource.fetchCoinPrice(coin)
+                ignoreFailure { localDataSource.storeCoinPrice(coin, remotePrice) }
+                remotePrice
             }
         }
 

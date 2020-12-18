@@ -8,13 +8,13 @@ import me.juangoncalves.mentra.domain_layer.extensions.isLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
-import me.juangoncalves.mentra.domain_layer.usecases.UseCase
+import me.juangoncalves.mentra.domain_layer.usecases.OldUseCase
 import java.math.BigDecimal
 import javax.inject.Inject
 
 class UpdateWallet @Inject constructor(
     private val walletRepository: WalletRepository
-) : UseCase<UpdateWallet.Params, Unit> {
+) : OldUseCase<UpdateWallet.Params, Unit> {
 
     class Params(val walletId: Long, val newAmount: BigDecimal)
 
