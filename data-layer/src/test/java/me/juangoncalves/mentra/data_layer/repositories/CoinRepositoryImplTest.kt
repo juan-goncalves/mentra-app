@@ -18,12 +18,10 @@ import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
-import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeA
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
 
@@ -31,7 +29,6 @@ import java.time.LocalDateTime
 class CoinRepositoryImplTest {
 
     //region Rules
-    @get:Rule val mainCoroutineRule = MainCoroutineRule()
     //endregion
 
     //region Mocks

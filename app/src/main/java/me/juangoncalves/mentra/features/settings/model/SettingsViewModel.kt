@@ -62,7 +62,7 @@ class SettingsViewModel @ViewModelInject constructor(
 
     private fun loadCurrencies() {
         viewModelScope.launch {
-            val result = getSupportedCurrencies.execute()
+            val result = getSupportedCurrencies()
 
             if (result.isLeft()) {
                 _showErrorSnackbarStream.value = Event(R.string.error_loading_currencies)

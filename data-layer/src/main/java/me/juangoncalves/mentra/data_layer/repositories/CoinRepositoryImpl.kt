@@ -8,7 +8,7 @@ import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
-import me.juangoncalves.mentra.domain_layer.errors.ignoreFailure
+import me.juangoncalves.mentra.domain_layer.errors.ignoringFailure
 import me.juangoncalves.mentra.domain_layer.errors.runCatching
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
@@ -28,24 +28,24 @@ class CoinRepositoryImpl @Inject constructor(
 
     override suspend fun getCoins(forceNonCached: Boolean): Either<Failure, List<Coin>> =
         errorHandler.runCatching(Dispatchers.IO) {
-            val cachedCoins = ignoreFailure { localDataSource.getStoredCoins() } ?: emptyList()
+            val cachedCoins = ignoringFailure { localDataSource.getStoredCoins() } ?: emptyList()
             if (cachedCoins.isNotEmpty() && !forceNonCached) {
                 cachedCoins
             } else {
                 val remoteCoins = remoteDataSource.fetchCoins()
-                ignoreFailure { localDataSource.storeCoins(remoteCoins) }
+                ignoringFailure { localDataSource.storeCoins(remoteCoins) }
                 remoteCoins
             }
         }
 
     override suspend fun getCoinPrice(coin: Coin): Either<Failure, Price> =
         errorHandler.runCatching(Dispatchers.IO) {
-            val cachedPrice = ignoreFailure { localDataSource.getLastCoinPrice(coin) }
+            val cachedPrice = ignoringFailure { localDataSource.getLastCoinPrice(coin) }
             if (cachedPrice != null && cachedPrice.timestamp.elapsedMinutes() <= 5) {
                 cachedPrice
             } else {
                 val remotePrice = remoteDataSource.fetchCoinPrice(coin)
-                ignoreFailure { localDataSource.storeCoinPrice(coin, remotePrice) }
+                ignoringFailure { localDataSource.storeCoinPrice(coin, remotePrice) }
                 remotePrice
             }
         }

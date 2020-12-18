@@ -31,7 +31,7 @@ suspend inline fun <T> ErrorHandler.runCatching(
     }
 }
 
-suspend inline fun <T> ErrorHandler.ignoreFailure(
+suspend inline fun <T> ErrorHandler.ignoringFailure(
     context: CoroutineContext? = null,
     crossinline block: suspend ErrorHandler.() -> T
 ): T? {
