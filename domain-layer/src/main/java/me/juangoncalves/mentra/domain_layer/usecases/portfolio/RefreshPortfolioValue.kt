@@ -46,7 +46,8 @@ class RefreshPortfolioValue @Inject constructor(
         if (totalCalculationFailure != null) return Left(totalCalculationFailure)
 
         val savePortfolioValueResult = portfolioRepository.updatePortfolioValue(total)
-        savePortfolioValueResult.rightValue ?: return Left(savePortfolioValueResult.requireLeft())
+        // TODO: Use the failure from savePortfolioValueResult after its refactored
+        savePortfolioValueResult.rightValue ?: return OldFailure().toLeft()
 
         return Right(total)
     }

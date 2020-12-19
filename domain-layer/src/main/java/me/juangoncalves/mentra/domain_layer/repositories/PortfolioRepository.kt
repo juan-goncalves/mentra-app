@@ -2,7 +2,7 @@ package me.juangoncalves.mentra.domain_layer.repositories
 
 import either.Either
 import kotlinx.coroutines.flow.Flow
-import me.juangoncalves.mentra.domain_layer.errors.OldFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.models.Price
 
 interface PortfolioRepository {
@@ -13,6 +13,6 @@ interface PortfolioRepository {
     /** Stream of the complete daily portfolio value history on ascending order */
     val portfolioDailyValueHistory: Flow<List<Price>>
 
-    suspend fun updatePortfolioValue(value: Price): Either<OldFailure, Unit>
+    suspend fun updatePortfolioValue(value: Price): Either<Failure, Unit>
 
 }
