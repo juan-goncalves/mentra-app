@@ -1,10 +1,13 @@
 package me.juangoncalves.mentra.data_layer.repositories
 
+import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.data_layer.sources.preferences.PreferenceLocalDataSource
+import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.errors.runCatching
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.repositories.PreferenceRepository
 import java.time.Duration
@@ -12,7 +15,8 @@ import java.util.*
 import javax.inject.Inject
 
 class PreferenceRepositoryImpl @Inject constructor(
-    private val localDataSource: PreferenceLocalDataSource
+    private val localDataSource: PreferenceLocalDataSource,
+    private val errorHandler: ErrorHandler
 ) : PreferenceRepository {
 
     companion object Keys {
@@ -33,18 +37,20 @@ class PreferenceRepositoryImpl @Inject constructor(
         get() = localDataSource.liveUpdatesFor(PeriodicRefresh)
             .map { stringValue -> stringValue.toDuration() }
 
-    override suspend fun updateTimeUnitPreference(value: TimeGranularity) =
-        withContext(Dispatchers.IO) {
+    override suspend fun updateTimeUnitPreference(value: TimeGranularity): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
             localDataSource.putString(ValueChartTimeGranularity, value.name)
         }
 
-    override suspend fun updateCurrencyPreference(value: Currency) = withContext(Dispatchers.IO) {
-        localDataSource.putString(CurrencyCode, value.currencyCode)
-    }
+    override suspend fun updateCurrencyPreference(value: Currency): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.putString(CurrencyCode, value.currencyCode)
+        }
 
-    override suspend fun updatePeriodicRefresh(value: Duration) = withContext(Dispatchers.IO) {
-        localDataSource.putString(PeriodicRefresh, value.toHours().toString())
-    }
+    override suspend fun updatePeriodicRefresh(value: Duration): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.putString(PeriodicRefresh, value.toHours().toString())
+        }
 
     private fun String?.toTimeGranularity(): TimeGranularity {
         if (this == null) return TimeGranularity.Daily
