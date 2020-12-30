@@ -16,6 +16,7 @@ class RetrofitErrorHandler @Inject constructor() : ErrorHandler {
     override fun getFailure(throwable: Throwable): Failure {
         return when (throwable) {
             is IOException -> Failure.Network
+            is CryptoCompareResponseException -> Failure.ServiceUnavailable
             is HttpException -> {
                 when (throwable.code()) {
                     // No cache found in case of no network, thrown by retrofit

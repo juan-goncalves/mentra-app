@@ -8,8 +8,6 @@ import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
 import me.juangoncalves.mentra.android_cache.models.CoinPriceModel
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
-import me.juangoncalves.mentra.domain_layer.errors.PriceCacheMissException
-import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import java.util.*
@@ -21,24 +19,21 @@ class RoomCoinDataSource @Inject constructor(
     private val coinMapper: CoinMapper
 ) : CoinLocalDataSource {
 
-    override suspend fun getStoredCoins(): List<Coin> = orStorageException {
-        coinDao.getAll()
+    override suspend fun getStoredCoins(): List<Coin> {
+        return coinDao.getAll()
             .map(coinMapper::map)
             .filterNot { it == Coin.Invalid }
     }
 
-    override suspend fun storeCoins(coins: List<Coin>) = orStorageException {
+    override suspend fun storeCoins(coins: List<Coin>) {
         val models = coins.map(coinMapper::map)
         coinDao.insertAll(*models.toTypedArray())
     }
 
-    override suspend fun clearCoins() = orStorageException { coinDao.clearAll() }
+    override suspend fun clearCoins() = coinDao.clearAll()
 
-    override suspend fun getLastCoinPrice(coin: Coin): Price {
-        val model = orStorageException {
-            coinPriceDao.getMostRecentCoinPrice(coin.symbol)
-        } ?: throw PriceCacheMissException()
-
+    override suspend fun getLastCoinPrice(coin: Coin): Price? {
+        val model = coinPriceDao.getMostRecentCoinPrice(coin.symbol) ?: return null
         return Price(model.valueInUSD, Currency.getInstance("USD"), model.timestamp)
     }
 
@@ -48,37 +43,21 @@ class RoomCoinDataSource @Inject constructor(
         }
 
         val model = CoinPriceModel(coin.symbol, price.value, price.timestamp)
-        return orStorageException("Exception when saving coin price.") {
-            coinPriceDao.insertCoinPrice(model)
-        }
+        return coinPriceDao.insertCoinPrice(model)
     }
 
     override suspend fun findCoinBySymbol(symbol: String): Coin? {
-        return orStorageException("Exception when finding coin by symbol.") {
-            val coin = coinDao.getCoinBySymbol(symbol)
-            if (coin != null) coinMapper.map(coin) else null
-        }
+        val coin = coinDao.getCoinBySymbol(symbol)
+        return if (coin != null) coinMapper.map(coin) else null
     }
 
-    override suspend fun updateCoin(coin: Coin) = orStorageException {
+    override suspend fun updateCoin(coin: Coin) {
         val model = coinMapper.map(coin)
         coinDao.update(model)
     }
 
     override fun getActiveCoinPricesStream(): Flow<Map<Coin, Price>> =
         coinPriceDao.getActiveCoinPricesStream().associateByCoin()
-
-    @Throws(StorageException::class)
-    private suspend fun <T> orStorageException(
-        message: String = "",
-        execute: suspend () -> T
-    ): T {
-        return try {
-            execute()
-        } catch (e: Exception) {
-            throw StorageException("$message\n$e")
-        }
-    }
 
     private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> = debounce(500)
         .map { prices ->

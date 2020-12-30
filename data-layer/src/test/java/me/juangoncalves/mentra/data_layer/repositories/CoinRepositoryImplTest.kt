@@ -12,8 +12,6 @@ import me.juangoncalves.mentra.data_layer.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.data_layer.toPrice
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
-import me.juangoncalves.mentra.domain_layer.errors.PriceCacheMissException
-import me.juangoncalves.mentra.domain_layer.errors.ServerException
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
@@ -145,7 +143,7 @@ class CoinRepositoryImplTest {
         runBlocking {
             // Arrange
             val price = 9532.472.toPrice()
-            coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } throws PriceCacheMissException()
+            coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } returns null
             coEvery { remoteSourceMock.fetchCoinPrice(Bitcoin) } returns price
 
             // Act
@@ -198,7 +196,7 @@ class CoinRepositoryImplTest {
         runBlocking {
             // Arrange
             val localPrice = 0.123.toPrice(timestamp = LocalDateTime.now().minusHours(2))
-            coEvery { remoteSourceMock.fetchCoinPrice(Ripple) } throws ServerException()
+            coEvery { remoteSourceMock.fetchCoinPrice(Ripple) } throws RuntimeException()
             coEvery { localSourceMock.getLastCoinPrice(Ripple) } returns localPrice
 
             // Act
