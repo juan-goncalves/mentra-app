@@ -28,7 +28,7 @@ class TimeChartMapper @Inject constructor(
         val granularity = getTimeUnitPreference(Unit).rightValue ?: TimeGranularity.Daily
         val labels = generateLabels(prices, granularity)
         val entries = generateEntries(prices)
-        val currency = getCurrencyPreference.execute()
+        val currency = getCurrencyPreference().rightValue ?: Currency.getInstance("USD")
         return TimeChartData(entries, labels, granularity, currency)
     }
 
