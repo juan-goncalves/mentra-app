@@ -9,6 +9,7 @@ import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain_layer.repositories.PreferenceRepository
+import me.juangoncalves.mentra.domain_layer.usecases.FlowUseCase
 import java.time.temporal.WeekFields
 import java.util.*
 import javax.inject.Inject
@@ -16,9 +17,9 @@ import javax.inject.Inject
 class GetPortfolioValueHistoryStream @Inject constructor(
     private val portfolioRepository: PortfolioRepository,
     private val preferenceRepository: PreferenceRepository
-) {
+) : FlowUseCase<List<Price>> {
 
-    operator fun invoke(): Flow<List<Price>> {
+    override operator fun invoke(): Flow<List<Price>> {
         return preferenceRepository.valueChartTimeUnitStream
             .distinctUntilChanged { old, new -> old == new }
             .combine(portfolioRepository.portfolioDailyValueHistory) { granularity, dailyHistory ->
