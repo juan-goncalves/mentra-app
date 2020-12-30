@@ -1,6 +1,7 @@
 package me.juangoncalves.mentra.domain_layer.errors
 
 import either.Either
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.extensions.toRight
@@ -20,7 +21,11 @@ suspend inline fun <T> ErrorHandler.runCatching(
         try {
             block().toRight()
         } catch (e: Exception) {
-            getFailure(e).toLeft()
+            if (e is CancellationException) {
+                throw e
+            } else {
+                getFailure(e).toLeft()
+            }
         }
     }
 
