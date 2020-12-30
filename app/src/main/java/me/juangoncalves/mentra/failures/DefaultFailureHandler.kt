@@ -18,7 +18,7 @@ class DefaultFailureHandler : FailureHandler {
 
     override suspend fun <Params, Result> Interactor<Params, Result>.runHandlingFailure(
         params: Params,
-        onSuccess: suspend (Result) -> Unit
+        onSuccess: (suspend (Result) -> Unit)?
     ) {
         val operation = invoke(params)
 
@@ -27,7 +27,7 @@ class DefaultFailureHandler : FailureHandler {
             _fleetingErrorStream.postValue(error.toEvent())
         }
 
-        operation.rightValue?.run { onSuccess(this) }
+        operation.rightValue?.run { onSuccess?.invoke(this) }
     }
 
     @StringRes

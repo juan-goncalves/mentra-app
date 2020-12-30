@@ -11,7 +11,7 @@ interface FailureHandler {
 
     suspend fun <Params, Result> Interactor<Params, Result>.runHandlingFailure(
         params: Params,
-        onSuccess: suspend (Result) -> Unit
+        onSuccess: (suspend (Result) -> Unit)? = null
     )
 
 }

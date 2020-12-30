@@ -8,8 +8,10 @@ import me.juangoncalves.mentra.data_layer.sources.portfolio.PortfolioLocalDataSo
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.runCatching
+import me.juangoncalves.mentra.domain_layer.extensions.toPrice
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class PortfolioRepositoryImpl @Inject constructor(
@@ -28,9 +30,10 @@ class PortfolioRepositoryImpl @Inject constructor(
         portfolioLocalDataSource.getPortfolioHistoricValuesStream()
     }
 
-    override suspend fun updatePortfolioValue(value: Price): Either<Failure, Unit> =
+    override suspend fun updatePortfolioUsdValue(value: BigDecimal): Either<Failure, Unit> =
         errorHandler.runCatching(Dispatchers.IO) {
-            portfolioLocalDataSource.insertValue(value)
+            val price = value.toPrice()
+            portfolioLocalDataSource.insertValue(price)
         }
 
 }

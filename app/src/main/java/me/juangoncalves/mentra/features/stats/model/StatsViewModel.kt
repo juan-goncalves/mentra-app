@@ -14,10 +14,8 @@ import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValue
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetTimeUnitPreferenceStream
 import me.juangoncalves.mentra.domain_layer.usecases.preference.UpdatePortfolioValueTimeGranularity
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisherImpl
-import me.juangoncalves.mentra.features.common.executor
-import me.juangoncalves.mentra.features.common.run
+import me.juangoncalves.mentra.failures.DefaultFailureHandler
+import me.juangoncalves.mentra.failures.FailureHandler
 import me.juangoncalves.mentra.features.stats.mapper.PiePortionMapper
 import me.juangoncalves.mentra.features.stats.mapper.TimeChartMapper
 import me.juangoncalves.pie.PiePortion
@@ -32,7 +30,7 @@ class StatsViewModel @ViewModelInject constructor(
     private val timeChartMapper: TimeChartMapper,
     private val piePortionMapper: PiePortionMapper
 ) : ViewModel(),
-    FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+    FailureHandler by DefaultFailureHandler() {
 
     val valueChartData: LiveData<TimeChartData> = with(exchangePriceStream) {
         getPortfolioValueHistory()
@@ -50,13 +48,10 @@ class StatsViewModel @ViewModelInject constructor(
     val valueChartGranularityStream: LiveData<TimeGranularity> =
         getTimeUnitPreferenceStream().asLiveData()
 
-    fun refreshSelected() {
-        refreshPortfolioValue.executor()
-            .inScope(viewModelScope)
-            .beforeInvoke { shouldShowRefreshIndicator.postValue(true) }
-            .afterInvoke { shouldShowRefreshIndicator.postValue(false) }
-            .onFailurePublishFleetingError()
-            .run()
+    fun refreshSelected() = viewModelScope.launch {
+        shouldShowRefreshIndicator.postValue(true)
+        refreshPortfolioValue.runHandlingFailure(Unit)
+        shouldShowRefreshIndicator.postValue(false)
     }
 
     fun timeGranularityChanged(selection: TimeGranularity) {
