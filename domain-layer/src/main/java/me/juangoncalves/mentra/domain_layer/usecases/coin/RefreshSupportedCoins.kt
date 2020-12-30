@@ -6,13 +6,13 @@ import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.extensions.toRight
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
-import me.juangoncalves.mentra.domain_layer.usecases.VoidInteractor
+import me.juangoncalves.mentra.domain_layer.usecases.VoidUseCase
 import javax.inject.Inject
 
 
 class RefreshSupportedCoins @Inject constructor(
     private val coinRepository: CoinRepository
-) : VoidInteractor<Unit> {
+) : VoidUseCase<Unit> {
 
     override suspend fun invoke(): Either<Failure, Unit> {
         return coinRepository.getCoins(forceNonCached = true).fold(

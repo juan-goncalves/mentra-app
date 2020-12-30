@@ -6,12 +6,12 @@ import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toRight
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.repositories.PreferenceRepository
-import me.juangoncalves.mentra.domain_layer.usecases.VoidInteractor
+import me.juangoncalves.mentra.domain_layer.usecases.VoidUseCase
 import javax.inject.Inject
 
 class GetTimeUnitPreference @Inject constructor(
     private val preferenceRepository: PreferenceRepository
-) : VoidInteractor<TimeGranularity> {
+) : VoidUseCase<TimeGranularity> {
 
     override suspend fun invoke(): Either<Failure, TimeGranularity> {
         return preferenceRepository.valueChartTimeUnitStream.first().toRight()

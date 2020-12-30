@@ -11,13 +11,13 @@ import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.extensions.toRight
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
-import me.juangoncalves.mentra.domain_layer.usecases.Interactor
+import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import java.util.*
 import javax.inject.Inject
 
 class FindCoinsByName @Inject constructor(
     private val coinRepository: CoinRepository
-) : Interactor<String, List<Coin>> {
+) : UseCase<String, List<Coin>> {
 
     private var allCoins: List<Coin>? = null
 

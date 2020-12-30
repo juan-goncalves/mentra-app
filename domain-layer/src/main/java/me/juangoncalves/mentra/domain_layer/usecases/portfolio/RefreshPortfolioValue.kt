@@ -11,7 +11,7 @@ import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
-import me.juangoncalves.mentra.domain_layer.usecases.VoidInteractor
+import me.juangoncalves.mentra.domain_layer.usecases.VoidUseCase
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.RefreshWalletValue
 import java.math.BigDecimal
 import java.util.*
@@ -21,7 +21,7 @@ class RefreshPortfolioValue @Inject constructor(
     private val walletRepository: WalletRepository,
     private val portfolioRepository: PortfolioRepository,
     private val refreshWalletValue: RefreshWalletValue
-) : VoidInteractor<Price> {
+) : VoidUseCase<Price> {
 
     override suspend operator fun invoke(): Either<Failure, Price> =
         withContext(Dispatchers.Default) {

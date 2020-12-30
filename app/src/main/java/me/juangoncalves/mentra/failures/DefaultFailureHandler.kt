@@ -7,7 +7,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.domain_layer.extensions.whenLeft
-import me.juangoncalves.mentra.domain_layer.usecases.Interactor
+import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import me.juangoncalves.mentra.extensions.toEvent
 import me.juangoncalves.mentra.features.common.Event
 
@@ -16,7 +16,7 @@ class DefaultFailureHandler : FailureHandler {
     override val fleetingErrorStream: LiveData<Event<FleetingError>> get() = _fleetingErrorStream
     private val _fleetingErrorStream: MutableLiveData<Event<FleetingError>> = MutableLiveData()
 
-    override suspend fun <Params, Result> Interactor<Params, Result>.runHandlingFailure(
+    override suspend fun <Params, Result> UseCase<Params, Result>.runHandlingFailure(
         params: Params,
         onSuccess: (suspend (Result) -> Unit)?
     ) {

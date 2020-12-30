@@ -4,13 +4,13 @@ import either.Either
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
-import me.juangoncalves.mentra.domain_layer.usecases.Interactor
+import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import java.math.BigDecimal
 import javax.inject.Inject
 
 class UpdateWallet @Inject constructor(
     private val walletRepository: WalletRepository
-) : Interactor<UpdateWallet.Params, Unit> {
+) : UseCase<UpdateWallet.Params, Unit> {
 
     class Params(val walletId: Long, val newAmount: BigDecimal)
 

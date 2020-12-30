@@ -6,12 +6,12 @@ import me.juangoncalves.mentra.domain_layer.extensions.Left
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
-import me.juangoncalves.mentra.domain_layer.usecases.Interactor
+import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import javax.inject.Inject
 
 class DeleteWallet @Inject constructor(
     private val walletRepository: WalletRepository
-) : Interactor<DeleteWallet.Params, Unit> {
+) : UseCase<DeleteWallet.Params, Unit> {
 
     class Params(val id: Long)
 

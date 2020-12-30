@@ -9,13 +9,13 @@ import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
-import me.juangoncalves.mentra.domain_layer.usecases.Interactor
+import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import javax.inject.Inject
 
 class RefreshWalletValue @Inject constructor(
     private val coinRepository: CoinRepository,
     private val walletRepository: WalletRepository
-) : Interactor<Wallet, Price> {
+) : UseCase<Wallet, Price> {
 
     /**
      * Calculates and stores the [params] wallet value in USD using the most recent [Coin]
