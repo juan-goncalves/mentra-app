@@ -7,7 +7,6 @@ import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.domain_layer.usecases.VoidInteractor
 import javax.inject.Inject
 
-
 class GetCoins @Inject constructor(
     private val coinRepository: CoinRepository
 ) : VoidInteractor<List<Coin>> {

@@ -3,7 +3,7 @@ package me.juangoncalves.mentra.domain_layer.usecases.coin
 import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.domain_layer.errors.OldFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.Right
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
@@ -11,15 +11,15 @@ import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.domain_layer.repositories.IconRepository
-import me.juangoncalves.mentra.domain_layer.usecases.OldUseCase
+import me.juangoncalves.mentra.domain_layer.usecases.Interactor
 import javax.inject.Inject
 
 class DeterminePrimaryIcon @Inject constructor(
     private val coinRepository: CoinRepository,
     private val iconRepository: IconRepository
-) : OldUseCase<Coin, String> {
+) : Interactor<Coin, String> {
 
-    override suspend fun invoke(params: Coin): Either<OldFailure, String> =
+    override suspend fun invoke(params: Coin): Either<Failure, String> =
         withContext(Dispatchers.Default) {
             if (params.iconType != IconType.Unknown) return@withContext Right(params.imageUrl)
 
