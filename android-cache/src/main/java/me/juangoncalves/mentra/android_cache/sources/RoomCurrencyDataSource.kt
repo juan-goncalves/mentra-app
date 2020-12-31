@@ -26,19 +26,15 @@ class RoomCurrencyDataSource @Inject constructor(
             currencyDao.insertCurrencies(*entities.toTypedArray())
         }
 
-    override suspend fun getExchangeRate(from: Currency, to: Currency): Price? {
-        val record = currencyDao.getExchangeRate(from.currencyCode, to.currencyCode)
-            ?: return null
-
-        return Price(record.rate, record.target, record.timestamp)
-    }
+    override suspend fun getExchangeRate(from: Currency, to: Currency): Price? =
+        withContext(Dispatchers.Default) {
+            val record = currencyDao.getExchangeRate(from.currencyCode, to.currencyCode)
+            if (record != null) Price(record.rate, record.target, record.timestamp) else null
+        }
 
     override suspend fun saveExchangeRates(base: Currency, rates: List<Price>) =
         withContext(Dispatchers.Default) {
-            val entities = rates.map { price ->
-                ExchangeRateEntity(base, price.currency, price.value)
-            }
-
+            val entities = rates.map { ExchangeRateEntity(base, it.currency, it.value) }
             currencyDao.insertExchangeRates(*entities.toTypedArray())
         }
 

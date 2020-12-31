@@ -1,8 +1,10 @@
 package me.juangoncalves.mentra.android_cache.sources
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
@@ -19,39 +21,43 @@ class RoomCoinDataSource @Inject constructor(
     private val coinMapper: CoinMapper
 ) : CoinLocalDataSource {
 
-    override suspend fun getStoredCoins(): List<Coin> {
-        return coinDao.getAll()
+    override suspend fun getStoredCoins(): List<Coin> = withContext(Dispatchers.Default) {
+        coinDao.getAll()
             .map(coinMapper::map)
             .filterNot { it == Coin.Invalid }
     }
 
-    override suspend fun storeCoins(coins: List<Coin>) {
+    override suspend fun storeCoins(coins: List<Coin>) = withContext(Dispatchers.Default) {
         val models = coins.map(coinMapper::map)
         coinDao.insertAll(*models.toTypedArray())
     }
 
     override suspend fun clearCoins() = coinDao.clearAll()
 
-    override suspend fun getLastCoinPrice(coin: Coin): Price? {
-        val model = coinPriceDao.getMostRecentCoinPrice(coin.symbol) ?: return null
-        return Price(model.valueInUSD, Currency.getInstance("USD"), model.timestamp)
+    override suspend fun getLastCoinPrice(coin: Coin): Price? = withContext(Dispatchers.Default) {
+        when (val model = coinPriceDao.getMostRecentCoinPrice(coin.symbol)) {
+            null -> null
+            else -> Price(model.valueInUSD, Currency.getInstance("USD"), model.timestamp)
+        }
     }
 
-    override suspend fun storeCoinPrice(coin: Coin, price: Price) {
-        require(price.currency == Currency.getInstance("USD")) {
-            "Prices in the database are stored in USD"
+    override suspend fun storeCoinPrice(coin: Coin, price: Price) =
+        withContext(Dispatchers.Default) {
+            require(price.currency == Currency.getInstance("USD")) {
+                "Prices in the database are stored in USD"
+            }
+
+            val model = CoinPriceModel(coin.symbol, price.value, price.timestamp)
+            coinPriceDao.insertCoinPrice(model)
         }
 
-        val model = CoinPriceModel(coin.symbol, price.value, price.timestamp)
-        return coinPriceDao.insertCoinPrice(model)
-    }
+    override suspend fun findCoinBySymbol(symbol: String): Coin? =
+        withContext(Dispatchers.Default) {
+            val coin = coinDao.getCoinBySymbol(symbol)
+            if (coin != null) coinMapper.map(coin) else null
+        }
 
-    override suspend fun findCoinBySymbol(symbol: String): Coin? {
-        val coin = coinDao.getCoinBySymbol(symbol)
-        return if (coin != null) coinMapper.map(coin) else null
-    }
-
-    override suspend fun updateCoin(coin: Coin) {
+    override suspend fun updateCoin(coin: Coin) = withContext(Dispatchers.Default) {
         val model = coinMapper.map(coin)
         coinDao.update(model)
     }
