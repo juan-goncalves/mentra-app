@@ -32,12 +32,11 @@ class GeneralFailureHandler : FailureHandler {
 
     @StringRes
     private fun getErrorMessage(failure: Failure): Int {
-        // TODO: Replace with actual string ids
         return when (failure) {
             Failure.Network -> R.string.connection_error
-            Failure.NotFound -> R.string.default_error
-            Failure.ServiceUnavailable -> R.string.default_error
-            Failure.AccessDenied -> R.string.default_error
+            Failure.NotFound -> R.string.not_found
+            Failure.ServiceUnavailable -> R.string.service_temporarily_unavailable
+            Failure.AccessDenied -> R.string.access_denied
             Failure.Unknown -> R.string.default_error
             Failure.InvalidRequest -> R.string.default_error
         }
