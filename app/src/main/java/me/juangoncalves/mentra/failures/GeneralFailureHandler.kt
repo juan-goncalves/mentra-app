@@ -11,7 +11,7 @@ import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import me.juangoncalves.mentra.extensions.toEvent
 import me.juangoncalves.mentra.features.common.Event
 
-class DefaultFailureHandler : FailureHandler {
+class GeneralFailureHandler : FailureHandler {
 
     override val fleetingErrorStream: LiveData<Event<FleetingError>> get() = _fleetingErrorStream
     private val _fleetingErrorStream: MutableLiveData<Event<FleetingError>> = MutableLiveData()
@@ -39,6 +39,7 @@ class DefaultFailureHandler : FailureHandler {
             Failure.ServiceUnavailable -> R.string.default_error
             Failure.AccessDenied -> R.string.default_error
             Failure.Unknown -> R.string.default_error
+            Failure.InvalidRequest -> R.string.default_error
         }
     }
 

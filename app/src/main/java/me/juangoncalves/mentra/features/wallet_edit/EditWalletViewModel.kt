@@ -11,8 +11,8 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.extensions.toPrice
-import me.juangoncalves.mentra.failures.DefaultFailureHandler
 import me.juangoncalves.mentra.failures.FailureHandler
+import me.juangoncalves.mentra.failures.GeneralFailureHandler
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
@@ -21,7 +21,7 @@ import java.util.*
 
 class EditWalletViewModel @ViewModelInject constructor(
     private val updateWallet: UpdateWallet
-) : ViewModel(), FailureHandler by DefaultFailureHandler() {
+) : ViewModel(), FailureHandler by GeneralFailureHandler() {
 
     val dismissStream: LiveData<Notification> get() = _dismiss
     val saveButtonStateStream: LiveData<Boolean> get() = _saveButtonEnabled
