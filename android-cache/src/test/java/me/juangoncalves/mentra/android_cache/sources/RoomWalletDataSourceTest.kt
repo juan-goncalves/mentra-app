@@ -17,6 +17,7 @@ import me.juangoncalves.mentra.android_cache.models.WalletValueModel
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,6 +48,11 @@ class RoomWalletDataSourceTest {
         initializeDAOs()
         initializeSut()
         insertDefaultCoins()
+    }
+
+    @After
+    fun closeDb() {
+        db.close()
     }
 
     @Test
