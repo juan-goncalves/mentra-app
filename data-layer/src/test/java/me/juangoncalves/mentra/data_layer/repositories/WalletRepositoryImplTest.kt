@@ -9,7 +9,6 @@ import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
-import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
@@ -155,7 +154,7 @@ class WalletRepositoryImplTest {
             // Arrange
             val wallet = Wallet(Ripple, 20.781, 1)
             val price = 1.34.toPrice()
-            coEvery { walletLocalSourceMock.update(any(), any()) } throws StorageException()
+            coEvery { walletLocalSourceMock.update(any(), any()) } throws RuntimeException()
 
             // Act
             val result = sut.updateWallet(wallet, price)

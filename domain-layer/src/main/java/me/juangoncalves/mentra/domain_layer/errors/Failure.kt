@@ -10,6 +10,8 @@ sealed class Failure {
 
     object AccessDenied : Failure()
 
+    object InvalidRequest : Failure()
+
     object Unknown : Failure()
 
 }
