@@ -8,13 +8,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import me.juangoncalves.mentra.*
-import me.juangoncalves.mentra.domain_layer.errors.FetchPriceFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.usecases.coin.GetActiveCoinsPriceStream
 import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceToPreferredCurrency
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreferenceStream
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.GetWalletListStream
+import me.juangoncalves.mentra.failures.FleetingError
+import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
@@ -47,7 +50,7 @@ class WalletListViewModelTest {
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this, relaxed = true)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         sut = WalletListViewModel(
             activeCoinsPriceStreamMock,
             walletListStreamMock,
@@ -174,23 +177,18 @@ class WalletListViewModelTest {
     }
 
     @Test
-    fun `viewStateStream emits a PricesNotRefreshed error when the prices refresh fails`() {
+    fun `a fleeting error is emitted when the price refresh fails`() {
         // Arrange
-        val state = slot<WalletListViewState>()
-        setupSuccessMocks()
-        coEvery { refreshPortfolioValueMock.invoke() } returns Left(FetchPriceFailure())
+        val captor = slot<Event<FleetingError>>()
+        val observer = mockk<Observer<Event<FleetingError>>>(relaxUnitFun = true)
+        sut.fleetingErrorStream.observeForever(observer)
+        coEvery { refreshPortfolioValueMock.invoke(any()) } returns Failure.Unknown.toLeft()
 
         // Act
         sut.refreshSelected()
 
         // Assert
-        verifySequence {
-            ignoreDefaultState()
-            stateObserver.onChanged(any()) // Ignore the load progress update
-            stateObserver.onChanged(capture(state))
-        }
-
-        state.captured.error shouldBeA Error.PricesNotRefreshed::class
+        verifySequence { observer.onChanged(capture(captor)) }
     }
 
     @Test
@@ -310,7 +308,7 @@ class WalletListViewModelTest {
     private fun setupSuccessMocks() {
         coEvery { walletListStreamMock.invoke() } returns flowOf(wallets)
         coEvery { activeCoinsPriceStreamMock.invoke() } returns flowOf(prices)
-        coEvery { refreshPortfolioValueMock.invoke() } returns 10.0.toPrice().toRight()
+        coEvery { refreshPortfolioValueMock.invoke(any()) } returns 10.0.toPrice().toRight()
         coEvery { walletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
             id = 0,
             iconUrl = "",
