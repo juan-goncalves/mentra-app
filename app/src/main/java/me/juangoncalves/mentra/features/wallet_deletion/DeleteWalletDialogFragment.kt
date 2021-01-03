@@ -9,15 +9,16 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
-import me.juangoncalves.mentra.failures.FailureHandlingDialogFragment
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
-class DeleteWalletDialogFragment : FailureHandlingDialogFragment<DeleteWalletViewModel>() {
+class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
         fun newInstance(wallet: WalletListViewState.Wallet): DeleteWalletDialogFragment {
@@ -27,8 +28,7 @@ class DeleteWalletDialogFragment : FailureHandlingDialogFragment<DeleteWalletVie
         }
     }
 
-    override val viewModel: DeleteWalletViewModel get() = _viewModel
-    private val _viewModel: DeleteWalletViewModel by viewModels()
+    private val viewModel: DeleteWalletViewModel by viewModels()
 
     private var _binding: DeleteWalletDialogFragmentBinding? = null
     private val binding get() = _binding!!
@@ -48,7 +48,7 @@ class DeleteWalletDialogFragment : FailureHandlingDialogFragment<DeleteWalletVie
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DeleteWalletDialogFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -59,6 +59,8 @@ class DeleteWalletDialogFragment : FailureHandlingDialogFragment<DeleteWalletVie
     }
 
     private fun initObservers() {
+        handleErrorsFrom(viewModel)
+
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }

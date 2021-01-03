@@ -2,7 +2,7 @@
     <string name="app_name">Mentra</string>
     <string name="default_error">An error occurred</string>
     <string name="retry">Retry</string>
-    <string name="connection_error">You don\'t seem to have an active internet connection</string>
+    <string name="connection_error">You don\'t have an active internet connection</string>
     <string name="wallets_subtitle">Wallets</string>
     <string name="add_wallet">Add wallet</string>
     <string name="wallet_name_input_label">Wallet name</string>

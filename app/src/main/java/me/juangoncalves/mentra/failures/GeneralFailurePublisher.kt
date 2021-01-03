@@ -11,7 +11,7 @@ import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import me.juangoncalves.mentra.extensions.toEvent
 import me.juangoncalves.mentra.features.common.Event
 
-class GeneralFailureHandler : FailureHandler {
+class GeneralFailurePublisher : FailurePublisher {
 
     override val fleetingErrorStream: LiveData<Event<FleetingError>> get() = _fleetingErrorStream
     private val _fleetingErrorStream: MutableLiveData<Event<FleetingError>> = MutableLiveData()

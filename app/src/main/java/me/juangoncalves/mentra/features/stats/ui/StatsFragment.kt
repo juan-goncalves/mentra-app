@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.github.mikephil.charting.charts.LineChart
@@ -18,18 +19,17 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.extensions.getThemeColor
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.extensions.styleByTheme
-import me.juangoncalves.mentra.failures.FailureHandlingFragment
 import me.juangoncalves.mentra.features.stats.model.StatsViewModel
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
 import java.util.*
 
 
 @AndroidEntryPoint
-class StatsFragment : FailureHandlingFragment<StatsViewModel>() {
+class StatsFragment : Fragment() {
 
-    override val viewModel: StatsViewModel get() = _viewModel
-    private val _viewModel: StatsViewModel by viewModels()
+    private val viewModel: StatsViewModel by viewModels()
 
     private var _binding: StatsFragmentBinding? = null
     private val binding get() = _binding!!
@@ -38,7 +38,7 @@ class StatsFragment : FailureHandlingFragment<StatsViewModel>() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = StatsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -75,6 +75,8 @@ class StatsFragment : FailureHandlingFragment<StatsViewModel>() {
     }
 
     private fun initObservers() {
+        handleErrorsFrom(viewModel)
+
         viewModel.valueChartData.observe(viewLifecycleOwner) { data ->
             updateLineChartData(data)
         }

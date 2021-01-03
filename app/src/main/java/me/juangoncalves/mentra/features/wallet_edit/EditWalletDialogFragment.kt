@@ -11,16 +11,17 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.EditWalletDialogFragmentBinding
 import me.juangoncalves.mentra.extensions.asCurrencyAmount
-import me.juangoncalves.mentra.failures.FailureHandlingDialogFragment
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint
-class EditWalletDialogFragment : FailureHandlingDialogFragment<EditWalletViewModel>() {
+class EditWalletDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
         fun newInstance(wallet: WalletListViewState.Wallet): EditWalletDialogFragment {
@@ -30,8 +31,7 @@ class EditWalletDialogFragment : FailureHandlingDialogFragment<EditWalletViewMod
         }
     }
 
-    override val viewModel: EditWalletViewModel get() = _viewModel
-    private val _viewModel: EditWalletViewModel by viewModels()
+    private val viewModel: EditWalletViewModel by viewModels()
 
     private val binding get() = _binding!!
     private var _binding: EditWalletDialogFragmentBinding? = null
@@ -51,7 +51,7 @@ class EditWalletDialogFragment : FailureHandlingDialogFragment<EditWalletViewMod
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = EditWalletDialogFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -67,6 +67,8 @@ class EditWalletDialogFragment : FailureHandlingDialogFragment<EditWalletViewMod
     }
 
     private fun initObservers() {
+        handleErrorsFrom(viewModel)
+
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }
         }
