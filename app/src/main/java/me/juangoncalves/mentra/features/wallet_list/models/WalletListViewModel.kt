@@ -4,7 +4,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import either.fold
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain_layer.models.Coin
@@ -14,6 +13,8 @@ import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceToPre
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreferenceStream
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.GetWalletListStream
+import me.juangoncalves.mentra.failures.FailurePublisher
+import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 
@@ -24,7 +25,7 @@ class WalletListViewModel @ViewModelInject constructor(
     private val exchangePriceToPreferredCurrency: ExchangePriceToPreferredCurrency,
     private val getCurrencyPreferenceStream: GetCurrencyPreferenceStream,
     private val walletListMapper: WalletMapper
-) : ViewModel() {
+) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
 
     val viewStateStream = MutableLiveData<WalletListViewState>(WalletListViewState())
 
@@ -64,28 +65,8 @@ class WalletListViewModel @ViewModelInject constructor(
 
     fun refreshSelected() = viewModelScope.launch {
         viewStateStream.value = currentViewState.copy(isRefreshingPrices = true)
-
-        val result = refreshPortfolioValue.invoke()
-
-        viewStateStream.value = result.fold(
-            left = {
-                currentViewState.copy(
-                    error = Error.PricesNotRefreshed(),
-                    isRefreshingPrices = false
-                )
-            },
-            right = {
-                val nextError = when (currentViewState.error) {
-                    is Error.PricesNotRefreshed -> Error.None
-                    else -> currentViewState.error
-                }
-
-                currentViewState.copy(
-                    error = nextError,
-                    isRefreshingPrices = false
-                )
-            }
-        )
+        refreshPortfolioValue.runHandlingFailure(Unit)
+        viewStateStream.value = currentViewState.copy(isRefreshingPrices = false)
     }
 
     private fun Flow<Map<Coin, Price>>.exchangeToPreferredCurrency() =

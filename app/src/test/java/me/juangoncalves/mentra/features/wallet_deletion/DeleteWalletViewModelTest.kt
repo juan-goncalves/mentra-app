@@ -10,13 +10,13 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.Bitcoin
-import me.juangoncalves.mentra.Left
 import me.juangoncalves.mentra.Right
 import me.juangoncalves.mentra.USD
-import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
+import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.DeleteWallet
+import me.juangoncalves.mentra.failures.FleetingError
 import me.juangoncalves.mentra.features.common.BundleKeys
-import me.juangoncalves.mentra.features.common.DisplayError
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
@@ -42,7 +42,7 @@ class DeleteWalletViewModelTest {
     //region Mocks
     @MockK lateinit var deleteWalletMock: DeleteWallet
     @MockK lateinit var dismissObserver: Observer<Notification>
-    @MockK lateinit var fleetingErrorObserver: Observer<Event<DisplayError>>
+    @MockK lateinit var fleetingErrorObserver: Observer<Event<FleetingError>>
     //endregion
 
     private lateinit var sut: DeleteWalletViewModel
@@ -104,7 +104,7 @@ class DeleteWalletViewModelTest {
     fun `fleetingErrorStream emits an error when the wallet deletion fails`() {
         // Arrange
         initSutWithFakeWallet()
-        coEvery { deleteWalletMock.invoke(any()) } returns Left(StorageFailure())
+        coEvery { deleteWalletMock.invoke(any()) } returns Failure.Unknown.toLeft()
 
         // Act
         sut.deleteSelected()
@@ -130,7 +130,7 @@ class DeleteWalletViewModelTest {
     fun `walletWasDeleted is FALSE when the wallet deletion fails`() {
         // Arrange
         initSutWithFakeWallet()
-        coEvery { deleteWalletMock.invoke(any()) } returns Left(StorageFailure())
+        coEvery { deleteWalletMock.invoke(any()) } returns Failure.Unknown.toLeft()
 
         // Act
         sut.deleteSelected()

@@ -7,17 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.domain_layer.extensions.isLeft
-import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.usecases.coin.RefreshSupportedCoins
 import me.juangoncalves.mentra.domain_layer.usecases.currency.GetSupportedCurrencies
+import me.juangoncalves.mentra.failures.FailurePublisher
+import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.common.Event
 import java.util.*
 
 class SettingsViewModel @ViewModelInject constructor(
     private val getSupportedCurrencies: GetSupportedCurrencies,
     private val refreshSupportedCoins: RefreshSupportedCoins
-) : ViewModel() {
+) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
 
     val availableCurrenciesStream: LiveData<List<Currency>> get() = _availableCurrenciesStream
     val durationsStream: LiveData<List<RefreshPeriod>> get() = _durationsStream
@@ -45,32 +45,19 @@ class SettingsViewModel @ViewModelInject constructor(
         )
     }
 
-    fun refreshCoinsSelected() {
-        viewModelScope.launch {
-            _showLoadingIndicatorStream.value = true
-            val result = refreshSupportedCoins()
-
-            if (result.isLeft()) {
-                _showErrorSnackbarStream.value = Event(R.string.coin_list_refresh_error)
-            } else {
-                _showSuccessSnackbarStream.value = Event(R.string.coins_updated)
-            }
-
-            _showLoadingIndicatorStream.value = false
+    fun refreshCoinsSelected() = viewModelScope.launch {
+        _showLoadingIndicatorStream.value = true
+        refreshSupportedCoins.runHandlingFailure(Unit) {
+            _showSuccessSnackbarStream.value = Event(R.string.coins_updated)
         }
+        _showLoadingIndicatorStream.value = false
     }
 
-    private fun loadCurrencies() {
-        viewModelScope.launch {
-            val result = getSupportedCurrencies.execute()
-
-            if (result.isLeft()) {
-                _showErrorSnackbarStream.value = Event(R.string.error_loading_currencies)
-            } else {
-                _availableCurrenciesStream.value = result.requireRight()
-                    .sortedBy { it.currencyCode }
-                    .toList()
-            }
+    private fun loadCurrencies() = viewModelScope.launch {
+        getSupportedCurrencies.runHandlingFailure(Unit) { currencies ->
+            _availableCurrenciesStream.value = currencies
+                .sortedBy { it.currencyCode }
+                .toList()
         }
     }
 

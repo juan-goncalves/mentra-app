@@ -12,7 +12,7 @@ interface CoinLocalDataSource {
 
     suspend fun clearCoins()
 
-    suspend fun getLastCoinPrice(coin: Coin): Price
+    suspend fun getLastCoinPrice(coin: Coin): Price?
 
     suspend fun storeCoinPrice(coin: Coin, price: Price)
 

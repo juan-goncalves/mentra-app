@@ -11,8 +11,7 @@ import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceStrea
 import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangeVariationStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueVariationStream
-import me.juangoncalves.mentra.features.common.DisplayError
-import me.juangoncalves.mentra.features.common.Event
+import me.juangoncalves.mentra.features.common.Notification
 
 
 class DashboardViewModel @ViewModelInject constructor(
@@ -24,13 +23,11 @@ class DashboardViewModel @ViewModelInject constructor(
 
     val portfolioValue: LiveData<Price> get() = _portfolioValue
     val lastDayValueChange: LiveData<ValueVariation> get() = _lastDayValueChange
-    val error: LiveData<DisplayError> get() = _error
     val openedTab: LiveData<Tab> get() = _openedTab
-    val closeEvent: LiveData<Event<Unit>> get() = _closeEvent
+    val closeEvent: LiveData<Notification> get() = _closeEvent
 
-    private val _error: MutableLiveData<DisplayError> = MutableLiveData()
     private val _openedTab: MutableLiveData<Tab> = MutableLiveData(Tab.STATS)
-    private val _closeEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
+    private val _closeEvent: MutableLiveData<Notification> = MutableLiveData()
 
     private val _portfolioValue: LiveData<Price> = with(exchangeExchangePriceStream) {
         getPortfolioValue()
@@ -57,7 +54,7 @@ class DashboardViewModel @ViewModelInject constructor(
         val currentTab = _openedTab.value ?: return
 
         when (currentTab) {
-            Tab.STATS -> _closeEvent.value = Event(Unit)
+            Tab.STATS -> _closeEvent.value = Notification()
             else -> _openedTab.value = Tab.STATS
         }
     }

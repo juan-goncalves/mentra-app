@@ -7,8 +7,8 @@ import java.util.*
 
 interface CurrencyRepository {
 
-    suspend fun getSupportedCurrencies(): Either<Failure, Set<Currency>>
+    suspend fun getCurrencies(): Either<Failure, Set<Currency>>
 
-    suspend fun exchange(price: Price, target: Currency): Either<Failure, Price>
+    suspend fun exchange(price: Price, target: Currency): Either<Failure, Price?>
 
 }

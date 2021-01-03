@@ -1,7 +1,10 @@
 package me.juangoncalves.mentra.domain_layer.usecases.portfolio
 
 import either.Either
+import either.fold
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
@@ -20,33 +23,33 @@ class RefreshPortfolioValue @Inject constructor(
     private val refreshWalletValue: RefreshWalletValue
 ) : VoidUseCase<Price> {
 
-    override suspend operator fun invoke(): Either<Failure, Price> {
-        val getWalletsResult = walletRepository.getWallets()
-        val wallets = getWalletsResult.rightValue ?: return Left(getWalletsResult.requireLeft())
+    override suspend operator fun invoke(): Either<Failure, Price> =
+        withContext(Dispatchers.Default) {
+            val getWalletsOp = walletRepository.getWallets()
+            val wallets = getWalletsOp.rightValue
+                ?: return@withContext getWalletsOp.requireLeft().toLeft()
 
-        val (total, totalCalculationFailure) = withContext(Dispatchers.Default) {
-            var total = BigDecimal.ZERO
-            for (wallet in wallets) {
-                val refreshResult = refreshWalletValue(wallet)
-                if (refreshResult.isLeft()) {
-                    return@withContext Pair<Price, Failure>(
-                        Price.None,
-                        refreshResult.requireLeft()
-                    )
+            val total = wallets.map { async { refreshWalletValue(it) } }
+                .awaitAll()
+                .sumByBigDecimal { result ->
+                    if (result.isLeft()) return@withContext result.requireLeft().toLeft()
+                    result.requireRight().value
                 }
-                total += refreshResult.requireRight().value
-            }
 
             val totalPrice = total.toPrice(currency = Currency.getInstance("USD"))
-            totalPrice to null
+
+            portfolioRepository.updatePortfolioUsdValue(total).fold(
+                left = { failure -> failure.toLeft() },
+                right = { totalPrice.toRight() }
+            )
         }
 
-        if (totalCalculationFailure != null) return Left(totalCalculationFailure)
-
-        val savePortfolioValueResult = portfolioRepository.updatePortfolioValue(total)
-        savePortfolioValueResult.rightValue ?: return Left(savePortfolioValueResult.requireLeft())
-
-        return Right(total)
+    private inline fun <T> Iterable<T>.sumByBigDecimal(selector: (T) -> BigDecimal): BigDecimal {
+        var sum = BigDecimal.ZERO
+        for (element in this) {
+            sum += selector(element)
+        }
+        return sum
     }
 
 }

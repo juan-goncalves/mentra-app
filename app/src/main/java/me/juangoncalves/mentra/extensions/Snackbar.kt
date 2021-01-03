@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.extensions
 
+import android.view.View
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import me.juangoncalves.mentra.R
@@ -25,4 +26,10 @@ fun Snackbar.applyErrorStyle(): Snackbar = apply {
     setBackgroundTint(errorColor)
     setTextColor(onErrorColor)
     setActionTextColor(onErrorColor)
+}
+
+fun Snackbar.setAnchorIfAvailable(anchor: View?) = apply {
+    if (anchor != null) {
+        anchorView = anchor
+    }
 }

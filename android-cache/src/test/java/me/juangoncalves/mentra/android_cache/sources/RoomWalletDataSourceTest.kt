@@ -2,10 +2,8 @@ package me.juangoncalves.mentra.android_cache.sources
 
 import android.app.Application
 import android.content.Context
-import android.database.sqlite.SQLiteException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.android_cache.*
@@ -16,10 +14,10 @@ import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
 import me.juangoncalves.mentra.android_cache.mappers.WalletMapper
 import me.juangoncalves.mentra.android_cache.models.WalletModel
 import me.juangoncalves.mentra.android_cache.models.WalletValueModel
-import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,6 +50,11 @@ class RoomWalletDataSourceTest {
         insertDefaultCoins()
     }
 
+    @After
+    fun closeDb() {
+        db.close()
+    }
+
     @Test
     fun `getAll returns every stored wallet in the database`() = runBlocking {
         // Arrange
@@ -70,21 +73,6 @@ class RoomWalletDataSourceTest {
         savedEthWallet!!.amount shouldBeCloseTo 1.0
     }
 
-    @Test(expected = StorageException::class)
-    fun `getAll throws a StorageException when the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            walletDao = mockk()
-            coEvery { walletDao.getAll() } throws SQLiteException()
-            initializeSut()
-
-            // Act
-            sut.getAll()
-
-            // Assert
-            Unit
-        }
-
     @Test
     fun `save inserts the received wallet into the database`() = runBlocking {
         // Arrange
@@ -100,19 +88,6 @@ class RoomWalletDataSourceTest {
         storedWallet.coinSymbol shouldBe "BTC"
         storedWallet.amount shouldBeCloseTo 0.876
     }
-
-    @Test(expected = StorageException::class)
-    fun `save throws a StorageException when the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            val wallet = Wallet(Bitcoin, 0.876)
-            walletDao = mockk()
-            coEvery { walletDao.insertAll(any()) } throws SQLiteException()
-            initializeSut()
-
-            // Act
-            sut.save(wallet)
-        }
 
     @Test
     fun `findByCoin returns all the wallets that hold the specified coin`() =
@@ -131,21 +106,6 @@ class RoomWalletDataSourceTest {
             result.forEach { it.coin shouldBe Bitcoin }
             result[0].amount shouldBeCloseTo 0.22
             result[1].amount shouldBeCloseTo 1.233
-        }
-
-    @Test(expected = StorageException::class)
-    fun `findByCoin throws a StorageException when the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            walletDao = mockk()
-            coEvery { walletDao.findByCoin(any()) } throws SQLiteException()
-            initializeSut()
-
-            // Act
-            sut.findByCoin(Ripple)
-
-            // Assert
-            Unit
         }
 
     @Test
@@ -185,22 +145,6 @@ class RoomWalletDataSourceTest {
                 size shouldBe 1
                 first().valueInUSD shouldBeCloseTo 432.11
             }
-        }
-
-    @Test(expected = StorageException::class)
-    fun `updateValue throws a StorageException when the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            val wallet = Wallet(Bitcoin, 3.21, 1)
-            val newValue = 1235.11.toPrice()
-            walletValueDao = mockk()
-            coEvery { walletValueDao.insert(any()) } throws SQLiteException()
-            initializeSut()
-
-            // Act
-            sut.updateValue(wallet, newValue)
-
-            // Assert
         }
 
     @Test

@@ -7,6 +7,8 @@ import java.time.LocalDateTime
 import java.util.*
 
 internal val USD: Currency = Currency.getInstance("USD")
+internal val EUR: Currency = Currency.getInstance("EUR")
+internal val CAD: Currency = Currency.getInstance("CAD")
 
 internal val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png", IconType.Unknown)
 internal val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png", IconType.Unknown)

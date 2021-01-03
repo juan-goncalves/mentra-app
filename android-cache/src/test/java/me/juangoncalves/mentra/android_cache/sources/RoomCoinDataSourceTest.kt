@@ -2,19 +2,14 @@ package me.juangoncalves.mentra.android_cache.sources
 
 import android.app.Application
 import android.content.Context
-import android.database.sqlite.SQLiteException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import io.mockk.coEvery
-import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.android_cache.*
 import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
 import me.juangoncalves.mentra.android_cache.models.CoinPriceModel
-import me.juangoncalves.mentra.domain_layer.errors.PriceCacheMissException
-import me.juangoncalves.mentra.domain_layer.errors.StorageException
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.After
@@ -66,20 +61,6 @@ class RoomCoinDataSourceTest {
         result.size shouldBe 3
     }
 
-    @Test(expected = StorageException::class)
-    fun `getStoredCoins should throw a StorageException if the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut = RoomCoinDataSource(coinDao, coinPriceDao, CoinMapper())
-
-            // Act
-            sut.getStoredCoins()
-
-            // Assert
-            Unit
-        }
-
     @Test
     fun `clearCoins should delete every coin in the database`() = runBlocking {
         // Arrange
@@ -92,20 +73,6 @@ class RoomCoinDataSourceTest {
         val stored = coinDao.getAll()
         stored.size shouldBe 0
     }
-
-    @Test(expected = StorageException::class)
-    fun `clearCoins should throw a StorageException if the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut = RoomCoinDataSource(coinDao, coinPriceDao, CoinMapper())
-
-            // Act
-            sut.clearCoins()
-
-            // Assert
-            Unit
-        }
 
     @Test
     fun `storeCoins should map and insert all the received coins into the database`() =
@@ -123,20 +90,6 @@ class RoomCoinDataSourceTest {
             stored.forEach {
                 symbols.contains(it.symbol) shouldBe true
             }
-        }
-
-    @Test(expected = StorageException::class)
-    fun `storeCoins should throw a StorageException if the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            coinDao = mockk() // Will throw an exception when any of its methods is called
-            sut = RoomCoinDataSource(coinDao, coinPriceDao, CoinMapper())
-
-            // Act
-            sut.storeCoins(listOf(Bitcoin, Ethereum))
-
-            // Assert
-            Unit
         }
 
     @Test
@@ -166,18 +119,6 @@ class RoomCoinDataSourceTest {
             // Assert
         }
 
-    @Test(expected = StorageException::class)
-    fun `storeCoinPrice should throw a StorageException if the coin is not in the database`() =
-        runBlocking {
-            // Arrange
-            val price = 8765.321.toPrice()
-
-            // Act
-            sut.storeCoinPrice(Bitcoin, price)
-
-            // Assert
-        }
-
     @Test
     fun `getLastCoinPrice should return the most recent coin price stored in the database`() =
         runBlocking {
@@ -194,33 +135,8 @@ class RoomCoinDataSourceTest {
             val result = sut.getLastCoinPrice(Bitcoin)
 
             // Assert
-            result.value shouldBeCloseTo 738.5.toBigDecimal()
+            result!!.value shouldBeCloseTo 738.5.toBigDecimal()
             result.currency shouldBe USD
-        }
-
-    @Test(expected = PriceCacheMissException::class)
-    fun `getLastCoinPrice should throw a PriceCacheMissException if there's no stored price for the coin in the database`() =
-        runBlocking {
-            // Act
-            sut.getLastCoinPrice(Bitcoin)
-
-            // Assert
-            Unit
-        }
-
-    @Test(expected = StorageException::class)
-    fun `getLastCoinPrice should throw a StorageException if the database throws an exception`() =
-        runBlocking {
-            // Arrange
-            coinDao = mockk() // Will throw an exception when any of its methods is called
-            coinPriceDao = mockk()
-            sut = RoomCoinDataSource(coinDao, coinPriceDao, CoinMapper())
-
-            // Act
-            sut.getLastCoinPrice(Bitcoin)
-
-            // Assert
-            Unit
         }
 
     @Test
@@ -246,21 +162,6 @@ class RoomCoinDataSourceTest {
         // Assert
         result shouldBe null
     }
-
-    @Test(expected = StorageException::class)
-    fun `findCoinBySymbol should throw a StorageException if there's an error communicating with the database`() =
-        runBlocking {
-            // Arrange
-            coinDao = mockk()
-            coEvery { coinDao.getCoinBySymbol(any()) } throws SQLiteException()
-            sut = RoomCoinDataSource(coinDao, coinPriceDao, CoinMapper())
-
-            // Act
-            sut.findCoinBySymbol("BTC")
-
-            // Assert
-            Unit
-        }
 
     //region Helpers
     //endregion

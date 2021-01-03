@@ -1,7 +1,10 @@
 package me.juangoncalves.mentra.features.stats.model
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -14,55 +17,42 @@ import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValue
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetTimeUnitPreferenceStream
 import me.juangoncalves.mentra.domain_layer.usecases.preference.UpdatePortfolioValueTimeGranularity
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisherImpl
-import me.juangoncalves.mentra.features.common.executor
-import me.juangoncalves.mentra.features.common.run
+import me.juangoncalves.mentra.failures.FailurePublisher
+import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.stats.mapper.PiePortionMapper
 import me.juangoncalves.mentra.features.stats.mapper.TimeChartMapper
-import me.juangoncalves.pie.PiePortion
 
 class StatsViewModel @ViewModelInject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
-    getTimeUnitPreferenceStream: GetTimeUnitPreferenceStream,
+    getTimeUnitPrefStream: GetTimeUnitPreferenceStream,
     exchangePriceStream: ExchangePriceStream,
     private val refreshPortfolioValue: RefreshPortfolioValue,
     private val updatePortfolioValueTimeGranularity: UpdatePortfolioValueTimeGranularity,
     private val timeChartMapper: TimeChartMapper,
     private val piePortionMapper: PiePortionMapper
 ) : ViewModel(),
-    FleetingErrorPublisher by FleetingErrorPublisherImpl() {
+    FailurePublisher by GeneralFailurePublisher() {
 
-    val valueChartData: LiveData<TimeChartData> = with(exchangePriceStream) {
+    val valueChartData = with(exchangePriceStream) {
         getPortfolioValueHistory()
             .exchangeWhenPreferredCurrencyChanges()
             .toTimeChartData()
             .asLiveData()
     }
 
-    val pieChartData: LiveData<Array<PiePortion>> = getPortfolioDistribution()
-        .toPiePortions()
-        .asLiveData()
+    val pieChartData = getPortfolioDistribution().toPiePortions().asLiveData()
+    val valueChartGranularityStream = getTimeUnitPrefStream().asLiveData()
+    val shouldShowRefreshIndicator = MutableLiveData(false)
 
-    val shouldShowRefreshIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    val valueChartGranularityStream: LiveData<TimeGranularity> =
-        getTimeUnitPreferenceStream().asLiveData()
-
-    fun refreshSelected() {
-        refreshPortfolioValue.executor()
-            .inScope(viewModelScope)
-            .beforeInvoke { shouldShowRefreshIndicator.postValue(true) }
-            .afterInvoke { shouldShowRefreshIndicator.postValue(false) }
-            .onFailurePublishFleetingError()
-            .run()
+    fun refreshSelected() = viewModelScope.launch {
+        shouldShowRefreshIndicator.postValue(true)
+        refreshPortfolioValue.runHandlingFailure(Unit)
+        shouldShowRefreshIndicator.postValue(false)
     }
 
-    fun timeGranularityChanged(selection: TimeGranularity) {
-        viewModelScope.launch {
-            updatePortfolioValueTimeGranularity(selection)
-        }
+    fun timeGranularityChanged(selection: TimeGranularity) = viewModelScope.launch {
+        updatePortfolioValueTimeGranularity(selection)
     }
 
     private fun Flow<List<Price>>.toTimeChartData() = map { timeChartMapper.map(it) }

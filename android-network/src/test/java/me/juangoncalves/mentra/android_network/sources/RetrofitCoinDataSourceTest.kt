@@ -5,24 +5,19 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.android_network.*
+import me.juangoncalves.mentra.android_network.error.CryptoCompareResponseException
 import me.juangoncalves.mentra.android_network.mapper.CoinMapper
 import me.juangoncalves.mentra.android_network.models.CoinListSchema
 import me.juangoncalves.mentra.android_network.models.CoinSchema
 import me.juangoncalves.mentra.android_network.models.CryptoCompareResponse
 import me.juangoncalves.mentra.android_network.models.PriceSchema
 import me.juangoncalves.mentra.android_network.services.CryptoCompareService
-import me.juangoncalves.mentra.domain_layer.errors.InternetConnectionException
-import me.juangoncalves.mentra.domain_layer.errors.ServerException
-import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
-import java.net.UnknownHostException
 
 class RetrofitCoinDataSourceTest {
 
@@ -31,7 +26,6 @@ class RetrofitCoinDataSourceTest {
 
     //region Mocks
     @MockK lateinit var apiServiceMock: CryptoCompareService
-    @MockK lateinit var loggerMock: MentraLogger
     //endregion
 
     private lateinit var sut: RetrofitCoinDataSource
@@ -39,11 +33,7 @@ class RetrofitCoinDataSourceTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = RetrofitCoinDataSource(
-            apiServiceMock,
-            CoinMapper(),
-            loggerMock
-        )
+        sut = RetrofitCoinDataSource(apiServiceMock, CoinMapper())
     }
 
     @Test
@@ -52,7 +42,7 @@ class RetrofitCoinDataSourceTest {
             // Arrange
             val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
             val coinListSchema = adapter.fromJson(fixture("/coin_list.json"))!!
-            coEvery { apiServiceMock.listCoins() } returns Response.success(coinListSchema)
+            coEvery { apiServiceMock.listCoins() } returns coinListSchema
 
             // Act
             val result = sut.fetchCoins()
@@ -61,38 +51,13 @@ class RetrofitCoinDataSourceTest {
             result shouldBe listOf(Bitcoin, Ethereum, Ripple)
         }
 
-    @Test(expected = ServerException::class)
-    fun `fetchCoins should throw a ServerException if the response is not successful`() =
+    @Test(expected = CryptoCompareResponseException::class)
+    fun `fetchCoins should throw a CryptoCompareResponseException if the response is not successful`() =
         runBlocking {
             // Arrange
             val adapter = moshi.adapter<CoinListSchema>(coinListSchemaMoshiType)
             val coinListSchema = adapter.fromJson(fixture("/coin_list_error.json"))!!
-            coEvery { apiServiceMock.listCoins() } returns Response.success(coinListSchema)
-
-            // Act
-            sut.fetchCoins()
-
-            // Assert
-            Unit
-        }
-
-    @Test(expected = ServerException::class)
-    fun `fetchCoins should throw a ServerException if the response body is null`() = runBlocking {
-        // Arrange
-        coEvery { apiServiceMock.listCoins() } returns Response.success(null)
-
-        // Act
-        sut.fetchCoins()
-
-        // Assert
-        Unit
-    }
-
-    @Test(expected = InternetConnectionException::class)
-    fun `fetchCoins should throw a InternetConnectionException if the communication with the remote source fails`() =
-        runBlocking {
-            // Arrange
-            coEvery { apiServiceMock.listCoins() } throws UnknownHostException()
+            coEvery { apiServiceMock.listCoins() } returns coinListSchema
 
             // Act
             sut.fetchCoins()
@@ -107,7 +72,7 @@ class RetrofitCoinDataSourceTest {
             // Arrange
             val adapter = moshi.adapter(PriceSchema::class.java)
             val price = adapter.fromJson(fixture("/btc_price.json"))!!
-            coEvery { apiServiceMock.getCoinPrice(any()) } returns Response.success(price)
+            coEvery { apiServiceMock.getCoinPrice(any()) } returns price
 
             // Act
             val result = sut.fetchCoinPrice(Bitcoin)
@@ -118,44 +83,6 @@ class RetrofitCoinDataSourceTest {
             result.value shouldBeCloseTo price.USD.toBigDecimal()
         }
 
-    @Test(expected = InternetConnectionException::class)
-    fun `fetchCoinPrice should throw a InternetConnectionException if the communication with the remote source fails`() =
-        runBlocking {
-            // Arrange
-            coEvery { apiServiceMock.getCoinPrice(any()) } throws UnknownHostException()
-
-            // Act
-            sut.fetchCoinPrice(Ethereum)
-
-            // Assert
-            Unit
-        }
-
-    @Test(expected = ServerException::class)
-    fun `fetchCoinPrice should throw a ServerException if the response body is null`() =
-        runBlocking {
-            // Arrange
-            coEvery { apiServiceMock.getCoinPrice(any()) } returns Response.success(null)
-
-            // Act
-            sut.fetchCoinPrice(Bitcoin)
-
-            // Assert
-            Unit
-        }
-
-    @Test(expected = ServerException::class)
-    fun `fetchCoinPrice should throw a ServerException if the response is not successful`() =
-        runBlocking {
-            // Arrange
-            coEvery { apiServiceMock.getCoinPrice(any()) } returns Response.error(500, mockk())
-
-            // Act
-            sut.fetchCoinPrice(Bitcoin)
-
-            // Assert
-            Unit
-        }
 
     //region Helpers
     private val coinListSchemaMoshiType = Types.newParameterizedType(

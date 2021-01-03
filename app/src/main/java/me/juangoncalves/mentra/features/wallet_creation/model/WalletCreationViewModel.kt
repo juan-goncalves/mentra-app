@@ -15,14 +15,15 @@ import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.usecases.coin.FindCoinsByName
 import me.juangoncalves.mentra.domain_layer.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.CreateWallet
-import me.juangoncalves.mentra.features.common.Event
+import me.juangoncalves.mentra.failures.FailurePublisher
+import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import java.math.BigDecimal
 
 class WalletCreationViewModel @ViewModelInject constructor(
     private val getCoins: GetCoins,
     private val createWallet: CreateWallet,
     private val findCoinsByName: FindCoinsByName
-) : ViewModel() {
+) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
 
     sealed class Step {
         object CoinSelection : Step()
@@ -40,11 +41,10 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val isSaveActionEnabledStream = MutableLiveData<Boolean>(false)
     val shouldShowSaveProgressIndicatorStream = MutableLiveData<Boolean>(false)
     val shouldShowNoMatchesWarningStream = MutableLiveData<Boolean>(false)
-    val errorStream = MutableLiveData<Error>(Error.None)
+    val errorStateStream = MutableLiveData<Error>(Error.None)
     val currentStepStream = MutableLiveData<Step>(Step.CoinSelection)
     val amountInputValidationStream = MutableLiveData<Int?>(null)
     val selectedCoinStream = MutableLiveData<Coin?>(null)
-    val fleetingErrorStream = MutableLiveData<Event<Int>>()
 
     private var amountInput: BigDecimal? = null
     private var filterJob: Job? = null
@@ -74,7 +74,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
         currentStepStream.value = when (currentStep) {
             Step.AmountInput -> {
-                amountInputValidationStream.value = null
+                amountInputValidationStream.postValue(null)
                 amountInput = null
                 Step.CoinSelection
             }
@@ -99,13 +99,11 @@ class WalletCreationViewModel @ViewModelInject constructor(
             isSaveActionEnabledStream.value = false
             shouldShowSaveProgressIndicatorStream.value = true
 
-            val result = createWallet(wallet)
-            if (result.isLeft()) {
-                isSaveActionEnabledStream.value = true
-                fleetingErrorStream.value = Event(R.string.create_wallet_error)
-            } else {
-                currentStepStream.value = Step.Done
-            }
+            createWallet.runHandlingFailure(
+                params = wallet,
+                onFailure = { isSaveActionEnabledStream.value = true },
+                onSuccess = { currentStepStream.value = Step.Done }
+            )
 
             shouldShowSaveProgressIndicatorStream.value = false
         }
@@ -117,15 +115,15 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
     private fun fetchCoins() = viewModelScope.launch {
         isLoadingCoinListStream.value = true
-        errorStream.value = Error.None
+        errorStateStream.value = Error.None
 
-        val result = getCoins(Unit)
-
+        val result = getCoins()
         if (result.isLeft()) {
-            errorStream.value = Error.CoinsNotLoaded
+            errorStateStream.value = Error.CoinsNotLoaded
         } else {
-            coinListStream.value = result.requireRight()
-            errorStream.value = Error.None
+            val coins = result.requireRight()
+            coinListStream.value = coins
+            errorStateStream.value = Error.None
         }
 
         isLoadingCoinListStream.value = false

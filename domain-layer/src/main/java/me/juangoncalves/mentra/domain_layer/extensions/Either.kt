@@ -20,3 +20,10 @@ fun <L, R> Either<L, R>.isLeft(): Boolean = (this is Left)
 fun <T> T.toRight(): Right<T> = Right(this)
 
 fun <T> T.toLeft(): Left<T> = Left(this)
+
+@Suppress("RedundantSuspendModifier")
+suspend inline fun <L, R> Either<L, R>.whenLeft(block: (L) -> Unit) {
+    if (isLeft()) {
+        block(requireLeft())
+    }
+}

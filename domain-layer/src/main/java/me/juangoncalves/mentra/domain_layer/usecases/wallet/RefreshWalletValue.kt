@@ -4,6 +4,7 @@ import either.Either
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.requireLeft
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
+import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
@@ -25,8 +26,8 @@ class RefreshWalletValue @Inject constructor(
         val (coinPrice, currency, timestamp) = coinPriceResult.rightValue ?: return coinPriceResult
         val walletValue = Price(coinPrice * params.amount, currency, timestamp)
 
-        val updateResult = walletRepository.updateWalletValue(params, walletValue)
-        updateResult.rightValue ?: return Either.Left(updateResult.requireLeft())
+        val updateResult = walletRepository.updateWallet(params, walletValue)
+        updateResult.rightValue ?: return updateResult.requireLeft().toLeft()
 
         return Either.Right(walletValue)
     }

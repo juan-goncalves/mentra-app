@@ -12,7 +12,7 @@ import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
-import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.common.BundleKeys
 import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
@@ -38,23 +38,28 @@ class DeleteWalletDialogFragment : BottomSheetDialogFragment() {
         viewModel.initialize(arguments)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        configureView()
+        initObservers()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DeleteWalletDialogFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initObservers()
+    private fun configureView() {
         binding.deleteButton.setOnClickListener { viewModel.deleteSelected() }
         binding.cancelButton.setOnClickListener { viewModel.cancelSelected() }
     }
 
     private fun initObservers() {
-        showSnackbarOnFleetingErrors(viewModel, binding.root)
+        handleErrorsFrom(viewModel)
 
         viewModel.dismissStream.observe(viewLifecycleOwner) { notification ->
             notification.use { dismiss() }

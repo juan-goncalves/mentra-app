@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.BuildConfig
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.extensions.applyErrorStyle
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.extensions.toDp
 import me.juangoncalves.mentra.features.settings.model.SettingsViewModel
 
@@ -44,6 +45,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initObservers() {
+        handleErrorsFrom(viewModel)
+
         viewModel.showErrorSnackbarStream.observe(viewLifecycleOwner) { event ->
             event.use { messageId ->
                 Snackbar.make(requireView(), getString(messageId), Snackbar.LENGTH_SHORT)

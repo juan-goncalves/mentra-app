@@ -18,7 +18,7 @@ class ExchangePriceToPreferredCurrency @Inject constructor(
      * If the conversion fails, it returns the received [price].
      */
     suspend fun execute(price: Price): Price {
-        val currency = getCurrencyPreference.execute()
+        val currency = getCurrencyPreference().rightValue ?: Currency.getInstance("USD")
         return currencyRepository.exchange(price, currency).rightValue ?: price
     }
 

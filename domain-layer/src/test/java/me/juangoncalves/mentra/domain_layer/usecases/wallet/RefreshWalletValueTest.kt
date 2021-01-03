@@ -7,8 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.domain_layer.*
-import me.juangoncalves.mentra.domain_layer.errors.FetchPriceFailure
-import me.juangoncalves.mentra.domain_layer.errors.StorageFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
@@ -46,7 +45,7 @@ class RefreshWalletValueTest {
         val ts = LocalDateTime.now()
         val ripplePrice = 1.20.toPrice(timestamp = ts)
         coEvery { coinRepoMock.getCoinPrice(Ripple) } returns ripplePrice.toRight()
-        coEvery { walletRepoMock.updateWalletValue(any(), any()) } returns Unit.toRight()
+        coEvery { walletRepoMock.updateWallet(any(), any()) } returns Unit.toRight()
 
         // Act
         val result = sut(wallet)
@@ -67,13 +66,13 @@ class RefreshWalletValueTest {
         val ts = LocalDateTime.now()
         val ethPrice = 381.20.toPrice(timestamp = ts)
         coEvery { coinRepoMock.getCoinPrice(Ethereum) } returns ethPrice.toRight()
-        coEvery { walletRepoMock.updateWalletValue(any(), capture(slot)) } returns Unit.toRight()
+        coEvery { walletRepoMock.updateWallet(any(), capture(slot)) } returns Unit.toRight()
 
         // Act
         sut(wallet)
 
         // Assert
-        coVerify { walletRepoMock.updateWalletValue(wallet, any()) }
+        coVerify { walletRepoMock.updateWallet(wallet, any()) }
         with(slot.captured) {
             value shouldBeCloseTo 823.392
             currency shouldBe USD
@@ -82,30 +81,30 @@ class RefreshWalletValueTest {
     }
 
     @Test
-    fun `returns a FetchPriceFailure if the coin price is not found`() = runBlocking {
+    fun `returns a Failure if the coin price is not found`() = runBlocking {
         // Arrange
         val wallet = Wallet(Ethereum, 2.16, 15)
-        coEvery { coinRepoMock.getCoinPrice(any()) } returns Left(FetchPriceFailure())
+        coEvery { coinRepoMock.getCoinPrice(any()) } returns Failure.Unknown.toLeft()
 
         // Act
         val result = sut(wallet)
 
         // Assert
-        result.leftValue shouldBeA FetchPriceFailure::class
+        result.leftValue shouldBeA Failure::class
     }
 
     @Test
-    fun `returns a StorageFailure if the updated wallet value can't be saved`() = runBlocking {
+    fun `returns a Failure if the updated wallet value can't be saved`() = runBlocking {
         // Arrange
         val wallet = Wallet(Ethereum, 2.16, 15)
         coEvery { coinRepoMock.getCoinPrice(Ethereum) } returns Right(USDPrices[Ethereum]!!)
-        coEvery { walletRepoMock.updateWalletValue(any(), any()) } returns StorageFailure().toLeft()
+        coEvery { walletRepoMock.updateWallet(any(), any()) } returns Failure.Unknown.toLeft()
 
         // Act
         val result = sut(wallet)
 
         // Assert
-        result.leftValue shouldBeA StorageFailure::class
+        result.leftValue shouldBeA Failure::class
     }
 
     //region Helpers

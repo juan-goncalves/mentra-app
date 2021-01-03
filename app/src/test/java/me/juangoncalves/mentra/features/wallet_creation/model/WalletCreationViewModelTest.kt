@@ -7,13 +7,14 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.domain_layer.errors.WalletCreationFailure
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.domain_layer.usecases.coin.FindCoinsByName
 import me.juangoncalves.mentra.domain_layer.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.CreateWallet
+import me.juangoncalves.mentra.failures.FleetingError
 import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel.Step
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
@@ -288,10 +289,10 @@ class WalletCreationViewModelTest {
     @Test
     fun `a fleeting error is emitted when the wallet creation fails`() {
         // Arrange
-        val captor = slot<Event<Int>>()
-        val observer = mockk<Observer<Event<Int>>>(relaxUnitFun = true)
+        val captor = slot<Event<FleetingError>>()
+        val observer = mockk<Observer<Event<FleetingError>>>(relaxUnitFun = true)
         sut.fleetingErrorStream.observeForever(observer)
-        coEvery { createWalletMock.invoke(any()) } returns WalletCreationFailure().toLeft()
+        coEvery { createWalletMock.invoke(any()) } returns Failure.Unknown.toLeft()
 
         // Act
         sut.selectCoin(Bitcoin)
@@ -300,7 +301,6 @@ class WalletCreationViewModelTest {
 
         // Assert
         verifySequence { observer.onChanged(capture(captor)) }
-        captor.captured.content shouldBe R.string.create_wallet_error
     }
 
     @Test

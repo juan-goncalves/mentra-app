@@ -12,15 +12,11 @@ import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinAmountInputFragmentBinding
 import me.juangoncalves.mentra.domain_layer.models.Coin
-import me.juangoncalves.mentra.extensions.animateVisibility
-import me.juangoncalves.mentra.extensions.applyErrorStyle
-import me.juangoncalves.mentra.extensions.hideKeyboard
-import me.juangoncalves.mentra.extensions.showKeyboard
+import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 
 @AndroidEntryPoint
@@ -39,15 +35,18 @@ class CoinAmountInputFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = CoinAmountInputFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configureView()
         initObservers()
+    }
 
+    private fun configureView() {
         binding.saveButton.setOnClickListener {
             viewModel.saveSelected()
             hideKeyboard()
@@ -73,6 +72,8 @@ class CoinAmountInputFragment : Fragment() {
     }
 
     private fun initObservers() {
+        handleErrorsFrom(viewModel)
+
         viewModel.selectedCoinStream.observe(viewLifecycleOwner) { selectedCoin ->
             bindSelectedCoinPreview(selectedCoin)
         }
@@ -90,14 +91,6 @@ class CoinAmountInputFragment : Fragment() {
 
         viewModel.shouldShowSaveProgressIndicatorStream.observe(viewLifecycleOwner) { shouldShow ->
             binding.saveProgressBar.animateVisibility(shouldShow, 300L)
-        }
-
-        viewModel.fleetingErrorStream.observe(viewLifecycleOwner) { errorEvent ->
-            errorEvent.use { stringResId ->
-                Snackbar.make(binding.coordinator, stringResId, Snackbar.LENGTH_LONG)
-                    .applyErrorStyle()
-                    .show()
-            }
         }
     }
 

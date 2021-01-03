@@ -14,7 +14,7 @@ class CreateWallet @Inject constructor(
 ) : UseCase<Wallet, Unit> {
 
     override suspend operator fun invoke(params: Wallet): Either<Failure, Unit> {
-        determinePrimaryIcon(params.coin) // TODO: Handle failure
+        determinePrimaryIcon(params.coin)
         return walletRepository.createWallet(params)
     }
 

@@ -4,29 +4,24 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
-import me.juangoncalves.mentra.features.common.DisplayError
-import me.juangoncalves.mentra.features.common.FleetingErrorPublisher
+import me.juangoncalves.mentra.failures.FailurePublisher
 
-fun Fragment.createErrorSnackbar(
-    error: DisplayError,
-    view: View? = null,
-    anchor: View? = null,
-    duration: Int = Snackbar.LENGTH_LONG
-): Snackbar = with(requireContext()) {
-    createErrorSnackbar(error, view ?: requireView(), duration, anchor)
-}
+fun Fragment.hideKeyboard() = requireView().hideKeyboard()
 
-fun Fragment.showSnackbarOnFleetingErrors(
-    fleetingErrorPublisher: FleetingErrorPublisher,
-    view: View? = null,
-    anchor: View? = null,
-    duration: Int = Snackbar.LENGTH_LONG
+fun Fragment.handleErrorsFrom(
+    failurePublisher: FailurePublisher,
+    anchor: View? = null
 ) {
-    fleetingErrorPublisher.fleetingErrorStream.observe(viewLifecycleOwner) { errorEvent ->
-        errorEvent.use { error ->
-            createErrorSnackbar(error, view, anchor, duration).show()
+    failurePublisher.fleetingErrorStream.observe(viewLifecycleOwner) { event ->
+        event.use { fleetingError ->
+            Snackbar.make(requireView(), fleetingError.message, Snackbar.LENGTH_LONG)
+                .applyErrorStyle()
+                .apply {
+                    if (anchor != null) {
+                        anchorView = anchor
+                    }
+                }
+                .show()
         }
     }
 }
-
-fun Fragment.hideKeyboard() = requireView().hideKeyboard()

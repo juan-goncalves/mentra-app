@@ -2,7 +2,7 @@
     <string name="app_name">Mentra</string>
     <string name="default_error">An error occurred</string>
     <string name="retry">Retry</string>
-    <string name="connection_error">You don\'t seem to have an active internet connection</string>
+    <string name="connection_error">You don\'t have an active internet connection</string>
     <string name="wallets_subtitle">Wallets</string>
     <string name="add_wallet">Add wallet</string>
     <string name="wallet_name_input_label">Wallet name</string>
@@ -55,4 +55,7 @@
     <string name="every_6_hours">Every 6 hours</string>
     <string name="every_12_hours">Every 12 hours</string>
     <string name="once_a_day">Once a day</string>
+    <string name="not_found">The requested resource was not found</string>
+    <string name="service_temporarily_unavailable">The service is temporarily unavailable, try again later</string>
+    <string name="access_denied">You don\'t have enough permissions for this action</string>
 </resources>

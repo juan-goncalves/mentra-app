@@ -1,21 +1,22 @@
 package me.juangoncalves.mentra.domain_layer.repositories
 
+import either.Either
 import kotlinx.coroutines.flow.Flow
+import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import java.time.Duration
 import java.util.*
 
-/** Every operation must be infallible, returning a default value if anything goe wrong. */
 interface PreferenceRepository {
 
     val valueChartTimeUnitStream: Flow<TimeGranularity>
     val currencyStream: Flow<Currency>
     val periodicRefresh: Flow<Duration>
 
-    suspend fun updateTimeUnitPreference(value: TimeGranularity)
+    suspend fun updateTimeUnitPreference(value: TimeGranularity): Either<Failure, Unit>
 
-    suspend fun updateCurrencyPreference(value: Currency)
+    suspend fun updateCurrencyPreference(value: Currency): Either<Failure, Unit>
 
-    suspend fun updatePeriodicRefresh(value: Duration)
+    suspend fun updatePeriodicRefresh(value: Duration): Either<Failure, Unit>
 
 }

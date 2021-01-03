@@ -19,7 +19,7 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.StatsFragmentBinding
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.extensions.getThemeColor
-import me.juangoncalves.mentra.extensions.showSnackbarOnFleetingErrors
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.extensions.styleByTheme
 import me.juangoncalves.mentra.features.stats.model.StatsViewModel
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
@@ -38,14 +38,18 @@ class StatsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = StatsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configureView()
         initObservers()
+    }
+
+    private fun configureView() {
         binding.valueLineChart.applyDefaultStyle()
         binding.monthlyValueLineChart.applyDefaultStyle()
 
@@ -71,7 +75,7 @@ class StatsFragment : Fragment() {
     }
 
     private fun initObservers() {
-        showSnackbarOnFleetingErrors(viewModel)
+        handleErrorsFrom(viewModel)
 
         viewModel.valueChartData.observe(viewLifecycleOwner) { data ->
             updateLineChartData(data)

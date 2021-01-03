@@ -3,11 +3,11 @@ package me.juangoncalves.mentra.domain_layer.usecases
 import either.Either
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 
-interface VoidUseCase<T> : UseCase<Unit, T> {
+interface VoidUseCase<Result> : UseCase<Unit, Result> {
 
-    suspend operator fun invoke(): Either<Failure, T>
+    suspend operator fun invoke(): Either<Failure, Result>
 
-    override suspend fun invoke(params: Unit): Either<Failure, T> {
+    override suspend fun invoke(params: Unit): Either<Failure, Result> {
         return invoke()
     }
 
