@@ -1,7 +1,10 @@
 package me.juangoncalves.mentra.features.stats.model
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -18,12 +21,11 @@ import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.stats.mapper.PiePortionMapper
 import me.juangoncalves.mentra.features.stats.mapper.TimeChartMapper
-import me.juangoncalves.pie.PiePortion
 
 class StatsViewModel @ViewModelInject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
-    getTimeUnitPreferenceStream: GetTimeUnitPreferenceStream,
+    getTimeUnitPrefStream: GetTimeUnitPreferenceStream,
     exchangePriceStream: ExchangePriceStream,
     private val refreshPortfolioValue: RefreshPortfolioValue,
     private val updatePortfolioValueTimeGranularity: UpdatePortfolioValueTimeGranularity,
@@ -32,21 +34,16 @@ class StatsViewModel @ViewModelInject constructor(
 ) : ViewModel(),
     FailurePublisher by GeneralFailurePublisher() {
 
-    val valueChartData: LiveData<TimeChartData> = with(exchangePriceStream) {
+    val valueChartData = with(exchangePriceStream) {
         getPortfolioValueHistory()
             .exchangeWhenPreferredCurrencyChanges()
             .toTimeChartData()
             .asLiveData()
     }
 
-    val pieChartData: LiveData<Array<PiePortion>> = getPortfolioDistribution()
-        .toPiePortions()
-        .asLiveData()
-
-    val shouldShowRefreshIndicator: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    val valueChartGranularityStream: LiveData<TimeGranularity> =
-        getTimeUnitPreferenceStream().asLiveData()
+    val pieChartData = getPortfolioDistribution().toPiePortions().asLiveData()
+    val valueChartGranularityStream = getTimeUnitPrefStream().asLiveData()
+    val shouldShowRefreshIndicator = MutableLiveData(false)
 
     fun refreshSelected() = viewModelScope.launch {
         shouldShowRefreshIndicator.postValue(true)
@@ -54,10 +51,8 @@ class StatsViewModel @ViewModelInject constructor(
         shouldShowRefreshIndicator.postValue(false)
     }
 
-    fun timeGranularityChanged(selection: TimeGranularity) {
-        viewModelScope.launch {
-            updatePortfolioValueTimeGranularity(selection)
-        }
+    fun timeGranularityChanged(selection: TimeGranularity) = viewModelScope.launch {
+        updatePortfolioValueTimeGranularity(selection)
     }
 
     private fun Flow<List<Price>>.toTimeChartData() = map { timeChartMapper.map(it) }
