@@ -13,11 +13,8 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.Callback.DISMISS_EVENT_MANUAL
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListFragmentBinding
 import me.juangoncalves.mentra.extensions.*
 import me.juangoncalves.mentra.features.common.BundleKeys
@@ -58,7 +55,7 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = WalletListFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -86,7 +83,11 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configureView(view)
+        initObservers()
+    }
 
+    private fun configureView(view: View) {
         ViewCompat.requestApplyInsets(view)
 
         binding.refreshLayout.styleByTheme().setOnRefreshListener {
@@ -108,25 +109,24 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
             val intent = Intent(requireContext(), WalletCreationActivity::class.java)
             startActivity(intent)
         }
-
-        initObservers()
     }
 
     private fun initObservers() {
         if (observersInitialized) return
-
         observersInitialized = true
+
+        handleErrorsFrom(viewModel, binding.addWalletButton)
 
         viewModel.viewStateStream.observe(viewLifecycleOwner) { state ->
             walletAdapter.data = state.wallets
             binding.walletsLoadingIndicator.animateVisibility(state.isLoadingWallets, 300L)
             binding.refreshLayout.isRefreshing = state.isRefreshingPrices
             binding.emptyStateView.animateVisibility(state.isEmpty, 300L)
-            bindError(state)
+            bindErrorState(state)
         }
     }
 
-    private fun bindError(state: WalletListViewState) {
+    private fun bindErrorState(state: WalletListViewState) {
         when (state.error) {
             WalletListViewState.Error.None -> {
                 binding.refreshLayout.isEnabled = true
@@ -137,19 +137,6 @@ class WalletListFragment : Fragment(), WalletSwipeHelper.Listener {
                 binding.refreshLayout.isEnabled = false
                 binding.recyclerView.animateVisibility(false, 300L)
                 binding.loadWalletsErrorStateView.show()
-            }
-            is WalletListViewState.Error.PricesNotRefreshed -> {
-                binding.refreshLayout.isEnabled = true
-                if (state.error.wasDismissed) return
-
-                Snackbar
-                    .make(requireView(), R.string.price_refresh_error, Snackbar.LENGTH_LONG)
-                    .onDismissed { actionCode ->
-                        if (actionCode != DISMISS_EVENT_MANUAL) state.error.dismiss()
-                    }
-                    .setAnchorView(binding.addWalletButton)
-                    .applyErrorStyle()
-                    .show()
             }
         }
     }
