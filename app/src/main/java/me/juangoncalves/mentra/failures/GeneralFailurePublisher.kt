@@ -18,6 +18,7 @@ class GeneralFailurePublisher : FailurePublisher {
 
     override suspend fun <Params, Result> UseCase<Params, Result>.runHandlingFailure(
         params: Params,
+        onFailure: (suspend (Failure) -> Unit)?,
         onSuccess: (suspend (Result) -> Unit)?
     ) {
         val operation = invoke(params)
@@ -25,6 +26,7 @@ class GeneralFailurePublisher : FailurePublisher {
         operation.whenLeft { failure ->
             val error = FleetingError(getErrorMessage(failure))
             _fleetingErrorStream.postValue(error.toEvent())
+            onFailure?.invoke(failure)
         }
 
         operation.rightValue?.run { onSuccess?.invoke(this) }

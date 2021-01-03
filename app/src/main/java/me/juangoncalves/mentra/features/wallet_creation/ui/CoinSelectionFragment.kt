@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.CoinSelectionFragmentBinding
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.extensions.animateVisibility
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel
 
 @AndroidEntryPoint
@@ -28,14 +29,18 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = CoinSelectionFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configureView()
+        initObservers()
+    }
 
+    private fun configureView() {
         val viewManager = GridLayoutManager(requireContext(), 3)
         binding.coinSelectionList.apply {
             layoutManager = viewManager
@@ -50,11 +55,11 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
         binding.coinNameInput.addTextChangedListener { text ->
             viewModel.submitQuery(text.toString())
         }
-
-        initObservers()
     }
 
     private fun initObservers() {
+        handleErrorsFrom(viewModel)
+
         viewModel.coinListStream.observe(viewLifecycleOwner) { coins ->
             coinAdapter.data = coins
         }
@@ -63,7 +68,7 @@ class CoinSelectionFragment : Fragment(), CoinAdapter.Listener {
             binding.coinsProgressBar.animateVisibility(shouldShow, 300L)
         }
 
-        viewModel.errorStream.observe(viewLifecycleOwner) { error ->
+        viewModel.errorStateStream.observe(viewLifecycleOwner) { error ->
             bindErrorState(error)
         }
 
