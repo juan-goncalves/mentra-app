@@ -36,6 +36,7 @@ class SettingsViewModel @ViewModelInject constructor(
         loadPeriodicRefreshOptions()
     }
 
+    // TODO: Use the GetPeriodicRefreshOptions use case
     private fun loadPeriodicRefreshOptions() {
         _durationsStream.value = listOf(
             RefreshPeriod(R.string.every_3_hours, "3"),

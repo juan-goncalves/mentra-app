@@ -15,11 +15,12 @@ import me.juangoncalves.mentra.databinding.OnboardingCurrencyFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
+import me.juangoncalves.mentra.features.onboarding.SingleChoiceAdapter
 import me.juangoncalves.mentra.features.onboarding.currency.OnboardingCurrencyViewModel.Error
 import java.util.*
 
 @AndroidEntryPoint
-class OnboardingCurrencyFragment : Fragment(), CurrencyAdapter.Listener {
+class OnboardingCurrencyFragment : Fragment(), SingleChoiceAdapter.Listener<Currency> {
 
     private val onboardingViewModel: OnboardingViewModel by activityViewModels()
     private val viewModel: OnboardingCurrencyViewModel by viewModels()
@@ -49,8 +50,8 @@ class OnboardingCurrencyFragment : Fragment(), CurrencyAdapter.Listener {
         initObservers()
     }
 
-    override fun onCurrencySelected(currency: Currency) {
-        viewModel.currencySelected(currency)
+    override fun onOptionSelected(option: Currency) {
+        viewModel.currencySelected(option)
     }
 
     private fun configureView() = with(binding) {
@@ -69,7 +70,7 @@ class OnboardingCurrencyFragment : Fragment(), CurrencyAdapter.Listener {
         }
 
         nextStepButton.setOnClickListener {
-            // onboardingViewModel.scrolledToStep(position + 1)
+            onboardingViewModel.scrolledToStep(position + 1)
         }
     }
 

@@ -23,12 +23,14 @@ class OnboardingViewModel @ViewModelInject constructor() : ViewModel() {
         object Benefits : Step(0)
         object ConfigureAutoRefresh : Step(1)
         object ConfigureCurrency : Step(2)
+        object Finished : Step(3)
 
         companion object {
             fun from(index: Int): Step = when (index) {
                 0 -> Benefits
                 1 -> ConfigureAutoRefresh
                 2 -> ConfigureCurrency
+                3 -> Finished
                 else -> error("Invalid step: $index")
             }
         }

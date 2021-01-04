@@ -8,14 +8,17 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.OnboardingAutoRefreshFragmentBinding
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
+import me.juangoncalves.mentra.features.onboarding.SingleChoiceAdapter
 import java.time.Duration
 
 @AndroidEntryPoint
-class OnboardingAutoRefreshFragment : Fragment() {
+class OnboardingAutoRefreshFragment : Fragment(), SingleChoiceAdapter.Listener<Duration> {
 
     private val onboardingViewModel: OnboardingViewModel by activityViewModels()
     private val viewModel: OnboardingAutoRefreshViewModel by viewModels()
@@ -23,6 +26,7 @@ class OnboardingAutoRefreshFragment : Fragment() {
     private var _binding: OnboardingAutoRefreshFragmentBinding? = null
     private val binding get() = _binding!!
 
+    private val durationAdapter = DurationAdapter(this)
     private var position: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,15 +50,25 @@ class OnboardingAutoRefreshFragment : Fragment() {
 
     private fun initObservers() = with(viewModel) {
         handleErrorsFrom(this)
+
+        durationsStream.observe(viewLifecycleOwner) { durations ->
+            durationAdapter.data = durations
+        }
     }
 
     private fun configureView() = with(binding) {
+        durationRecyclerView.apply {
+            adapter = durationAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+        }
+
         previousStepButton.setOnClickListener { onboardingViewModel.scrolledToStep(position - 1) }
         nextStepButton.setOnClickListener { onboardingViewModel.scrolledToStep(position + 1) }
-        dailyButton.setOnClickListener { viewModel.periodSelected(Duration.ofDays(1)) }
-        twelveHoursButton.setOnClickListener { viewModel.periodSelected(Duration.ofHours(12)) }
-        sixHoursButton.setOnClickListener { viewModel.periodSelected(Duration.ofHours(6)) }
-        threeHoursButton.setOnClickListener { viewModel.periodSelected(Duration.ofHours(3)) }
+    }
+
+    override fun onOptionSelected(option: Duration) {
+        viewModel.periodSelected(option)
     }
 
     override fun onDestroyView() {
