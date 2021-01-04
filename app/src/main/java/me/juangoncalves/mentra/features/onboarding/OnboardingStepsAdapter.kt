@@ -6,11 +6,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class OnboardingStepsAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
-    override fun getItemCount(): Int = 2
+    override fun getItemCount(): Int = 3
 
     override fun createFragment(position: Int): Fragment = when (position) {
         0 -> OnboardingBenefitsFragment.newInstance()
-        1 -> OnboardingAutoRefreshFragment.newInstance(1)
+        1 -> OnboardingAutoRefreshFragment.newInstance(position)
+        2 -> OnboardingCurrencyFragment.newInstance(position)
         else -> error("Unsupported onboarding step: $position")
     }
 
