@@ -14,7 +14,7 @@
         android:layout_marginHorizontal="18dp"
         android:layout_marginTop="42dp"
         android:gravity="center_vertical|end"
-        android:text="In what currency do you want to see the prices and values?"
+        android:text="@string/onboarding_currency_select_title"
         android:textColor="@color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
