@@ -13,9 +13,12 @@ class OnboardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = OnboardingActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.pager.adapter = OnboardingStepsAdapter(this)
-        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
-            tab.text = "Step ${(position + 1)}"
+        configureView()
+    }
+
+    private fun configureView() = with(binding) {
+        pager.adapter = OnboardingStepsAdapter(this@OnboardingActivity)
+        TabLayoutMediator(tabLayout, pager) { _, _ ->
         }.attach()
     }
 
