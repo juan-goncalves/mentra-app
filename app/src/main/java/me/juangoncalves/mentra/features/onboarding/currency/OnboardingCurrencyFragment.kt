@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.OnboardingCurrencyFragmentBinding
 import me.juangoncalves.mentra.extensions.animateVisibility
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
 import me.juangoncalves.mentra.features.onboarding.currency.OnboardingCurrencyViewModel.Error
+import java.util.*
 
 @AndroidEntryPoint
-class OnboardingCurrencyFragment : Fragment() {
+class OnboardingCurrencyFragment : Fragment(), CurrencyAdapter.Listener {
 
     private val onboardingViewModel: OnboardingViewModel by activityViewModels()
     private val viewModel: OnboardingCurrencyViewModel by viewModels()
@@ -26,7 +28,7 @@ class OnboardingCurrencyFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var position: Int = 0
-    private val currencyAdapter = CurrencyAdapter()
+    private val currencyAdapter = CurrencyAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,10 @@ class OnboardingCurrencyFragment : Fragment() {
         initObservers()
     }
 
+    override fun onCurrencySelected(currency: Currency) {
+        viewModel.currencySelected(currency)
+    }
+
     private fun configureView() = with(binding) {
         currencyRecyclerView.apply {
             adapter = currencyAdapter
@@ -54,11 +60,22 @@ class OnboardingCurrencyFragment : Fragment() {
             setHasFixedSize(true)
         }
 
-        retryButton.setOnClickListener { viewModel.retrySelected() }
-        previousStepButton.setOnClickListener { onboardingViewModel.scrolledToStep(position - 1) }
+        retryButton.setOnClickListener {
+            viewModel.retrySelected()
+        }
+
+        previousStepButton.setOnClickListener {
+            onboardingViewModel.scrolledToStep(position - 1)
+        }
+
+        nextStepButton.setOnClickListener {
+            // onboardingViewModel.scrolledToStep(position + 1)
+        }
     }
 
     private fun initObservers() = with(viewModel) {
+        handleErrorsFrom(this)
+
         currenciesStream.observe(viewLifecycleOwner) { currencies ->
             currencyAdapter.data = currencies
         }

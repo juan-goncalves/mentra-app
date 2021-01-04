@@ -7,13 +7,15 @@ import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.OnboardingCurrencyItemBinding
 import java.util.*
 
-class CurrencyAdapter : RecyclerView.Adapter<CurrencyAdapter.ViewHolder>() {
+class CurrencyAdapter constructor(
+    private val listener: Listener
+) : RecyclerView.Adapter<CurrencyAdapter.ViewHolder>() {
 
     var data: List<Currency> = emptyList()
         set(value) {
             field = value
             notifyDataSetChanged()
-            lastSelectedPos = -1
+            selectFirstCurrency(value)
         }
 
     private var lastSelectedPos: Int = -1
@@ -40,6 +42,7 @@ class CurrencyAdapter : RecyclerView.Adapter<CurrencyAdapter.ViewHolder>() {
         )
 
         radioButton.setOnClickListener {
+            listener.onCurrencySelected(currency)
             val copyOfLastCheckedPosition = lastSelectedPos
             lastSelectedPos = position
             notifyItemChanged(copyOfLastCheckedPosition)
@@ -49,7 +52,18 @@ class CurrencyAdapter : RecyclerView.Adapter<CurrencyAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int = data.size
 
+    private fun selectFirstCurrency(value: List<Currency>) {
+        if (value.isNotEmpty()) {
+            lastSelectedPos = 0
+            listener.onCurrencySelected(value[lastSelectedPos])
+        }
+    }
+
     inner class ViewHolder(val binding: OnboardingCurrencyItemBinding) :
         RecyclerView.ViewHolder(binding.root)
+
+    interface Listener {
+        fun onCurrencySelected(currency: Currency)
+    }
 
 }
