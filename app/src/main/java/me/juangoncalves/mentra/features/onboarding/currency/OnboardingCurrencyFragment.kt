@@ -12,7 +12,7 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.OnboardingCurrencyFragmentBinding
-import me.juangoncalves.mentra.extensions.updateVisibility
+import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
 import me.juangoncalves.mentra.features.onboarding.currency.OnboardingCurrencyViewModel.Error
 
@@ -63,10 +63,14 @@ class OnboardingCurrencyFragment : Fragment() {
             currencyAdapter.data = currencies
         }
 
+        showLoadingIndicatorStream.observe(viewLifecycleOwner) { shouldShow ->
+            binding.progressBar.animateVisibility(shouldShow, 300L)
+        }
+
         errorStateStream.observe(viewLifecycleOwner) { error ->
             when (error) {
-                Error.None -> binding.errorStateView.updateVisibility(false)
-                Error.CurrenciesNotLoaded -> binding.errorStateView.updateVisibility(true)
+                Error.None -> binding.errorStateView.animateVisibility(false, 300L)
+                Error.CurrenciesNotLoaded -> binding.errorStateView.animateVisibility(true, 300L)
             }
         }
     }

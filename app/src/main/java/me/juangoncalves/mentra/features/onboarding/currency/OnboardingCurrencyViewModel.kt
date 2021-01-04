@@ -1,6 +1,7 @@
 package me.juangoncalves.mentra.features.onboarding.currency
 
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,26 +17,33 @@ class OnboardingCurrencyViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     private val _currenciesStream: MutableLiveData<List<Currency>> = MutableLiveData(emptyList())
-    val currenciesStream: MutableLiveData<List<Currency>> = _currenciesStream
+    val currenciesStream: LiveData<List<Currency>> = _currenciesStream
 
     private val _errorStateStream: MutableLiveData<Error> = MutableLiveData(Error.None)
-    val errorStateStream: MutableLiveData<Error> = _errorStateStream
+    val errorStateStream: LiveData<Error> = _errorStateStream
+
+    private val _showLoadingIndicatorStream: MutableLiveData<Boolean> = MutableLiveData(false)
+    val showLoadingIndicatorStream: LiveData<Boolean> = _showLoadingIndicatorStream
 
     init {
         loadCurrencies()
     }
 
     fun retrySelected() = loadCurrencies()
-    
+
     private fun loadCurrencies() = viewModelScope.launch(Dispatchers.Default) {
+        _showLoadingIndicatorStream.postValue(true)
+        _errorStateStream.postValue(Error.None)
+
         val currenciesOp = getSupportedCurrencies()
         if (currenciesOp.isLeft()) {
             _errorStateStream.postValue(Error.CurrenciesNotLoaded)
         } else {
             val sorted = currenciesOp.requireRight().toList().sortedBy { it.displayName }.reversed()
             _currenciesStream.postValue(sorted)
-            _errorStateStream.postValue(Error.None)
         }
+
+        _showLoadingIndicatorStream.postValue(false)
     }
 
     sealed class Error {
