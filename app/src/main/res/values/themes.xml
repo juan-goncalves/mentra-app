@@ -139,6 +139,7 @@
     <style name="Theme.Mentra.Onboarding" parent="Theme.Mentra">
         <item name="android:statusBarColor">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="colorSecondary">@color/wild_strawberry</item>
     </style>
 
 </resources>

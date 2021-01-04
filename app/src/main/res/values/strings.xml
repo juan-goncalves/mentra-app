@@ -59,4 +59,6 @@
     <string name="service_temporarily_unavailable">The service is temporarily unavailable, try again later</string>
     <string name="access_denied">You don\'t have enough permissions for this action</string>
     <string name="get_started">Get started</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
 </resources>

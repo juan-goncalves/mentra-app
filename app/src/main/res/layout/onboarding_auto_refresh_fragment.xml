@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".features.onboarding.OnboardingBenefitsFragment">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/title"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="18dp"
+        android:layout_marginTop="42dp"
+        android:text="How often do you want your portfolio value to be refreshed?"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RadioGroup
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintVertical_bias="0.15">
+
+        <RadioButton
+            android:id="@+id/dailyButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:checked="true"
+            android:gravity="start|center_vertical"
+            android:layoutDirection="rtl"
+            android:text="Once a day"
+            android:textAlignment="gravity"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textColor="?android:attr/textColor"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/twelveHoursButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="12dp"
+            android:gravity="start|center_vertical"
+            android:layoutDirection="rtl"
+            android:text="Every 12 hours"
+            android:textAlignment="gravity"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textColor="?android:attr/textColor"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/sixHoursButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="12dp"
+            android:gravity="start|center_vertical"
+            android:layoutDirection="rtl"
+            android:text="Every 6 hours"
+            android:textAlignment="gravity"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textColor="?android:attr/textColor"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/threeHoursButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="12dp"
+            android:gravity="start|center_vertical"
+            android:layoutDirection="rtl"
+            android:text="Every 3 hours"
+            android:textAlignment="gravity"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textColor="?android:attr/textColor"
+            android:textSize="18sp" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/previousStepButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="18dp"
+        android:layout_marginBottom="30dp"
+        android:drawableTint="@color/wild_strawberry"
+        android:text="@string/back"
+        app:icon="@drawable/ic_arrow_back_18"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/nextStepButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="18dp"
+        android:layout_marginBottom="30dp"
+        android:drawableEnd="@drawable/ic_arrow_forward_18"
+        android:drawableTint="@color/wild_strawberry"
+        android:text="@string/next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

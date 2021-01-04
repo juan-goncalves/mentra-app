@@ -10,7 +10,7 @@ class OnboardingStepsAdapter(activity: FragmentActivity) : FragmentStateAdapter(
 
     override fun createFragment(position: Int): Fragment = when (position) {
         0 -> OnboardingBenefitsFragment.newInstance()
-        1 -> OnboardingBenefitsFragment.newInstance()
+        1 -> OnboardingAutoRefreshFragment.newInstance(1)
         else -> error("Unsupported onboarding step: $position")
     }
 
