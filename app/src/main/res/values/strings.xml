@@ -69,4 +69,6 @@
     <string name="all_done">All done!</string>
     <string name="onboarding_finish_description">You can now add your wallets and Mentra will take care of the rest.</string>
     <string name="onboarding_finish_button">Finish</string>
+    <string name="welcome">Welcome.</string>
+    <string name="benefits">Track the behaviour and composition of your portfolio over time.</string>
 </resources>
