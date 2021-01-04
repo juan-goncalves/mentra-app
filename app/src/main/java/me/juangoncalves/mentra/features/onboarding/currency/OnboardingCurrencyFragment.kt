@@ -12,8 +12,8 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.OnboardingCurrencyFragmentBinding
-import me.juangoncalves.mentra.extensions.animateVisibility
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
+import me.juangoncalves.mentra.extensions.updateVisibility
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
 import me.juangoncalves.mentra.features.onboarding.SingleChoiceAdapter
 import me.juangoncalves.mentra.features.onboarding.currency.OnboardingCurrencyViewModel.Error
@@ -82,13 +82,13 @@ class OnboardingCurrencyFragment : Fragment(), SingleChoiceAdapter.Listener<Curr
         }
 
         showLoadingIndicatorStream.observe(viewLifecycleOwner) { shouldShow ->
-            binding.progressBar.animateVisibility(shouldShow, 300L)
+            binding.progressBar.updateVisibility(shouldShow)
         }
 
         errorStateStream.observe(viewLifecycleOwner) { error ->
             when (error) {
-                Error.None -> binding.errorStateView.animateVisibility(false, 300L)
-                Error.CurrenciesNotLoaded -> binding.errorStateView.animateVisibility(true, 300L)
+                Error.None -> binding.errorStateView.updateVisibility(false)
+                Error.CurrenciesNotLoaded -> binding.errorStateView.updateVisibility(true)
             }
         }
     }
