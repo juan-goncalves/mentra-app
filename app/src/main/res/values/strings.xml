@@ -26,12 +26,13 @@
     <string name="last_day_change">%1$s %2$s (%3$s)</string>
     <string name="last_day_change_tooltip">24 hour change</string>
     <string name="price_refresh_error">Error, could not get the latest coin prices</string>
-    <string name="whoops_something_went_wrong">Whoops! Something went wrong.</string>
+    <string name="whoops_something_went_wrong">Whoops! Something went wrong</string>
     <string name="error_loading_wallets">An error occurred while trying to load your wallets.</string>
     <string name="error_loading_currencies">An error occurred trying to get the currency list.</string>
     <string name="empty_wallets_title">Empty in wallets</string>
     <string name="empty_wallets_description">Add a wallet and it will show up here.</string>
     <string name="coin_list_fetch_error">An error occurred while getting the list of supported coins.</string>
+    <string name="currency_list_fetch_error">You can skip this step, the default currency will be US Dollars and you can change it at any time in the app settings.</string>
     <string name="coin_list_refresh_error">An error occurred refreshing the list of coins.</string>
     <string name="coins_updated">The supported coin list has been updated.</string>
     <string name="create_wallet_error">Error, could not save your wallet</string>

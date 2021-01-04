@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.onboarding
+package me.juangoncalves.mentra.features.onboarding.currency
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
