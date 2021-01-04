@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.onboarding
+package me.juangoncalves.mentra.features.onboarding.periodic_refresh
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,18 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.OnboardingAutoRefreshFragmentBinding
+import me.juangoncalves.mentra.extensions.handleErrorsFrom
+import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
+import java.time.Duration
 
-
+@AndroidEntryPoint
 class OnboardingAutoRefreshFragment : Fragment() {
 
-    private val viewModel: OnboardingViewModel by activityViewModels()
+    private val onboardingViewModel: OnboardingViewModel by activityViewModels()
+    private val viewModel: OnboardingAutoRefreshViewModel by viewModels()
 
     private var _binding: OnboardingAutoRefreshFragmentBinding? = null
     private val binding get() = _binding!!
@@ -34,8 +40,21 @@ class OnboardingAutoRefreshFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.previousStepButton.setOnClickListener { viewModel.scrolledToStep(position - 1) }
-        binding.nextStepButton.setOnClickListener { viewModel.scrolledToStep(position + 1) }
+        configureView()
+        initObservers()
+    }
+
+    private fun initObservers() = with(viewModel) {
+        handleErrorsFrom(this)
+    }
+
+    private fun configureView() = with(binding) {
+        previousStepButton.setOnClickListener { onboardingViewModel.scrolledToStep(position - 1) }
+        nextStepButton.setOnClickListener { onboardingViewModel.scrolledToStep(position + 1) }
+        dailyButton.setOnClickListener { viewModel.periodSelected(Duration.ofDays(1)) }
+        twelveHoursButton.setOnClickListener { viewModel.periodSelected(Duration.ofHours(12)) }
+        sixHoursButton.setOnClickListener { viewModel.periodSelected(Duration.ofHours(6)) }
+        threeHoursButton.setOnClickListener { viewModel.periodSelected(Duration.ofHours(3)) }
     }
 
     override fun onDestroyView() {

@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import me.juangoncalves.mentra.features.onboarding.currency.OnboardingCurrencyFragment
+import me.juangoncalves.mentra.features.onboarding.periodic_refresh.OnboardingAutoRefreshFragment
 
 class OnboardingStepsAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
