@@ -110,4 +110,11 @@
     <style name="Theme.Mentra.SnackbarButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:backgroundTint">@android:color/transparent</item>
     </style>
+
+    <style name="Theme.Mentra.Onboarding" parent="Theme.Mentra">
+        <item name="android:statusBarColor">@color/pickled_bluewood</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorSecondary">@color/wild_strawberry</item>
+        <item name="titleTextColor">@color/white</item>
+    </style>
 </resources>

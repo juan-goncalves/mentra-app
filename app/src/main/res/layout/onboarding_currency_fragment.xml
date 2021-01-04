@@ -8,15 +8,12 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"
-        style="@style/TextAppearance.MaterialComponents.Headline5"
+        style="@style/Theme.Mentra.Onboarding.Question"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="18dp"
         android:layout_marginTop="42dp"
-        android:gravity="center_vertical|end"
         android:text="@string/onboarding_currency_select_title"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -40,7 +37,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingVertical="8dp"
-            tools:listitem="@layout/onboarding_currency_item" />
+            tools:listitem="@layout/single_choice_item" />
 
     </com.bosphere.fadingedgelayout.FadingEdgeLayout>
 
