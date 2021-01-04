@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.onboarding
+package me.juangoncalves.mentra.features.onboarding.benefits
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import me.juangoncalves.mentra.databinding.OnboardingBenefitsFragmentBinding
+import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
 
 
 class OnboardingBenefitsFragment : Fragment() {
