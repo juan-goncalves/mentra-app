@@ -135,4 +135,10 @@
     <style name="Theme.Mentra.SnackbarButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:backgroundTint">@android:color/transparent</item>
     </style>
+
+    <style name="Theme.Mentra.Onboarding" parent="Theme.Mentra">
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
 </resources>

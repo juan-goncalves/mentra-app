@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mentra">
 
-        <activity android:name=".features.onboarding.OnboardingActivity" />
+        <activity
+            android:name=".features.onboarding.OnboardingActivity"
+            android:theme="@style/Theme.Mentra.Onboarding" />
 
         <activity
             android:name=".features.dashboard.DashboardActivity"

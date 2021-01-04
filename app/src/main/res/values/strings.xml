@@ -58,4 +58,5 @@
     <string name="not_found">The requested resource was not found</string>
     <string name="service_temporarily_unavailable">The service is temporarily unavailable, try again later</string>
     <string name="access_denied">You don\'t have enough permissions for this action</string>
+    <string name="get_started">Get started</string>
 </resources>
