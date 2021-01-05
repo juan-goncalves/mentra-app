@@ -10,6 +10,7 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.content.res.ResourcesCompat
 import me.juangoncalves.pie.domain.GridZone
+import me.juangoncalves.pie.domain.PieManager
 import me.juangoncalves.pie.domain.PiePortionValidator
 import me.juangoncalves.pie.domain.PortionDrawData
 import me.juangoncalves.pie.extensions.asPercentage
@@ -50,6 +51,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     private var portionsDrawData: Array<PortionDrawData> = emptyArray()
     private var paintsForPortions: Map<PiePortion, Paint> = emptyMap()
     private val portionValidator = PiePortionValidator()
+    private val pieManager = PieManager()
 
     private val textHorizontalMargin = 5f * resources.displayMetrics.density
     private val usableWidth get() = width - paddingHorizontal
@@ -103,7 +105,8 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     fun setPortions(portions: Array<PiePortion>) {
         portionValidator.validatePortions(portions)
-        val sorted = sortAndInterlacePortions(portions)
+        val reduced = pieManager.reducePortions(portions, "Other")
+        val sorted = sortAndInterlacePortions(reduced)
         paintsForPortions = selectPaintsForPortions(sorted)
         portionsDrawData = calculatePieDrawData(sorted)
         piePortions = sorted
@@ -111,6 +114,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     private fun sortAndInterlacePortions(portions: Array<PiePortion>): Array<PiePortion> {
+        if (portions.isEmpty()) return portions
         Arrays.sort(portions, Collections.reverseOrder())
         val upper = portions.sliceArray(0..portions.lastIndex / 2)
         val lower = portions.sliceArray(portions.lastIndex / 2 + 1..portions.lastIndex)
