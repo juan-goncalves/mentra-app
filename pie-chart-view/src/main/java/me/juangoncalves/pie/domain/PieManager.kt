@@ -12,17 +12,16 @@ internal class PieManager {
     fun reducePortions(portions: Array<PiePortion>, mergedPortionText: String): Array<PiePortion> {
         val validPortions = portions.filter { it.percentage.compareTo(MIN_PORTION) > 0 }
         val invalidPortions = portions.filterNot { it.percentage.compareTo(MIN_PORTION) > 0 }
-        return if (invalidPortions.isNotEmpty()) {
+
+        return if (invalidPortions.size > 1) {
             val mergedPercentage = invalidPortions.sumByDouble { it.percentage }
             val validPortionsWithMerged =
                 validPortions + PiePortion(
                     mergedPercentage,
                     mergedPortionText
                 )
-            return validPortionsWithMerged.toTypedArray()
-        } else {
-            portions
-        }
+            validPortionsWithMerged.toTypedArray()
+        } else portions
     }
 
 }
