@@ -55,7 +55,7 @@ dependencies {
     implementation project(path: ':data-layer')
     implementation project(path: ':android-cache')
     implementation project(path: ':android-network')
-    implementation project(path: ':pie')
+    implementation project(path: ':pie-chart-view')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"

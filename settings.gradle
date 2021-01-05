@@ -3,6 +3,6 @@ include ':android-cache'
 include ':test-utils'
 include ':data-layer'
 include ':domain-layer'
-include ':pie'
+include ':pie-chart-view'
 include ':app'
 rootProject.name = "Mentra"
