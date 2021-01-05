@@ -23,6 +23,7 @@ class PreferenceRepositoryImpl @Inject constructor(
         const val ValueChartTimeGranularity = "value_chart_time_granularity"
         const val CurrencyCode = "currency_code"
         const val PeriodicRefresh = "periodic_refresh"
+        const val OnboardingFinished = "onboarding_finished"
     }
 
     override val valueChartTimeUnitStream: Flow<TimeGranularity>
@@ -50,6 +51,17 @@ class PreferenceRepositoryImpl @Inject constructor(
     override suspend fun updatePeriodicRefresh(value: Duration): Either<Failure, Unit> =
         errorHandler.runCatching(Dispatchers.IO) {
             localDataSource.putString(PeriodicRefresh, value.toHours().toString())
+        }
+
+    override suspend fun hasFinishedOnboarding(): Either<Failure, Boolean> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            localDataSource.getString(OnboardingFinished) == "1"
+        }
+
+    override suspend fun updateOnboardingStatus(wasCompleted: Boolean): Either<Failure, Unit> =
+        errorHandler.runCatching(Dispatchers.IO) {
+            val value = if (wasCompleted) "1" else "0"
+            localDataSource.putString(OnboardingFinished, value)
         }
 
     private fun String?.toTimeGranularity(): TimeGranularity {

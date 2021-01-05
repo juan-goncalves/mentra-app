@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.features.onboarding
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.OnboardingActivityBinding
 import me.juangoncalves.mentra.extensions.empty
+import me.juangoncalves.mentra.features.dashboard.DashboardActivity
 
 @AndroidEntryPoint
 class OnboardingActivity : AppCompatActivity() {
@@ -29,6 +31,10 @@ class OnboardingActivity : AppCompatActivity() {
         viewModel.currentStep.observe(this) { step ->
             binding.pager.setCurrentItem(step.index, true)
         }
+
+        viewModel.closeOnboardingStream.observe(this) { notification ->
+            notification.use { openDashboard() }
+        }
     }
 
     private fun configureView() = with(binding) {
@@ -36,6 +42,13 @@ class OnboardingActivity : AppCompatActivity() {
         binding.tabLayout.addOnTabSelectedListener(tabListener)
         TabLayoutMediator(tabLayout, pager) { _, _ ->
         }.attach()
+    }
+
+    private fun openDashboard() {
+        val intent = Intent(this, DashboardActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
     }
 
     private val tabListener = object : TabLayout.OnTabSelectedListener {
