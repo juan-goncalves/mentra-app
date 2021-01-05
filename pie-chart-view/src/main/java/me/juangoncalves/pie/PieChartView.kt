@@ -10,15 +10,14 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.content.res.ResourcesCompat
 import me.juangoncalves.pie.domain.GridZone
+import me.juangoncalves.pie.domain.PieManager
 import me.juangoncalves.pie.domain.PiePortionValidator
 import me.juangoncalves.pie.domain.PortionDrawData
 import me.juangoncalves.pie.extensions.asPercentage
 import me.juangoncalves.pie.extensions.closeTo
-import me.juangoncalves.pie.extensions.toRadians
+import me.juangoncalves.pie.extensions.rad
 import java.util.*
-import kotlin.math.cos
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 
 class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
@@ -52,14 +51,18 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     private var portionsDrawData: Array<PortionDrawData> = emptyArray()
     private var paintsForPortions: Map<PiePortion, Paint> = emptyMap()
     private val portionValidator = PiePortionValidator()
+    private val pieManager = PieManager()
 
     private val textHorizontalMargin = 5f * resources.displayMetrics.density
     private val usableWidth get() = width - paddingHorizontal
     private val usableHeight get() = height - paddingVertical
     private val paddingHorizontal get() = paddingStart + paddingEnd
     private val paddingVertical get() = paddingTop + paddingBottom
-    private val pieDiameter get() = pieChartContainer.width() - paddingEnd - paddingStart
+    private val pieDiameter get() = pieChartContainer.width()
     private val pieRadius get() = pieDiameter / 2f
+    private val defaultLabelWidth = textPaint.measureText("NANO (99.9%)")
+    private val horizontalLabelsSpace = (defaultLabelWidth + DefaultTextLineLength).toInt() * 2
+    private val verticalLabelSpace = DefaultTextLineLength.toInt() * 2
 
     init {
         processAttributes(context, attrs)
@@ -102,11 +105,29 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     fun setPortions(portions: Array<PiePortion>) {
         portionValidator.validatePortions(portions)
-        Arrays.sort(portions, Collections.reverseOrder())
-        paintsForPortions = selectPaintsForPortions(portions)
-        portionsDrawData = calculatePieDrawData(portions)
-        piePortions = portions
+        val reduced = pieManager.reducePortions(portions, "Other")
+        val sorted = sortAndInterlacePortions(reduced)
+        paintsForPortions = selectPaintsForPortions(sorted)
+        portionsDrawData = calculatePieDrawData(sorted)
+        piePortions = sorted
         invalidate()
+    }
+
+    private fun sortAndInterlacePortions(portions: Array<PiePortion>): Array<PiePortion> {
+        if (portions.isEmpty()) return portions
+        Arrays.sort(portions, Collections.reverseOrder())
+        val upper = portions.sliceArray(0..portions.lastIndex / 2)
+        val lower = portions.sliceArray(portions.lastIndex / 2 + 1..portions.lastIndex)
+        return sequence {
+            val first = upper.iterator()
+            val second = lower.iterator()
+            while (first.hasNext() && second.hasNext()) {
+                yield(first.next())
+                yield(second.next())
+            }
+            yieldAll(first)
+            yieldAll(second)
+        }.toList().toTypedArray()
     }
 
     private fun selectPaintsForPortions(portions: Array<PiePortion>): Map<PiePortion, Paint> {
@@ -154,34 +175,25 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-
-        val sampleText = "NANO (99.9%)"
-        val defaultLabelWidth = textPaint.measureText(sampleText)
-        val horizontalLabelsSpace = (defaultLabelWidth + DefaultTextLineLength).toInt() * 2
-        val verticalLabelSpace = DefaultTextLineLength.toInt() * 2
         val desiredWidth = DefaultPieDiameter + paddingStart + paddingEnd + horizontalLabelsSpace
         val desiredHeight = DefaultPieDiameter + paddingTop + paddingBottom + verticalLabelSpace
 
-        val width = when (widthMode) {
-            MeasureSpec.EXACTLY -> widthSize
-            MeasureSpec.AT_MOST -> desiredWidth.coerceAtMost(widthSize)
-            MeasureSpec.UNSPECIFIED -> desiredWidth
-            else -> desiredWidth
-        }
+        val measuredWidth = measureDimension(desiredWidth, widthMeasureSpec)
+        val measuredHeight = measureDimension(desiredHeight, heightMeasureSpec)
 
-        val height = when (heightMode) {
-            MeasureSpec.EXACTLY -> heightSize
-            MeasureSpec.AT_MOST -> desiredHeight.coerceAtMost(heightSize)
-            MeasureSpec.UNSPECIFIED -> desiredHeight
-            else -> desiredHeight
-        }
+        setMeasuredDimension(measuredWidth, measuredHeight)
+    }
 
-        setMeasuredDimension(width, height)
+    private fun measureDimension(desiredSize: Int, measureSpec: Int): Int {
+        val specMode = MeasureSpec.getMode(measureSpec)
+        val specSize = MeasureSpec.getSize(measureSpec)
+
+        return when (specMode) {
+            MeasureSpec.EXACTLY -> specSize
+            MeasureSpec.AT_MOST -> desiredSize.coerceAtMost(specSize)
+            MeasureSpec.UNSPECIFIED -> desiredSize
+            else -> desiredSize
+        }
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
@@ -291,7 +303,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     private fun calculatePieDrawData(portions: Array<PiePortion>): Array<PortionDrawData> {
         val result = arrayListOf<PortionDrawData>()
-        var currStartAngle = 30.0
+        var currStartAngle = 0.0
 
         portions.forEach { portion ->
             val usedSweepAngle = 360 * portion.percentage
@@ -325,27 +337,34 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         startAngle: Double,
         sweepAngle: Double
     ): Triple<PointF, PointF, PointF> {
+        val arcCenter = calculateArcCenter(startAngle, sweepAngle)
+        val middle = calculateMiddlePointFor(arcCenter)
+        val end = calculateEndPointFor(arcCenter, middle)
+        return Triple(arcCenter, middle, end)
+    }
+
+    private fun calculateArcCenter(startAngle: Double, sweepAngle: Double): PointF {
         val endAngle = startAngle + sweepAngle
-        val middleAngle = ((startAngle + endAngle) / 2).toRadians()
+        val middleAngle = ((startAngle + endAngle) / 2).rad
         val rx = pieChartContainer.centerX() + pieRadius * cos(middleAngle)
         val ry = pieChartContainer.centerY() + pieRadius * sin(middleAngle)
-        val arcCenter = PointF(rx.toFloat(), ry.toFloat())
-        val lineAngle = getArcZone(arcCenter).textLineDegree()
+        return PointF(rx.toFloat(), ry.toFloat())
+    }
 
-        val middle = when {
-            lineAngle closeTo 0.0 -> arcCenter
-            else -> {
-                val textLineLength = pieRadius * 0.3
-                val sx = rx + textLineLength * cos(lineAngle)
-                val sy = ry + textLineLength * sin(lineAngle)
-                PointF(sx.toFloat(), sy.toFloat())
-            }
-        }
+    private fun calculateEndPointFor(arcCenter: PointF, middle: PointF): PointF {
+        val directionModifier = if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
+        val lineExtension = pieRadius * 0.28f * directionModifier
+        return PointF(middle.x + lineExtension, middle.y)
+    }
 
-        val ex = pieRadius * 0.3f * if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
-        val end = PointF(middle.x + ex, middle.y)
-
-        return Triple(arcCenter, middle, end)
+    private fun calculateMiddlePointFor(arcCenter: PointF): PointF {
+        val (rx, ry) = arcCenter.x to arcCenter.y
+        val lineAngle = getArcZone(arcCenter).textLineDegrees
+        val factor = abs(pieChartContainer.centerY() - ry)
+        val textLineLength = factor * 0.4
+        val sx = rx + textLineLength * cos(lineAngle)
+        val sy = ry + textLineLength * sin(lineAngle)
+        return PointF(sx.toFloat(), sy.toFloat())
     }
 
     private fun textLayoutForPortion(
@@ -372,7 +391,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         }
 
         val textLayout = StaticLayout.Builder
-            .obtain(text, 0, text.length, textPaint, textLayoutMaxWidth)
+            .obtain(text, 0, text.length, textPaint, max(textLayoutMaxWidth, 0))
             .setAlignment(textLayoutAlignment)
             .setMaxLines(1)
             .build()
@@ -385,29 +404,24 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     /** Get the [GridZone] in which the [point] is contained. */
     private fun getArcZone(point: PointF): GridZone {
-        val third = pieDiameter / 3f
-        val verticalBreakpoint1 = pieChartContainer.left + third
-        val verticalBreakpoint2 = verticalBreakpoint1 + third
-        val horizontalBreakpoint1 = pieChartContainer.top + third
-        val horizontalBreakpoint2 = horizontalBreakpoint1 + third
+        val verticalBreakpoint = pieChartContainer.left + (pieDiameter / 2f)
+        val horizontalBreakpoint1 = pieChartContainer.top + (pieDiameter / 3f)
+        val horizontalBreakpoint2 = horizontalBreakpoint1 + (pieDiameter / 3f)
 
         val isInFirstRow = point.y <= horizontalBreakpoint1
         val isInMiddleRow = point.y in horizontalBreakpoint1..horizontalBreakpoint2
         val isInEndRow = point.y >= horizontalBreakpoint2
 
-        val isInFirstCol = point.x <= verticalBreakpoint1
-        val isInMiddleCol = point.x in verticalBreakpoint1..verticalBreakpoint2
-        val isInEndCol = point.x >= verticalBreakpoint2
+        val isInLeftCol = point.x <= verticalBreakpoint
+        val isRightCol = !isInLeftCol
 
         return when {
-            isInEndCol && isInFirstRow -> GridZone.TopRight
-            isInEndCol && isInMiddleRow -> GridZone.MiddleRight
-            isInEndCol && isInEndRow -> GridZone.BottomRight
-            isInMiddleCol && isInFirstRow -> GridZone.TopMiddle
-            isInMiddleCol && isInEndRow -> GridZone.BottomMiddle
-            isInFirstCol && isInFirstRow -> GridZone.TopLeft
-            isInFirstCol && isInMiddleRow -> GridZone.MiddleLeft
-            isInFirstCol && isInEndRow -> GridZone.BottomLeft
+            isRightCol && isInFirstRow -> GridZone.TopRight
+            isRightCol && isInMiddleRow -> GridZone.MiddleRight
+            isRightCol && isInEndRow -> GridZone.BottomRight
+            isInLeftCol && isInFirstRow -> GridZone.TopLeft
+            isInLeftCol && isInMiddleRow -> GridZone.MiddleLeft
+            isInLeftCol && isInEndRow -> GridZone.BottomLeft
             else -> GridZone.None
         }
     }

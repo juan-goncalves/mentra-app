@@ -1,6 +1,6 @@
-package me.juangoncalves.pie
+package me.juangoncalves.pie.domain
 
-import me.juangoncalves.pie.domain.PieManager
+import me.juangoncalves.pie.PiePortion
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertArrayEquals
@@ -52,6 +52,29 @@ class PieManagerTest {
             PiePortion(0.80, "Portion 1"),
             PiePortion(0.15, "Portion 2"),
             PiePortion(0.05, "Other portions")
+        )
+        assertArrayEquals(result, expected)
+    }
+
+    @Test
+    fun `reducePortions returns the received portions without change if there's only one small portion`() {
+        // Arrange
+        val portions = arrayOf(
+            PiePortion(0.80, "Portion 1"),
+            PiePortion(0.1, "Portion 2"),
+            PiePortion(0.09, "Portion 3"),
+            PiePortion(0.01, "Small")
+        )
+
+        // Act
+        val result = sut.reducePortions(portions, "Other portions")
+
+        // Assert
+        val expected = arrayOf(
+            PiePortion(0.80, "Portion 1"),
+            PiePortion(0.1, "Portion 2"),
+            PiePortion(0.09, "Portion 3"),
+            PiePortion(0.01, "Small")
         )
         assertArrayEquals(result, expected)
     }
