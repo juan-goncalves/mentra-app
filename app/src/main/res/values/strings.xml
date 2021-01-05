@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Mentra</string>
-    <string name="default_error">An error occurred</string>
+    <string name="default_error">An error occurred, try again later</string>
     <string name="retry">Retry</string>
     <string name="connection_error">You don\'t have an active internet connection</string>
     <string name="wallets_subtitle">Wallets</string>
@@ -26,12 +26,13 @@
     <string name="last_day_change">%1$s %2$s (%3$s)</string>
     <string name="last_day_change_tooltip">24 hour change</string>
     <string name="price_refresh_error">Error, could not get the latest coin prices</string>
-    <string name="whoops_something_went_wrong">Whoops! Something went wrong.</string>
+    <string name="whoops_something_went_wrong">Whoops! Something went wrong</string>
     <string name="error_loading_wallets">An error occurred while trying to load your wallets.</string>
     <string name="error_loading_currencies">An error occurred trying to get the currency list.</string>
     <string name="empty_wallets_title">Empty in wallets</string>
     <string name="empty_wallets_description">Add a wallet and it will show up here.</string>
     <string name="coin_list_fetch_error">An error occurred while getting the list of supported coins.</string>
+    <string name="currency_list_fetch_error">You can skip this step, the default currency will be US Dollars and you can change it at any time in the app settings.</string>
     <string name="coin_list_refresh_error">An error occurred refreshing the list of coins.</string>
     <string name="coins_updated">The supported coin list has been updated.</string>
     <string name="create_wallet_error">Error, could not save your wallet</string>
@@ -54,8 +55,20 @@
     <string name="every_3_hours">Every 3 hours</string>
     <string name="every_6_hours">Every 6 hours</string>
     <string name="every_12_hours">Every 12 hours</string>
+    <string name="every_x_hours">Every %1$d hours</string>
     <string name="once_a_day">Once a day</string>
     <string name="not_found">The requested resource was not found</string>
     <string name="service_temporarily_unavailable">The service is temporarily unavailable, try again later</string>
     <string name="access_denied">You don\'t have enough permissions for this action</string>
+    <string name="get_started">Get started</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="onboarding_currency">%1$s (%2$s)</string>
+    <string name="onboarding_currency_select_title">In what currency do you want to see prices and values?</string>
+    <string name="onboarding_auto_refresh_title">How often do you want your portfolio value to be refreshed?</string>
+    <string name="all_done">All done.</string>
+    <string name="onboarding_finish_description">You can now add your wallets and we will take care of the rest.</string>
+    <string name="onboarding_finish_button">Finish</string>
+    <string name="welcome">Welcome.</string>
+    <string name="benefits">Track the behaviour and composition of your portfolio over time.</string>
 </resources>

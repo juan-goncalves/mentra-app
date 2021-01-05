@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.common
+package me.juangoncalves.mentra.common
 
 open class Event<out T>(private val _content: T) {
 

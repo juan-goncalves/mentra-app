@@ -135,4 +135,23 @@
     <style name="Theme.Mentra.SnackbarButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:backgroundTint">@android:color/transparent</item>
     </style>
+
+    <style name="Theme.Mentra.Onboarding" parent="Theme.Mentra">
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorSecondary">@color/wild_strawberry</item>
+        <item name="titleTextColor">@color/black</item>
+    </style>
+
+    <style name="Theme.Mentra.Onboarding.Title" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="android:textColor">?attr/titleTextColor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Theme.Mentra.Onboarding.Question" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textColor">?attr/titleTextColor</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center_vertical|end</item>
+    </style>
+
 </resources>

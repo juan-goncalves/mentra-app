@@ -11,10 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.common.BundleKeys
+import me.juangoncalves.mentra.common.RequestKeys
 import me.juangoncalves.mentra.databinding.DeleteWalletDialogFragmentBinding
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
-import me.juangoncalves.mentra.features.common.BundleKeys
-import me.juangoncalves.mentra.features.common.RequestKeys
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 @AndroidEntryPoint

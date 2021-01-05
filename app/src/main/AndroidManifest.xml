@@ -15,6 +15,10 @@
         android:theme="@style/Theme.Mentra">
 
         <activity
+            android:name=".features.onboarding.OnboardingActivity"
+            android:theme="@style/Theme.Mentra.Onboarding" />
+
+        <activity
             android:name=".features.dashboard.DashboardActivity"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
 
@@ -50,7 +54,6 @@
             android:authorities="${applicationId}.workmanager-init"
             android:exported="false"
             tools:node="remove" />
-
     </application>
 
 </manifest>

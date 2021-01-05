@@ -19,4 +19,8 @@ interface PreferenceRepository {
 
     suspend fun updatePeriodicRefresh(value: Duration): Either<Failure, Unit>
 
+    suspend fun hasFinishedOnboarding(): Either<Failure, Boolean>
+
+    suspend fun updateOnboardingStatus(wasCompleted: Boolean): Either<Failure, Unit>
+
 }

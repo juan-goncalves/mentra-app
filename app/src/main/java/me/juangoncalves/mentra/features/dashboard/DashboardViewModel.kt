@@ -1,17 +1,19 @@
 package me.juangoncalves.mentra.features.dashboard
 
+import android.os.Bundle
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import me.juangoncalves.mentra.common.BundleKeys
+import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.ValueVariation
 import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceStream
 import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangeVariationStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueVariationStream
-import me.juangoncalves.mentra.features.common.Notification
 
 
 class DashboardViewModel @ViewModelInject constructor(
@@ -26,7 +28,7 @@ class DashboardViewModel @ViewModelInject constructor(
     val openedTab: LiveData<Tab> get() = _openedTab
     val closeEvent: LiveData<Notification> get() = _closeEvent
 
-    private val _openedTab: MutableLiveData<Tab> = MutableLiveData(Tab.STATS)
+    private val _openedTab: MutableLiveData<Tab> = MutableLiveData()
     private val _closeEvent: MutableLiveData<Notification> = MutableLiveData()
 
     private val _portfolioValue: LiveData<Price> = with(exchangeExchangePriceStream) {
@@ -42,24 +44,29 @@ class DashboardViewModel @ViewModelInject constructor(
                 .asLiveData()
         }
 
+    fun initialize(args: Bundle?) {
+        val isFirstRun = args?.getBoolean(BundleKeys.FirstRun) ?: false
+        _openedTab.value = if (isFirstRun) Tab.Wallets else Tab.Stats
+    }
+
     fun openStatsSelected() {
-        _openedTab.value = Tab.STATS
+        _openedTab.value = Tab.Stats
     }
 
     fun openWalletsSelected() {
-        _openedTab.value = Tab.WALLETS
+        _openedTab.value = Tab.Wallets
     }
 
     fun backPressed() {
         val currentTab = _openedTab.value ?: return
 
         when (currentTab) {
-            Tab.STATS -> _closeEvent.value = Notification()
-            else -> _openedTab.value = Tab.STATS
+            Tab.Stats -> _closeEvent.value = Notification()
+            else -> _openedTab.value = Tab.Stats
         }
     }
 
-    enum class Tab { STATS, WALLETS }
+    enum class Tab { Stats, Wallets }
 
 }
 

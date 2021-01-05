@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import me.juangoncalves.mentra.*
+import me.juangoncalves.mentra.common.Event
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Wallet
@@ -17,7 +18,6 @@ import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioV
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreferenceStream
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.GetWalletListStream
 import me.juangoncalves.mentra.failures.FleetingError
-import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule

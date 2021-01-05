@@ -15,6 +15,10 @@ fun View.show() {
     visibility = View.VISIBLE
 }
 
+fun View.updateVisibility(shouldShow: Boolean) {
+    visibility = if (shouldShow) View.VISIBLE else View.GONE
+}
+
 fun View.animateVisibility(shouldShow: Boolean, duration: Long = 700L) {
     when {
         // Ensure that the view is visible to show the alpha animation

@@ -7,11 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import me.juangoncalves.mentra.common.BundleKeys
+import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.DeleteWallet
 import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
-import me.juangoncalves.mentra.features.common.BundleKeys
-import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 
 class DeleteWalletViewModel @ViewModelInject constructor(
