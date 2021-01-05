@@ -155,10 +155,6 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
         val sampleText = "NANO (99.9%)"
         val defaultLabelWidth = textPaint.measureText(sampleText)
@@ -167,21 +163,22 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         val desiredWidth = DefaultPieDiameter + paddingStart + paddingEnd + horizontalLabelsSpace
         val desiredHeight = DefaultPieDiameter + paddingTop + paddingBottom + verticalLabelSpace
 
-        val width = when (widthMode) {
-            MeasureSpec.EXACTLY -> widthSize
-            MeasureSpec.AT_MOST -> desiredWidth.coerceAtMost(widthSize)
-            MeasureSpec.UNSPECIFIED -> desiredWidth
-            else -> desiredWidth
-        }
+        val measuredWidth = measureDimension(desiredWidth, widthMeasureSpec)
+        val measuredHeight = measureDimension(desiredHeight, heightMeasureSpec)
 
-        val height = when (heightMode) {
-            MeasureSpec.EXACTLY -> heightSize
-            MeasureSpec.AT_MOST -> desiredHeight.coerceAtMost(heightSize)
-            MeasureSpec.UNSPECIFIED -> desiredHeight
-            else -> desiredHeight
-        }
+        setMeasuredDimension(measuredWidth, measuredHeight)
+    }
 
-        setMeasuredDimension(width, height)
+    private fun measureDimension(desiredSize: Int, measureSpec: Int): Int {
+        val specMode = MeasureSpec.getMode(measureSpec)
+        val specSize = MeasureSpec.getSize(measureSpec)
+
+        return when (specMode) {
+            MeasureSpec.EXACTLY -> specSize
+            MeasureSpec.AT_MOST -> desiredSize.coerceAtMost(specSize)
+            MeasureSpec.UNSPECIFIED -> desiredSize
+            else -> desiredSize
+        }
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
