@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.usecases.preference.FinishOnboarding
-import me.juangoncalves.mentra.features.common.Notification
 
 class OnboardingViewModel @ViewModelInject constructor(
     private val finishOnboarding: FinishOnboarding

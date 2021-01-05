@@ -7,6 +7,7 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.common.Event
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Coin
@@ -15,7 +16,6 @@ import me.juangoncalves.mentra.domain_layer.usecases.coin.FindCoinsByName
 import me.juangoncalves.mentra.domain_layer.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.CreateWallet
 import me.juangoncalves.mentra.failures.FleetingError
-import me.juangoncalves.mentra.features.common.Event
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel.Step
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe

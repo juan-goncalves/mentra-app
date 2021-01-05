@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.common.BundleKeys
 import me.juangoncalves.mentra.databinding.OnboardingFinishedFragmentBinding
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
 
@@ -44,7 +45,7 @@ class OnboardingFinishedFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(position: Int) = OnboardingFinishedFragment().apply {
-            arguments = bundleOf("position" to position)
+            arguments = bundleOf(BundleKeys.Position to position)
         }
     }
 

@@ -11,11 +11,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.common.BundleKeys
+import me.juangoncalves.mentra.common.SingleChoiceAdapter
 import me.juangoncalves.mentra.databinding.OnboardingCurrencyFragmentBinding
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.extensions.updateVisibility
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
-import me.juangoncalves.mentra.features.onboarding.SingleChoiceAdapter
 import me.juangoncalves.mentra.features.onboarding.currency.OnboardingCurrencyViewModel.Error
 import java.util.*
 
@@ -33,7 +34,7 @@ class OnboardingCurrencyFragment : Fragment(), SingleChoiceAdapter.Listener<Curr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        position = arguments?.getInt("position") ?: 0
+        position = arguments?.getInt(BundleKeys.Position) ?: 0
     }
 
     override fun onCreateView(
@@ -101,7 +102,7 @@ class OnboardingCurrencyFragment : Fragment(), SingleChoiceAdapter.Listener<Curr
     companion object {
         @JvmStatic
         fun newInstance(position: Int) = OnboardingCurrencyFragment().apply {
-            arguments = bundleOf("position" to position)
+            arguments = bundleOf(BundleKeys.Position to position)
         }
     }
 

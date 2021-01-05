@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.onboarding
+package me.juangoncalves.mentra.common
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -17,7 +17,7 @@ abstract class SingleChoiceAdapter<T> constructor(
             selectFirstOption(value)
         }
 
-    private var lastSelectedPos: Int = -1
+    private var lastSelectedIndex: Int = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = SingleChoiceItemBinding.inflate(
@@ -30,15 +30,15 @@ abstract class SingleChoiceAdapter<T> constructor(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = with(holder.binding) {
         val currency = data[position]
-        radioButton.isChecked = position == lastSelectedPos
+        radioButton.isChecked = position == lastSelectedIndex
         radioButton.text = getTextForItem(root.context, currency)
 
         radioButton.setOnClickListener {
             listener.onOptionSelected(currency)
-            val copyOfLastCheckedPosition = lastSelectedPos
-            lastSelectedPos = position
+            val copyOfLastCheckedPosition = lastSelectedIndex
+            lastSelectedIndex = position
             notifyItemChanged(copyOfLastCheckedPosition)
-            notifyItemChanged(lastSelectedPos)
+            notifyItemChanged(lastSelectedIndex)
         }
     }
 
@@ -48,8 +48,8 @@ abstract class SingleChoiceAdapter<T> constructor(
 
     private fun selectFirstOption(value: List<T>) {
         if (value.isNotEmpty()) {
-            lastSelectedPos = 0
-            listener.onOptionSelected(value[lastSelectedPos])
+            lastSelectedIndex = 0
+            listener.onOptionSelected(value[lastSelectedIndex])
         }
     }
 

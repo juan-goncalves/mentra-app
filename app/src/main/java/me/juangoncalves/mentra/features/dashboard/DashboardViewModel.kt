@@ -5,13 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.ValueVariation
 import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceStream
 import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangeVariationStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueVariationStream
-import me.juangoncalves.mentra.features.common.Notification
 
 
 class DashboardViewModel @ViewModelInject constructor(

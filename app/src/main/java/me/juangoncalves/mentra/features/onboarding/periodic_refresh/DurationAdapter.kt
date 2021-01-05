@@ -2,7 +2,7 @@ package me.juangoncalves.mentra.features.onboarding.periodic_refresh
 
 import android.content.Context
 import me.juangoncalves.mentra.R
-import me.juangoncalves.mentra.features.onboarding.SingleChoiceAdapter
+import me.juangoncalves.mentra.common.SingleChoiceAdapter
 import java.time.Duration
 
 class DurationAdapter(listener: Listener<Duration>) : SingleChoiceAdapter<Duration>(listener) {

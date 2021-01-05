@@ -11,10 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.common.BundleKeys
+import me.juangoncalves.mentra.common.SingleChoiceAdapter
 import me.juangoncalves.mentra.databinding.OnboardingAutoRefreshFragmentBinding
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.features.onboarding.OnboardingViewModel
-import me.juangoncalves.mentra.features.onboarding.SingleChoiceAdapter
 import java.time.Duration
 
 @AndroidEntryPoint
@@ -31,7 +32,7 @@ class OnboardingAutoRefreshFragment : Fragment(), SingleChoiceAdapter.Listener<D
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        position = arguments?.getInt("position") ?: 0
+        position = arguments?.getInt(BundleKeys.Position) ?: 0
     }
 
     override fun onCreateView(
@@ -79,7 +80,7 @@ class OnboardingAutoRefreshFragment : Fragment(), SingleChoiceAdapter.Listener<D
     companion object {
         @JvmStatic
         fun newInstance(position: Int) = OnboardingAutoRefreshFragment().apply {
-            arguments = bundleOf("position" to position)
+            arguments = bundleOf(BundleKeys.Position to position)
         }
     }
 

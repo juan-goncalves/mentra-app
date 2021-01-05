@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.features.common
+package me.juangoncalves.mentra.common
 
 object RequestKeys {
     const val WalletDeletion = "req_delete_wallet"
@@ -9,4 +9,5 @@ object BundleKeys {
     const val Wallet = "wallet_arg_key"
     const val WalletDeletionResult = "wallet_delete_result_key"
     const val WalletEditResult = "wallet_edit_result_key"
+    const val Position = "position_key"
 }

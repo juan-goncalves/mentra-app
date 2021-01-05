@@ -4,12 +4,12 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.common.Event
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.domain_layer.extensions.whenLeft
 import me.juangoncalves.mentra.domain_layer.usecases.UseCase
 import me.juangoncalves.mentra.extensions.toEvent
-import me.juangoncalves.mentra.features.common.Event
 
 class GeneralFailurePublisher : FailurePublisher {
 

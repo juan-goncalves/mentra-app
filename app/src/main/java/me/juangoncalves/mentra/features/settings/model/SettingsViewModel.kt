@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
+import me.juangoncalves.mentra.common.Event
 import me.juangoncalves.mentra.domain_layer.usecases.coin.RefreshSupportedCoins
 import me.juangoncalves.mentra.domain_layer.usecases.currency.GetSupportedCurrencies
 import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
-import me.juangoncalves.mentra.features.common.Event
 import java.util.*
 
 class SettingsViewModel @ViewModelInject constructor(

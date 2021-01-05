@@ -11,14 +11,14 @@ import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.Right
 import me.juangoncalves.mentra.USD
+import me.juangoncalves.mentra.common.BundleKeys
+import me.juangoncalves.mentra.common.Event
+import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.UpdateWallet
 import me.juangoncalves.mentra.failures.FleetingError
-import me.juangoncalves.mentra.features.common.BundleKeys
-import me.juangoncalves.mentra.features.common.Event
-import me.juangoncalves.mentra.features.common.Notification
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe
