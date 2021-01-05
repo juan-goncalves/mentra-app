@@ -17,6 +17,7 @@ import me.juangoncalves.pie.extensions.closeTo
 import me.juangoncalves.pie.extensions.toRadians
 import java.util.*
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
@@ -58,8 +59,11 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     private val usableHeight get() = height - paddingVertical
     private val paddingHorizontal get() = paddingStart + paddingEnd
     private val paddingVertical get() = paddingTop + paddingBottom
-    private val pieDiameter get() = pieChartContainer.width() - paddingEnd - paddingStart
+    private val pieDiameter get() = pieChartContainer.width()
     private val pieRadius get() = pieDiameter / 2f
+    private val defaultLabelWidth = textPaint.measureText("NANO (99.9%)")
+    private val horizontalLabelsSpace = (defaultLabelWidth + DefaultTextLineLength).toInt() * 2
+    private val verticalLabelSpace = DefaultTextLineLength.toInt() * 2
 
     init {
         processAttributes(context, attrs)
@@ -154,12 +158,6 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
-        val sampleText = "NANO (99.9%)"
-        val defaultLabelWidth = textPaint.measureText(sampleText)
-        val horizontalLabelsSpace = (defaultLabelWidth + DefaultTextLineLength).toInt() * 2
-        val verticalLabelSpace = DefaultTextLineLength.toInt() * 2
         val desiredWidth = DefaultPieDiameter + paddingStart + paddingEnd + horizontalLabelsSpace
         val desiredHeight = DefaultPieDiameter + paddingTop + paddingBottom + verticalLabelSpace
 
@@ -369,7 +367,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         }
 
         val textLayout = StaticLayout.Builder
-            .obtain(text, 0, text.length, textPaint, textLayoutMaxWidth)
+            .obtain(text, 0, text.length, textPaint, max(textLayoutMaxWidth, 0))
             .setAlignment(textLayoutAlignment)
             .setMaxLines(1)
             .build()
