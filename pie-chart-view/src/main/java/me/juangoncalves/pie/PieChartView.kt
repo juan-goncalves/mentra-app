@@ -106,11 +106,28 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     fun setPortions(portions: Array<PiePortion>) {
         portionValidator.validatePortions(portions)
-        Arrays.sort(portions, Collections.reverseOrder())
-        paintsForPortions = selectPaintsForPortions(portions)
-        portionsDrawData = calculatePieDrawData(portions)
-        piePortions = portions
+        val sorted = sortAndMergePortions(portions)
+        paintsForPortions = selectPaintsForPortions(sorted)
+        portionsDrawData = calculatePieDrawData(sorted)
+        piePortions = sorted
         invalidate()
+    }
+
+    private fun sortAndMergePortions(portions: Array<PiePortion>): Array<PiePortion> {
+        Arrays.sort(portions, Collections.reverseOrder())
+        val upper = portions.sliceArray(0..portions.lastIndex / 2)
+        val lower = portions.sliceArray(portions.lastIndex / 2 + 1..portions.lastIndex)
+        val result = sequence {
+            val first = upper.iterator()
+            val second = lower.iterator()
+            while (first.hasNext() && second.hasNext()) {
+                yield(first.next())
+                yield(second.next())
+            }
+            yieldAll(first)
+            yieldAll(second)
+        }.toList().toTypedArray()
+        return result
     }
 
     private fun selectPaintsForPortions(portions: Array<PiePortion>): Map<PiePortion, Paint> {
@@ -286,7 +303,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     private fun calculatePieDrawData(portions: Array<PiePortion>): Array<PortionDrawData> {
         val result = arrayListOf<PortionDrawData>()
-        var currStartAngle = 30.0
+        var currStartAngle = 0.0
 
         portions.forEach { portion ->
             val usedSweepAngle = 360 * portion.percentage
@@ -325,7 +342,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         val rx = pieChartContainer.centerX() + pieRadius * cos(middleAngle)
         val ry = pieChartContainer.centerY() + pieRadius * sin(middleAngle)
         val arcCenter = PointF(rx.toFloat(), ry.toFloat())
-        val lineAngle = getArcZone(arcCenter).textLineDegree()
+        val lineAngle = getArcZone(arcCenter).textLineDegrees
 
         val middle = when {
             lineAngle closeTo 0.0 -> arcCenter
