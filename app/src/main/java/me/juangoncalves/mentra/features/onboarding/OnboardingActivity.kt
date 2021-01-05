@@ -8,6 +8,7 @@ import androidx.lifecycle.observe
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import me.juangoncalves.mentra.common.BundleKeys
 import me.juangoncalves.mentra.databinding.OnboardingActivityBinding
 import me.juangoncalves.mentra.extensions.empty
 import me.juangoncalves.mentra.features.dashboard.DashboardActivity
@@ -47,6 +48,7 @@ class OnboardingActivity : AppCompatActivity() {
     private fun openDashboard() {
         val intent = Intent(this, DashboardActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(BundleKeys.FirstRun, true)
         }
         startActivity(intent)
     }

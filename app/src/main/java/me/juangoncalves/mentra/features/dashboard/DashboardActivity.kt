@@ -43,6 +43,7 @@ class DashboardActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         binding = DashboardActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel.initialize(intent.extras)
         configureView()
         initObservers()
     }
@@ -85,8 +86,8 @@ class DashboardActivity : FragmentActivity() {
 
         viewModel.openedTab.observe(this) { screen ->
             when (screen) {
-                DashboardViewModel.Tab.STATS -> loadStatsTab()
-                DashboardViewModel.Tab.WALLETS -> loadWalletsTab()
+                DashboardViewModel.Tab.Stats -> loadStatsTab()
+                DashboardViewModel.Tab.Wallets -> loadWalletsTab()
             }
         }
 

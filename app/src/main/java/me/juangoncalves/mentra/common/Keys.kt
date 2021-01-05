@@ -10,4 +10,5 @@ object BundleKeys {
     const val WalletDeletionResult = "wallet_delete_result_key"
     const val WalletEditResult = "wallet_edit_result_key"
     const val Position = "position_key"
+    const val FirstRun = "first_run_key"
 }
