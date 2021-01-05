@@ -397,29 +397,24 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     /** Get the [GridZone] in which the [point] is contained. */
     private fun getArcZone(point: PointF): GridZone {
-        val third = pieDiameter / 3f
-        val verticalBreakpoint1 = pieChartContainer.left + third
-        val verticalBreakpoint2 = verticalBreakpoint1 + third
-        val horizontalBreakpoint1 = pieChartContainer.top + third
-        val horizontalBreakpoint2 = horizontalBreakpoint1 + third
+        val verticalBreakpoint = pieChartContainer.left + (pieDiameter / 2f)
+        val horizontalBreakpoint1 = pieChartContainer.top + (pieDiameter / 3f)
+        val horizontalBreakpoint2 = horizontalBreakpoint1 + (pieDiameter / 3f)
 
         val isInFirstRow = point.y <= horizontalBreakpoint1
         val isInMiddleRow = point.y in horizontalBreakpoint1..horizontalBreakpoint2
         val isInEndRow = point.y >= horizontalBreakpoint2
 
-        val isInFirstCol = point.x <= verticalBreakpoint1
-        val isInMiddleCol = point.x in verticalBreakpoint1..verticalBreakpoint2
-        val isInEndCol = point.x >= verticalBreakpoint2
+        val isInLeftCol = point.x <= verticalBreakpoint
+        val isRightCol = !isInLeftCol
 
         return when {
-            isInEndCol && isInFirstRow -> GridZone.TopRight
-            isInEndCol && isInMiddleRow -> GridZone.MiddleRight
-            isInEndCol && isInEndRow -> GridZone.BottomRight
-            isInMiddleCol && isInFirstRow -> GridZone.TopMiddle
-            isInMiddleCol && isInEndRow -> GridZone.BottomMiddle
-            isInFirstCol && isInFirstRow -> GridZone.TopLeft
-            isInFirstCol && isInMiddleRow -> GridZone.MiddleLeft
-            isInFirstCol && isInEndRow -> GridZone.BottomLeft
+            isRightCol && isInFirstRow -> GridZone.TopRight
+            isRightCol && isInMiddleRow -> GridZone.MiddleRight
+            isRightCol && isInEndRow -> GridZone.BottomRight
+            isInLeftCol && isInFirstRow -> GridZone.TopLeft
+            isInLeftCol && isInMiddleRow -> GridZone.MiddleLeft
+            isInLeftCol && isInEndRow -> GridZone.BottomLeft
             else -> GridZone.None
         }
     }
