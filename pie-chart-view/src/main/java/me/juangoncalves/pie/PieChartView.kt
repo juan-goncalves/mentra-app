@@ -14,7 +14,7 @@ import me.juangoncalves.pie.domain.PiePortionValidator
 import me.juangoncalves.pie.domain.PortionDrawData
 import me.juangoncalves.pie.extensions.asPercentage
 import me.juangoncalves.pie.extensions.closeTo
-import me.juangoncalves.pie.extensions.toRadians
+import me.juangoncalves.pie.extensions.rad
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
@@ -338,7 +338,7 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         sweepAngle: Double
     ): Triple<PointF, PointF, PointF> {
         val endAngle = startAngle + sweepAngle
-        val middleAngle = ((startAngle + endAngle) / 2).toRadians()
+        val middleAngle = ((startAngle + endAngle) / 2).rad
         val rx = pieChartContainer.centerX() + pieRadius * cos(middleAngle)
         val ry = pieChartContainer.centerY() + pieRadius * sin(middleAngle)
         val arcCenter = PointF(rx.toFloat(), ry.toFloat())
