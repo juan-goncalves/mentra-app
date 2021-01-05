@@ -16,10 +16,7 @@ import me.juangoncalves.pie.extensions.asPercentage
 import me.juangoncalves.pie.extensions.closeTo
 import me.juangoncalves.pie.extensions.rad
 import java.util.*
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 
 class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
@@ -106,18 +103,18 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     fun setPortions(portions: Array<PiePortion>) {
         portionValidator.validatePortions(portions)
-        val sorted = sortAndMergePortions(portions)
+        val sorted = sortAndInterlacePortions(portions)
         paintsForPortions = selectPaintsForPortions(sorted)
         portionsDrawData = calculatePieDrawData(sorted)
         piePortions = sorted
         invalidate()
     }
 
-    private fun sortAndMergePortions(portions: Array<PiePortion>): Array<PiePortion> {
+    private fun sortAndInterlacePortions(portions: Array<PiePortion>): Array<PiePortion> {
         Arrays.sort(portions, Collections.reverseOrder())
         val upper = portions.sliceArray(0..portions.lastIndex / 2)
         val lower = portions.sliceArray(portions.lastIndex / 2 + 1..portions.lastIndex)
-        val result = sequence {
+        return sequence {
             val first = upper.iterator()
             val second = lower.iterator()
             while (first.hasNext() && second.hasNext()) {
@@ -127,7 +124,6 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
             yieldAll(first)
             yieldAll(second)
         }.toList().toTypedArray()
-        return result
     }
 
     private fun selectPaintsForPortions(portions: Array<PiePortion>): Map<PiePortion, Paint> {
@@ -337,27 +333,34 @@ class PieChartView(context: Context, attrs: AttributeSet?) : View(context, attrs
         startAngle: Double,
         sweepAngle: Double
     ): Triple<PointF, PointF, PointF> {
+        val arcCenter = calculateArcCenter(startAngle, sweepAngle)
+        val middle = calculateMiddlePointFor(arcCenter)
+        val end = calculateEndPointFor(arcCenter, middle)
+        return Triple(arcCenter, middle, end)
+    }
+
+    private fun calculateArcCenter(startAngle: Double, sweepAngle: Double): PointF {
         val endAngle = startAngle + sweepAngle
         val middleAngle = ((startAngle + endAngle) / 2).rad
         val rx = pieChartContainer.centerX() + pieRadius * cos(middleAngle)
         val ry = pieChartContainer.centerY() + pieRadius * sin(middleAngle)
-        val arcCenter = PointF(rx.toFloat(), ry.toFloat())
+        return PointF(rx.toFloat(), ry.toFloat())
+    }
+
+    private fun calculateEndPointFor(arcCenter: PointF, middle: PointF): PointF {
+        val directionModifier = if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
+        val lineExtension = pieRadius * 0.28f * directionModifier
+        return PointF(middle.x + lineExtension, middle.y)
+    }
+
+    private fun calculateMiddlePointFor(arcCenter: PointF): PointF {
+        val (rx, ry) = arcCenter.x to arcCenter.y
         val lineAngle = getArcZone(arcCenter).textLineDegrees
-
-        val middle = when {
-            lineAngle closeTo 0.0 -> arcCenter
-            else -> {
-                val textLineLength = pieRadius * 0.3
-                val sx = rx + textLineLength * cos(lineAngle)
-                val sy = ry + textLineLength * sin(lineAngle)
-                PointF(sx.toFloat(), sy.toFloat())
-            }
-        }
-
-        val ex = pieRadius * 0.3f * if (arcCenter.x < pieChartContainer.centerX()) -1 else 1
-        val end = PointF(middle.x + ex, middle.y)
-
-        return Triple(arcCenter, middle, end)
+        val factor = abs(pieChartContainer.centerY() - ry)
+        val textLineLength = factor * 0.4
+        val sx = rx + textLineLength * cos(lineAngle)
+        val sy = ry + textLineLength * sin(lineAngle)
+        return PointF(sx.toFloat(), sy.toFloat())
     }
 
     private fun textLayoutForPortion(
