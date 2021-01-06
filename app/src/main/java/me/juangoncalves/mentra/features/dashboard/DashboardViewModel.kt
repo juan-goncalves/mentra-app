@@ -1,11 +1,9 @@
 package me.juangoncalves.mentra.features.dashboard
 
 import android.os.Bundle
+import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import me.juangoncalves.mentra.common.BundleKeys
 import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.models.Price
@@ -20,15 +18,20 @@ class DashboardViewModel @ViewModelInject constructor(
     getPortfolioValue: GetPortfolioValueStream,
     getPortfolioValueVariation: GetPortfolioValueVariationStream,
     exchangeExchangePriceStream: ExchangePriceStream,
-    exchangeExchangeVariationStream: ExchangeVariationStream
+    exchangeExchangeVariationStream: ExchangeVariationStream,
+    @Assisted private val handle: SavedStateHandle
 ) : ViewModel() {
+
+    private object Keys {
+        const val Tab = "tab_handle_key"
+    }
 
     val portfolioValue: LiveData<Price> get() = _portfolioValue
     val lastDayValueChange: LiveData<ValueVariation> get() = _lastDayValueChange
     val openedTab: LiveData<Tab> get() = _openedTab
     val closeEvent: LiveData<Notification> get() = _closeEvent
 
-    private val _openedTab: MutableLiveData<Tab> = MutableLiveData()
+    private val _openedTab: MutableLiveData<Tab> = handle.getLiveData(Keys.Tab)
     private val _closeEvent: MutableLiveData<Notification> = MutableLiveData()
 
     private val _portfolioValue: LiveData<Price> = with(exchangeExchangePriceStream) {
@@ -46,7 +49,9 @@ class DashboardViewModel @ViewModelInject constructor(
 
     fun initialize(args: Bundle?) {
         val isFirstRun = args?.getBoolean(BundleKeys.FirstRun) ?: false
-        _openedTab.value = if (isFirstRun) Tab.Wallets else Tab.Stats
+        if (_openedTab.value == null) {
+            _openedTab.value = if (isFirstRun) Tab.Wallets else Tab.Stats
+        }
     }
 
     fun openStatsSelected() {
