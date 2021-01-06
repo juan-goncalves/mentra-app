@@ -153,7 +153,7 @@ class CoinRepositoryImplTest {
             result.rightValue shouldBe price
             coVerify { localSourceMock.getLastCoinPrice(Bitcoin) }
             coVerify { remoteSourceMock.fetchCoinPrice(Bitcoin) }
-            coVerify { localSourceMock.storeCoinPrice(Bitcoin, price) }
+            coVerify { localSourceMock.storeCoinPrices(listOf(Bitcoin to price)) }
         }
 
     @Test
@@ -188,7 +188,7 @@ class CoinRepositoryImplTest {
             result.rightValue shouldBe remotePrice
             coVerify { localSourceMock.getLastCoinPrice(Bitcoin) }
             coVerify { remoteSourceMock.fetchCoinPrice(Bitcoin) }
-            coVerify { localSourceMock.storeCoinPrice(Bitcoin, remotePrice) }
+            coVerify { localSourceMock.storeCoinPrices(listOf(Bitcoin to remotePrice)) }
         }
 
     @Test
@@ -224,7 +224,7 @@ class CoinRepositoryImplTest {
     fun `getCoinPrice fetches the price from the network and returns it even if the caching fails`() =
         runBlocking {
             // Arrange
-            coEvery { localSourceMock.storeCoinPrice(any(), any()) } throws RuntimeException()
+            coEvery { localSourceMock.storeCoinPrices(any()) } throws RuntimeException()
             coEvery { remoteSourceMock.fetchCoinPrice(Bitcoin) } returns 20_000.0.toPrice()
 
             // Act

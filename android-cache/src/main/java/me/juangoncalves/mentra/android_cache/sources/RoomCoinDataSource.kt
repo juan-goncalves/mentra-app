@@ -2,8 +2,7 @@ package me.juangoncalves.mentra.android_cache.sources
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
@@ -41,14 +40,16 @@ class RoomCoinDataSource @Inject constructor(
         }
     }
 
-    override suspend fun storeCoinPrice(coin: Coin, price: Price) =
-        withContext(Dispatchers.Default) {
-            require(price.currency == Currency.getInstance("USD")) {
-                "Prices in the database are stored in USD"
+    override suspend fun storeCoinPrices(data: List<Pair<Coin, Price>>) =
+        with(Dispatchers.Default) {
+            val models = data.map { (coin, price) ->
+                require(price.currency == Currency.getInstance("USD")) {
+                    "Prices to be stored in the database must be in USD"
+                }
+                CoinPriceModel(coin.symbol, price.value, price.timestamp)
             }
 
-            val model = CoinPriceModel(coin.symbol, price.value, price.timestamp)
-            coinPriceDao.insertCoinPrice(model)
+            coinPriceDao.insertCoinPrices(*models.toTypedArray())
         }
 
     override suspend fun findCoinBySymbol(symbol: String): Coin? =
@@ -65,8 +66,8 @@ class RoomCoinDataSource @Inject constructor(
     override fun getActiveCoinPricesStream(): Flow<Map<Coin, Price>> =
         coinPriceDao.getActiveCoinPricesStream().associateByCoin()
 
-    private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> = debounce(500)
-        .map { prices ->
+    private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> =
+        mapLatest { prices ->
             val coinPricesMap = hashMapOf<Coin, Price>()
 
             prices.forEach { priceModel ->

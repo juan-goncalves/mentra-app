@@ -12,7 +12,10 @@ import me.juangoncalves.mentra.domain_layer.extensions.leftValue
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.extensions.toLeft
 import me.juangoncalves.mentra.domain_layer.extensions.toRight
+import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
+import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.RefreshWalletValue
@@ -31,6 +34,7 @@ class RefreshPortfolioValueTest {
     //region Mocks
     @MockK lateinit var walletRepoMock: WalletRepository
     @MockK lateinit var portfolioRepoMock: PortfolioRepository
+    @MockK lateinit var coinRepoMock: CoinRepository
     @MockK lateinit var refreshWalletValueMock: RefreshWalletValue
     //endregion
 
@@ -39,7 +43,14 @@ class RefreshPortfolioValueTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = RefreshPortfolioValue(walletRepoMock, portfolioRepoMock, refreshWalletValueMock)
+        sut = RefreshPortfolioValue(
+            walletRepoMock,
+            portfolioRepoMock,
+            coinRepoMock,
+            refreshWalletValueMock
+        )
+
+        coEvery { coinRepoMock.getCoinPrices(any()) } returns emptyMap<Coin, Price>().toRight()
     }
 
     @Test
