@@ -19,8 +19,7 @@ class RoomPortfolioDataSource @Inject constructor(
         .map(portfolioValueMapper::map)
 
     override fun getPortfolioHistoricValuesStream(): Flow<List<Price>> =
-        portfolioDao.getPortfolioHistoricValuesStream()
-            .map { portfolioValueMapper.map(it).filterNotNull() }
+        portfolioDao.getPortfolioHistoricValuesStream().map(portfolioValueMapper::map)
 
     override suspend fun insertValue(value: Price) = withContext(Dispatchers.Default) {
         val model = portfolioValueMapper.map(value)

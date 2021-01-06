@@ -13,7 +13,7 @@ class PortfolioValueMapper @Inject constructor() {
         return Price(model.valueInUSD, Currency.getInstance("USD"), model.date.atStartOfDay())
     }
 
-    suspend fun map(models: List<PortfolioValueModel>): List<Price?> = models.map { map(it) }
+    suspend fun map(models: List<PortfolioValueModel>): List<Price> = models.mapNotNull { map(it) }
 
     suspend fun map(price: Price): PortfolioValueModel = with(price) {
         PortfolioValueModel(price.value, timestamp.toLocalDate())
