@@ -84,9 +84,11 @@
             android:layout_marginTop="28dp"
             android:orientation="vertical"
             android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/addWalletButtonWrapper"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/walletsLabel">
+            app:layout_constraintTop_toBottomOf="@id/walletsLabel"
+            app:layout_constraintVertical_bias="0.40">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
