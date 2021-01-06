@@ -15,7 +15,6 @@ import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
 import me.juangoncalves.mentra.domain_layer.usecases.VoidUseCase
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.RefreshWalletValue
 import java.math.BigDecimal
-import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 
@@ -33,12 +32,7 @@ class RefreshPortfolioValue @Inject constructor(
 
             val currentValue = portfolioRepository.portfolioValue.firstOrNull()
             if (wallets.isEmpty() && currentValue == null) {
-                val defaultValue = Price(
-                    BigDecimal.ZERO,
-                    Currency.getInstance("USD"),
-                    LocalDateTime.now()
-                )
-                return@withContext defaultValue.toRight()
+                return@withContext Price.Zero.toRight()
             }
 
             val total = wallets.map { async { refreshWalletValue(it) } }
