@@ -2,7 +2,6 @@ package me.juangoncalves.mentra.android_cache.sources
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.android_cache.daos.PortfolioDao
@@ -16,13 +15,12 @@ class RoomPortfolioDataSource @Inject constructor(
     private val portfolioValueMapper: PortfolioValueMapper
 ) : PortfolioLocalDataSource {
 
-    override fun getPortfolioValueStream(): Flow<Price> = portfolioDao.getPortfolioValueStream()
-        .filterNotNull()
+    override fun getPortfolioValueStream(): Flow<Price?> = portfolioDao.getPortfolioValueStream()
         .map(portfolioValueMapper::map)
 
     override fun getPortfolioHistoricValuesStream(): Flow<List<Price>> =
         portfolioDao.getPortfolioHistoricValuesStream()
-            .map(portfolioValueMapper::map)
+            .map { portfolioValueMapper.map(it).filterNotNull() }
 
     override suspend fun insertValue(value: Price) = withContext(Dispatchers.Default) {
         val model = portfolioValueMapper.map(value)

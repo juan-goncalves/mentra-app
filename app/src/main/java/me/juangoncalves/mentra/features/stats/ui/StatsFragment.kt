@@ -98,6 +98,18 @@ class StatsFragment : Fragment() {
             binding.distributionPieChart.updateVisibility(shouldShow)
         }
 
+        viewModel.shouldShowEmptyLineChartWarning.observe(viewLifecycleOwner) { shouldShow ->
+            binding.lineChartPlaceholder.updateVisibility(shouldShow)
+        }
+
+        viewModel.shouldShowLineChart.observe(viewLifecycleOwner) { shouldShow ->
+            val timeGranularity = viewModel.valueChartGranularityStream.value
+            if (timeGranularity != null) {
+                val chart = chartForGranularity(timeGranularity)
+                chart.updateVisibility(shouldShow)
+            }
+        }
+
         viewModel.valueChartGranularityStream.observe(viewLifecycleOwner) { granularity ->
             when (granularity) {
                 TimeGranularity.Daily -> binding.dailyValueChip.isChecked = true
@@ -110,11 +122,7 @@ class StatsFragment : Fragment() {
     private fun updateLineChartData(chartData: TimeChartData) {
         val (entries, labels, granularity, currency) = chartData
 
-        val applicableChart = when (granularity) {
-            TimeGranularity.Daily -> binding.valueLineChart
-            TimeGranularity.Weekly -> binding.weeklyValueLineChart
-            TimeGranularity.Monthly -> binding.monthlyValueLineChart
-        }
+        val applicableChart = chartForGranularity(granularity)
 
         valueCharts.forEach { chart ->
             chart.visibility = if (chart == applicableChart) View.VISIBLE else View.GONE
@@ -137,6 +145,14 @@ class StatsFragment : Fragment() {
 
             setVisibleXRangeMaximum(5f)
             entries.lastOrNull()?.let { last -> moveViewToX(last.x) }
+        }
+    }
+
+    private fun chartForGranularity(granularity: TimeGranularity): LineChart {
+        return when (granularity) {
+            TimeGranularity.Daily -> binding.valueLineChart
+            TimeGranularity.Weekly -> binding.weeklyValueLineChart
+            TimeGranularity.Monthly -> binding.monthlyValueLineChart
         }
     }
 

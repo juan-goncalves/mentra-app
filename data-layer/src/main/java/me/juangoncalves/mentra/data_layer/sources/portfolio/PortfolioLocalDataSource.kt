@@ -5,7 +5,7 @@ import me.juangoncalves.mentra.domain_layer.models.Price
 
 interface PortfolioLocalDataSource {
 
-    fun getPortfolioValueStream(): Flow<Price>
+    fun getPortfolioValueStream(): Flow<Price?>
 
     fun getPortfolioHistoricValuesStream(): Flow<List<Price>>
 

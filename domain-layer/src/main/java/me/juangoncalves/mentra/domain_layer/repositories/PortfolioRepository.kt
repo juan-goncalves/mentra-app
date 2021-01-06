@@ -9,7 +9,7 @@ import java.math.BigDecimal
 interface PortfolioRepository {
 
     /** Stream of the most recent portfolio value */
-    val portfolioValue: Flow<Price>
+    val portfolioValue: Flow<Price?>
 
     /** Stream of the complete daily portfolio value history on ascending order */
     val portfolioDailyValueHistory: Flow<List<Price>>
