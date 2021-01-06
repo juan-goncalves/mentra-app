@@ -6,6 +6,8 @@ plugins {
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
     id "jacoco"
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
 
 android {
@@ -83,6 +85,10 @@ dependencies {
     implementation "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:1.0.0"
     implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    implementation platform('com.google.firebase:firebase-bom:26.2.0')
+    implementation "com.google.firebase:firebase-analytics-ktx"
+    implementation "com.google.firebase:firebase-crashlytics-ktx"
 
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
