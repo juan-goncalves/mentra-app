@@ -71,4 +71,6 @@
     <string name="onboarding_finish_button">Finish</string>
     <string name="welcome">Welcome.</string>
     <string name="benefits">Track the behaviour and composition of your portfolio over time.</string>
+    <string name="empty_coin_distribution">Add a wallet to start seeing your coin distribution.</string>
+    <string name="empty_line_chart_warning">Add a wallet to start tracking its value.</string>
 </resources>

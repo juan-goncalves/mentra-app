@@ -21,6 +21,7 @@ import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.extensions.getThemeColor
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.extensions.styleByTheme
+import me.juangoncalves.mentra.extensions.updateVisibility
 import me.juangoncalves.mentra.features.stats.model.StatsViewModel
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
 import java.util.*
@@ -89,6 +90,14 @@ class StatsFragment : Fragment() {
             binding.statsRefreshLayout.isRefreshing = shouldShow
         }
 
+        viewModel.shouldShowEmptyPortionsWarning.observe(viewLifecycleOwner) { shouldShow ->
+            binding.pieChartPlaceholder.updateVisibility(shouldShow)
+        }
+
+        viewModel.shouldShowPieChart.observe(viewLifecycleOwner) { shouldShow ->
+            binding.distributionPieChart.updateVisibility(shouldShow)
+        }
+
         viewModel.valueChartGranularityStream.observe(viewLifecycleOwner) { granularity ->
             when (granularity) {
                 TimeGranularity.Daily -> binding.dailyValueChip.isChecked = true
@@ -134,7 +143,7 @@ class StatsFragment : Fragment() {
     private fun LineChart.applyDefaultStyle() = apply {
         setExtraOffsets(30f, 0f, 30f, 0f)
         setHardwareAccelerationEnabled(true)
-
+        setNoDataText("")
         isHighlightPerTapEnabled = false
         isHighlightPerDragEnabled = false
         description.isEnabled = false
