@@ -40,6 +40,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun configureView() = with(binding) {
         pager.adapter = OnboardingStepsAdapter(this@OnboardingActivity)
+        pager.offscreenPageLimit = 2
         binding.tabLayout.addOnTabSelectedListener(tabListener)
         TabLayoutMediator(tabLayout, pager) { _, _ ->
         }.attach()

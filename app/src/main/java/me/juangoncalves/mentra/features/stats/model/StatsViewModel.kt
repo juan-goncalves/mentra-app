@@ -1,10 +1,7 @@
 package me.juangoncalves.mentra.features.stats.model
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -44,6 +41,16 @@ class StatsViewModel @ViewModelInject constructor(
     val pieChartData = getPortfolioDistribution().toPiePortions().asLiveData()
     val valueChartGranularityStream = getTimeUnitPrefStream().asLiveData()
     val shouldShowRefreshIndicator = MutableLiveData(false)
+    val shouldShowEmptyPortionsWarning: LiveData<Boolean> = pieChartData.map { it.isEmpty() }
+    val shouldShowPieChart: LiveData<Boolean> = pieChartData.map { it.isNotEmpty() }
+
+    val shouldShowEmptyLineChartWarning: LiveData<Boolean> = valueChartData.map { data ->
+        data.entries.isEmpty()
+    }
+
+    val shouldShowLineChart: LiveData<Boolean> = valueChartData.map { data ->
+        data.entries.isNotEmpty()
+    }
 
     fun refreshSelected() = viewModelScope.launch {
         shouldShowRefreshIndicator.postValue(true)

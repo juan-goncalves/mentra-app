@@ -3,7 +3,6 @@ package me.juangoncalves.mentra.data_layer.repositories
 import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
 import me.juangoncalves.mentra.data_layer.sources.portfolio.PortfolioLocalDataSource
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
@@ -19,11 +18,11 @@ class PortfolioRepositoryImpl @Inject constructor(
     private val errorHandler: ErrorHandler
 ) : PortfolioRepository {
 
-    override val portfolioValue: Flow<Price> get() = _portfolioValue
+    override val portfolioValue: Flow<Price?> get() = _portfolioValue
     override val portfolioDailyValueHistory: Flow<List<Price>> get() = _portfolioValueHistory
 
-    private val _portfolioValue: Flow<Price> by lazy {
-        portfolioLocalDataSource.getPortfolioValueStream().filterNotNull()
+    private val _portfolioValue: Flow<Price?> by lazy {
+        portfolioLocalDataSource.getPortfolioValueStream()
     }
 
     private val _portfolioValueHistory: Flow<List<Price>> by lazy {

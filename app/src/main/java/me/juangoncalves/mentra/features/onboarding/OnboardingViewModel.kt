@@ -1,19 +1,24 @@
 package me.juangoncalves.mentra.features.onboarding
 
+import android.os.Parcelable
+import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.usecases.preference.FinishOnboarding
 
 class OnboardingViewModel @ViewModelInject constructor(
-    private val finishOnboarding: FinishOnboarding
+    private val finishOnboarding: FinishOnboarding,
+    @Assisted private val handle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _currentStep: MutableLiveData<Step> = MutableLiveData(Step.Benefits)
+    private object Keys {
+        const val Step = "step_handle_key"
+    }
+
+    private val _currentStep: MutableLiveData<Step> = handle.getLiveData(Keys.Step, Step.Benefits)
     val currentStep: LiveData<Step> = _currentStep
 
     private val _closeOnboardingStream: MutableLiveData<Notification> = MutableLiveData()
@@ -33,11 +38,12 @@ class OnboardingViewModel @ViewModelInject constructor(
         _closeOnboardingStream.value = Notification()
     }
 
-    sealed class Step(val index: Int) {
-        object Benefits : Step(0)
-        object ConfigureAutoRefresh : Step(1)
-        object ConfigureCurrency : Step(2)
-        object Finished : Step(3)
+
+    sealed class Step(val index: Int) : Parcelable {
+        @Parcelize object Benefits : Step(0)
+        @Parcelize object ConfigureAutoRefresh : Step(1)
+        @Parcelize object ConfigureCurrency : Step(2)
+        @Parcelize object Finished : Step(3)
 
         companion object {
             fun from(index: Int): Step = when (index) {

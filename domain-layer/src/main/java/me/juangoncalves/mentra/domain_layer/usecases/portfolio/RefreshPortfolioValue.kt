@@ -5,6 +5,7 @@ import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
@@ -28,6 +29,11 @@ class RefreshPortfolioValue @Inject constructor(
             val getWalletsOp = walletRepository.getWallets()
             val wallets = getWalletsOp.rightValue
                 ?: return@withContext getWalletsOp.requireLeft().toLeft()
+
+            val currentValue = portfolioRepository.portfolioValue.firstOrNull()
+            if (wallets.isEmpty() && currentValue == null) {
+                return@withContext Price.Zero.toRight()
+            }
 
             val total = wallets.map { async { refreshWalletValue(it) } }
                 .awaitAll()

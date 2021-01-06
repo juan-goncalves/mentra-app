@@ -12,6 +12,7 @@ data class Price(
 
     companion object {
         val None: Price = Price(BigDecimal(-1), Currency.getInstance("USD"), LocalDateTime.now())
+        val Zero: Price = Price(BigDecimal.ZERO, Currency.getInstance("USD"), LocalDateTime.now())
     }
 
 }
