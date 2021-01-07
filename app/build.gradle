@@ -26,11 +26,16 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            resValue "string", "app_name", "Mentra Debug"
+            manifestPlaceholders.crashlyticsCollectionEnabled = false
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            resValue "string", "app_name", "Mentra"
+            manifestPlaceholders.crashlyticsCollectionEnabled = true
         }
     }
 
