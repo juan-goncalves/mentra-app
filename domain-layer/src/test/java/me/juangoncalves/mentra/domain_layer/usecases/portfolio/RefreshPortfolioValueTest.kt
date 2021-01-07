@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.domain_layer.*
 import me.juangoncalves.mentra.domain_layer.errors.Failure
@@ -40,6 +41,7 @@ class RefreshPortfolioValueTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
         sut = RefreshPortfolioValue(walletRepoMock, portfolioRepoMock, refreshWalletValueMock)
+        coEvery { portfolioRepoMock.portfolioValue } returns flowOf(null)
     }
 
     @Test
