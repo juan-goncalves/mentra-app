@@ -53,15 +53,15 @@ dependencies {
     api "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    implementation Deps.dagger_hilt
+    kapt Deps.dagger_hilt_compiler
 
     testImplementation project(path: ':test-utils')
     testImplementation "junit:junit:4.13"
     testImplementation "org.hamcrest:hamcrest-library:2.2"
     testImplementation "io.mockk:mockk:1.10.0"
     testImplementation Deps.androidx_core_testing
-    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    testImplementation Deps.dagger_hilt_android_testing
     testImplementation "androidx.room:room-testing:$room_version"
     testImplementation "org.robolectric:robolectric:4.4"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"

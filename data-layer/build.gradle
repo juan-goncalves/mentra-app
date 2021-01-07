@@ -11,11 +11,11 @@ java {
 
 dependencies {
     implementation project(path: ':domain-layer')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation Deps.kotlin_stdlib
 
     testImplementation project(path: ':test-utils')
     testImplementation "junit:junit:4.13"
     testImplementation "org.hamcrest:hamcrest-library:2.2"
     testImplementation "io.mockk:mockk:1.10.0"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation Deps.coroutines_test
 }

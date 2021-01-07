@@ -38,10 +38,10 @@ dependencies {
     implementation project(path: ':domain-layer')
     implementation project(path: ':data-layer')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation Deps.kotlin_stdlib
 
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    implementation Deps.dagger_hilt
+    kapt Deps.dagger_hilt_compiler
 
     api "com.squareup.retrofit2:retrofit:2.6.0"
     api "com.squareup.retrofit2:converter-moshi:2.6.0"
