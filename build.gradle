@@ -12,7 +12,6 @@ buildscript {
         classpath Deps.google_oss_licenses_gradle_plugin
         classpath Deps.google_services
         classpath Deps.firebase_crashlytics_gradle_plugin
-        classpath "org.jacoco:org.jacoco.core:0.8.5"
     }
 }
 

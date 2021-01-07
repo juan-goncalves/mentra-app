@@ -5,7 +5,6 @@ plugins {
     id "kotlin-android-extensions"
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
-    id "jacoco"
     id "com.google.gms.google-services"
     id "com.google.firebase.crashlytics"
 }
@@ -34,16 +33,20 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         viewBinding true
     }
+
     kapt {
         correctErrorTypes true
     }
@@ -104,48 +107,4 @@ dependencies {
     androidTestImplementation Deps.androidx_junit
     androidTestImplementation Deps.espresso
     androidTestImplementation Deps.androidx_work_testing
-}
-
-jacoco {
-    toolVersion = '0.8.5'
-}
-
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-}
-
-task jacocoTestReport(
-        type: JacocoReport,
-        dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']
-) {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
-    def fileFilters = [
-            '**/R.class',
-            '**/R$*.class',
-            '**/BuildConfig.*',
-            '**/Manifest*.*',
-            '**/*Test*.*',
-            'android/**/*.*'
-    ]
-
-    def debugTree = fileTree(
-            dir: "$project.buildDir/tmp/kotlin-classes/debug",
-            excludes: fileFilters
-    )
-
-    def mainSrc = "$project.projectDir/src/main/java"
-
-    sourceDirectories.from = files([mainSrc])
-    classDirectories.from = files([debugTree])
-    executionData.from = fileTree(
-            dir: project.buildDir,
-            includes: [
-                    'jacoco/testDebugUnitTest.exec',
-                    'outputs/code-coverage/connected/*coverage.ec'
-            ]
-    )
 }
