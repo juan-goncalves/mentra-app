@@ -22,6 +22,7 @@ object Versions {
     const val google_oss_licenses = "17.0.0"
     const val androidx_core_testing = "2.1.0"
 
+    const val dagger = "2.28.3"
     const val dagger_hilt = "2.28-alpha"
     const val androidx_hilt = "1.0.0-alpha01"
 
@@ -30,6 +31,7 @@ object Versions {
     const val glide = "4.11.0"
     const val fading_edge_layout = "1.0.0"
     const val mp_android_chart = "v3.1.0"
+    const val either = "3.0.0"
 
     const val junit = "4.13.1"
     const val hamcrest = "2.2"
@@ -43,6 +45,7 @@ object Versions {
 object Deps {
     const val kotlin_gradle_plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin_stdlib}"
     const val kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin_stdlib}"
+    const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val android_coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
     const val coroutines_test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
 
@@ -64,6 +67,8 @@ object Deps {
     const val google_material = "com.google.android.material:material:${Versions.google_material}"
     const val google_oss_licenses = "com.google.android.gms:play-services-oss-licenses:${Versions.google_oss_licenses}"
 
+    const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
+    const val dagger_compiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
     const val dagger_hilt_gradle_plugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.dagger_hilt}"
     const val dagger_hilt = "com.google.dagger:hilt-android:${Versions.dagger_hilt}"
     const val dagger_hilt_compiler = "com.google.dagger:hilt-android-compiler:${Versions.dagger_hilt}"
@@ -79,6 +84,7 @@ object Deps {
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
     const val fading_edge_layout = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:${Versions.fading_edge_layout}"
     const val mp_android_chart = "com.github.PhilJay:MPAndroidChart:${Versions.mp_android_chart}"
+    const val either = "com.github.adelnizamutdinov:kotlin-either:${Versions.either}"
 
     const val junit = "junit:junit:${Versions.junit}"
     const val hamcrest = "org.hamcrest:hamcrest-library:${Versions.hamcrest}"
