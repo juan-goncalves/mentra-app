@@ -50,9 +50,6 @@ android {
 }
 
 dependencies {
-    def lifecycle_version = "2.3.0-alpha05"
-    def work_version = "2.4.0"
-
     implementation project(path: ':domain-layer')
     implementation project(path: ':data-layer')
     implementation project(path: ':android-cache')
@@ -70,27 +67,24 @@ dependencies {
     implementation Deps.androidx_constraint_layout
     implementation Deps.androidx_swipe_refresh_layout
     implementation Deps.androidx_viewpager2
-
+    implementation Deps.androidx_work_ktx
     implementation Deps.androidx_lifecycle_viewmodel_ktx
     implementation Deps.androidx_lifecycle_saved_state
     implementation Deps.androidx_lifecycle_livedata_ktx
+    implementation Deps.google_material
+    implementation Deps.google_oss_licenses
 
     implementation Deps.dagger_hilt
     implementation Deps.androidx_hilt_work
     implementation Deps.androidx_hilt_lifecycle_viewmodel
 
-    implementation "com.google.android.material:material:1.2.1"
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    implementation "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:1.0.0"
-    implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
+    implementation Deps.glide
+    implementation Deps.fading_edge_layout
+    implementation Deps.mp_android_chart
 
-    implementation platform('com.google.firebase:firebase-bom:26.2.0')
-    implementation "com.google.firebase:firebase-analytics-ktx"
-    implementation "com.google.firebase:firebase-crashlytics-ktx"
-
-    implementation "androidx.work:work-runtime-ktx:$work_version"
-
-    implementation "com.google.android.gms:play-services-oss-licenses:17.0.0"
+    implementation platform(Deps.firebase_platform)
+    implementation Deps.firebase_analytics
+    implementation Deps.firebase_crashlytics
 
     kapt Deps.dagger_hilt_androidx_compiler
     kapt Deps.dagger_hilt_compiler
@@ -99,17 +93,17 @@ dependencies {
     kaptTest Deps.dagger_hilt_compiler
 
     testImplementation project(path: ':test-utils')
-    testImplementation "junit:junit:4.13"
-    testImplementation "org.hamcrest:hamcrest-library:2.2"
-    testImplementation "io.mockk:mockk:1.10.0"
-    testImplementation "androidx.arch.core:core-testing:$arch_version"
-    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    testImplementation "org.robolectric:robolectric:4.3"
+    testImplementation Deps.junit
+    testImplementation Deps.hamcrest
+    testImplementation Deps.mockk
+    testImplementation Deps.androidx_core_testing
+    testImplementation Deps.dagger_hilt_android_testing
+    testImplementation Deps.robolectric
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"
 
-    androidTestImplementation "androidx.test.ext:junit:1.1.1"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
-    androidTestImplementation "androidx.work:work-testing:$work_version"
+    androidTestImplementation Deps.androidx_junit
+    androidTestImplementation Deps.espresso
+    androidTestImplementation Deps.androidx_work_testing
 }
 
 jacoco {

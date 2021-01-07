@@ -1,12 +1,10 @@
 // @formatter:off
 
 object Versions {
-    // Build config
     const val min_sdk = 26
     const val target_sdk = 29
     const val compile_sdk = 29
 
-    // AndroidX
     const val androidx_core = "1.5.0-alpha01"
     const val androidx_appcompat = "1.3.0-alpha01"
     const val androidx_activity = "1.1.0"
@@ -16,12 +14,27 @@ object Versions {
     const val androidx_swipe_refresh_layout = "1.1.0"
     const val androidx_lifecycle = "2.3.0-alpha05"
     const val androidx_viewpager2 = "1.0.0"
+    const val androidx_work = "2.4.0"
+    const val google_material = "1.2.1"
+    const val google_oss_licenses = "17.0.0"
+    const val androidx_core_testing = "2.1.0"
 
-    // Dagger Hilt
     const val dagger_hilt = "2.28-alpha"
     const val androidx_hilt_work = "1.0.0-alpha01"
     const val androidx_hilt_lifecycle_viewmodel = "1.0.0-alpha01"
 
+    const val firebase = "26.2.0"
+
+    const val glide = "4.11.0"
+    const val fading_edge_layout = "1.0.0"
+    const val mp_android_chart = "v3.1.0"
+
+    const val junit = "4.13.1"
+    const val hamcrest = "2.2"
+    const val mockk = "1.10.0"
+    const val robolectric = "4.3"
+    const val androidx_junit = "1.1.1"
+    const val espresso = "3.2.0"
 }
 
 @Suppress("unused")
@@ -38,14 +51,34 @@ object Deps {
     const val androidx_lifecycle_saved_state = "androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.androidx_lifecycle}"
     const val androidx_lifecycle_livedata_ktx = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.androidx_lifecycle}"
     const val androidx_lifecycle_compiler = "androidx.lifecycle:lifecycle-compiler:${Versions.androidx_lifecycle}"
+    const val androidx_work_ktx = "androidx.work:work-runtime-ktx:${Versions.androidx_work}"
+    const val androidx_work_testing = "androidx.work:work-testing:${Versions.androidx_work}"
+    const val androidx_core_testing = "androidx.arch.core:core-testing:${Versions.androidx_core_testing}"
+    const val google_material = "com.google.android.material:material:${Versions.google_material}"
+    const val google_oss_licenses = "com.google.android.gms:play-services-oss-licenses:${Versions.google_oss_licenses}"
 
-    // Dagger Hilt
     const val dagger_hilt_gradle_plugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.dagger_hilt}"
     const val dagger_hilt = "com.google.dagger:hilt-android:${Versions.dagger_hilt}"
     const val dagger_hilt_androidx_compiler = "androidx.hilt:hilt-compiler:${Versions.dagger_hilt}"
     const val dagger_hilt_compiler = "com.google.dagger:hilt-android-compiler:${Versions.dagger_hilt}"
     const val androidx_hilt_work = "androidx.hilt:hilt-work:${Versions.androidx_hilt_work}"
     const val androidx_hilt_lifecycle_viewmodel = "androidx.hilt:hilt-lifecycle-viewmodel:${Versions.androidx_hilt_lifecycle_viewmodel}"
+    const val dagger_hilt_android_testing = "com.google.dagger:hilt-android-testing:${Versions.dagger_hilt}"
+
+    const val firebase_platform = "com.google.firebase:firebase-bom:${Versions.firebase}"
+    const val firebase_analytics = "com.google.firebase:firebase-analytics-ktx"
+    const val firebase_crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+
+    const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
+    const val fading_edge_layout = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:${Versions.fading_edge_layout}"
+    const val mp_android_chart = "com.github.PhilJay:MPAndroidChart:${Versions.mp_android_chart}"
+
+    const val junit = "junit:junit:${Versions.junit}"
+    const val hamcrest = "org.hamcrest:hamcrest-library:${Versions.hamcrest}"
+    const val mockk = "io.mockk:mockk:${Versions.mockk}"
+    const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
+    const val androidx_junit = "androidx.test.ext:junit:${Versions.androidx_junit}"
+    const val espresso = "androidx.test.espresso:espresso-core:${Versions.espresso}"
 
 }
 
