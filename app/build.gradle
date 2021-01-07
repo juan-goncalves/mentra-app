@@ -56,8 +56,8 @@ dependencies {
     implementation project(path: ':android-network')
     implementation project(path: ':pie-chart-view')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    implementation Deps.kotlin_stdlib
+    implementation Deps.android_coroutines
 
     implementation Deps.androidx_core_ktx
     implementation Deps.androidx_appcompat
@@ -86,8 +86,8 @@ dependencies {
     implementation Deps.firebase_analytics
     implementation Deps.firebase_crashlytics
 
-    kapt Deps.dagger_hilt_androidx_compiler
     kapt Deps.dagger_hilt_compiler
+    kapt Deps.androidx_hilt_compiler
     kapt Deps.androidx_lifecycle_compiler
 
     kaptTest Deps.dagger_hilt_compiler
@@ -99,7 +99,7 @@ dependencies {
     testImplementation Deps.androidx_core_testing
     testImplementation Deps.dagger_hilt_android_testing
     testImplementation Deps.robolectric
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"
+    testImplementation Deps.coroutines_test
 
     androidTestImplementation Deps.androidx_junit
     androidTestImplementation Deps.espresso

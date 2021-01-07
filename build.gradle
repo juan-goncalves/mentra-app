@@ -15,7 +15,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:4.1.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath Deps.kotlin_gradle_plugin
         classpath Deps.dagger_hilt_gradle_plugin
         classpath "org.jacoco:org.jacoco.core:0.8.5"
         classpath "com.google.android.gms:oss-licenses-plugin:0.10.2"

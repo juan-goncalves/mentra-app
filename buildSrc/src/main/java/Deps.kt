@@ -5,6 +5,9 @@ object Versions {
     const val target_sdk = 29
     const val compile_sdk = 29
 
+    const val kotlin_stdlib = "1.3.72"
+    const val coroutines = "1.4.2"
+
     const val androidx_core = "1.5.0-alpha01"
     const val androidx_appcompat = "1.3.0-alpha01"
     const val androidx_activity = "1.1.0"
@@ -20,8 +23,7 @@ object Versions {
     const val androidx_core_testing = "2.1.0"
 
     const val dagger_hilt = "2.28-alpha"
-    const val androidx_hilt_work = "1.0.0-alpha01"
-    const val androidx_hilt_lifecycle_viewmodel = "1.0.0-alpha01"
+    const val androidx_hilt = "1.0.0-alpha01"
 
     const val firebase = "26.2.0"
 
@@ -39,6 +41,11 @@ object Versions {
 
 @Suppress("unused")
 object Deps {
+    const val kotlin_gradle_plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin_stdlib}"
+    const val kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin_stdlib}"
+    const val android_coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
+    const val coroutines_test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
+
     const val androidx_core_ktx = "androidx.core:core-ktx:${Versions.androidx_core}"
     const val androidx_appcompat = "androidx.appcompat:appcompat:${Versions.androidx_appcompat}"
     const val androidx_activity_ktx = "androidx.activity:activity-ktx:${Versions.androidx_activity}"
@@ -59,10 +66,10 @@ object Deps {
 
     const val dagger_hilt_gradle_plugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.dagger_hilt}"
     const val dagger_hilt = "com.google.dagger:hilt-android:${Versions.dagger_hilt}"
-    const val dagger_hilt_androidx_compiler = "androidx.hilt:hilt-compiler:${Versions.dagger_hilt}"
     const val dagger_hilt_compiler = "com.google.dagger:hilt-android-compiler:${Versions.dagger_hilt}"
-    const val androidx_hilt_work = "androidx.hilt:hilt-work:${Versions.androidx_hilt_work}"
-    const val androidx_hilt_lifecycle_viewmodel = "androidx.hilt:hilt-lifecycle-viewmodel:${Versions.androidx_hilt_lifecycle_viewmodel}"
+    const val androidx_hilt_compiler = "androidx.hilt:hilt-compiler:${Versions.androidx_hilt}"
+    const val androidx_hilt_work = "androidx.hilt:hilt-work:${Versions.androidx_hilt}"
+    const val androidx_hilt_lifecycle_viewmodel = "androidx.hilt:hilt-lifecycle-viewmodel:${Versions.androidx_hilt}"
     const val dagger_hilt_android_testing = "com.google.dagger:hilt-android-testing:${Versions.dagger_hilt}"
 
     const val firebase_platform = "com.google.firebase:firebase-bom:${Versions.firebase}"
@@ -79,7 +86,6 @@ object Deps {
     const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
     const val androidx_junit = "androidx.test.ext:junit:${Versions.androidx_junit}"
     const val espresso = "androidx.test.espresso:espresso-core:${Versions.espresso}"
-
 }
 
 // @formatter:on
