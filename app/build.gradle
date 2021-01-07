@@ -10,14 +10,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion Versions.compile_sdk
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
     testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
         applicationId "me.juangoncalves.mentra"
-        minSdkVersion Versions.min_sdk
-        targetSdkVersion Versions.target_sdk
+        minSdkVersion 26
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0.0"
 

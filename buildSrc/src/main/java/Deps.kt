@@ -1,10 +1,6 @@
 // @formatter:off
 
 object Versions {
-    const val min_sdk = 26
-    const val target_sdk = 29
-    const val compile_sdk = 29
-
     const val kotlin_stdlib = "1.3.72"
     const val coroutines = "1.4.2"
     const val android_gradle = "4.1.1"
