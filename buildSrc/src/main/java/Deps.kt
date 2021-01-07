@@ -29,6 +29,9 @@ object Versions {
 
     const val firebase = "26.2.0"
 
+    const val retrofit = "2.6.0"
+    const val okhttp3_logging_interceptor = "4.2.1"
+
     const val glide = "4.11.0"
     const val fading_edge_layout = "1.0.0"
     const val mp_android_chart = "v3.1.0"
@@ -86,6 +89,10 @@ object Deps {
     const val firebase_platform = "com.google.firebase:firebase-bom:${Versions.firebase}"
     const val firebase_analytics = "com.google.firebase:firebase-analytics-ktx"
     const val firebase_crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+
+    const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    const val moshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
+    const val okhttp3_logging_interceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp3_logging_interceptor}"
 
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
     const val fading_edge_layout = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:${Versions.fading_edge_layout}"
