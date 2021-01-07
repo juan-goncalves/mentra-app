@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Mentra</string>
     <string name="default_error">An error occurred, try again later</string>
     <string name="retry">Retry</string>
     <string name="connection_error">You don\'t have an active internet connection</string>

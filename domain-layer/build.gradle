@@ -10,16 +10,16 @@ java {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
-    api "com.github.adelnizamutdinov:kotlin-either:3.0.0"
-    api "com.google.dagger:dagger:$dagger_version"
+    implementation Deps.kotlin_stdlib
+    api Deps.coroutines
+    api Deps.either
+    api Deps.dagger
 
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    kapt Deps.dagger_compiler
 
     testImplementation project(path: ':test-utils')
-    testImplementation "junit:junit:4.13"
-    testImplementation "org.hamcrest:hamcrest-library:2.2"
-    testImplementation "io.mockk:mockk:1.10.0"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation Deps.junit
+    testImplementation Deps.hamcrest
+    testImplementation Deps.mockk
+    testImplementation Deps.coroutines_test
 }
