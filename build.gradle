@@ -4,7 +4,6 @@ buildscript {
         hilt_version = '2.28-alpha'
         dagger_version = '2.28.3'
         coroutines_version = '1.4.2'
-        arch_version = '2.1.0'
     }
 
     repositories {
