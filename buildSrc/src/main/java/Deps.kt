@@ -21,6 +21,7 @@ object Versions {
     const val google_material = "1.2.1"
     const val google_oss_licenses = "17.0.0"
     const val androidx_core_testing = "2.1.0"
+    const val androidx_room = "2.2.5"
 
     const val dagger = "2.28.3"
     const val dagger_hilt = "2.28-alpha"
@@ -66,6 +67,11 @@ object Deps {
     const val androidx_core_testing = "androidx.arch.core:core-testing:${Versions.androidx_core_testing}"
     const val google_material = "com.google.android.material:material:${Versions.google_material}"
     const val google_oss_licenses = "com.google.android.gms:play-services-oss-licenses:${Versions.google_oss_licenses}"
+
+    const val androidx_room_runtime = "androidx.room:room-runtime:${Versions.androidx_room}"
+    const val androidx_room_ktx = "androidx.room:room-ktx:${Versions.androidx_room}"
+    const val androidx_room_compiler = "androidx.room:room-compiler:${Versions.androidx_room}"
+    const val androidx_room_testing = "androidx.room:room-testing:${Versions.androidx_room}"
 
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
     const val dagger_compiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
