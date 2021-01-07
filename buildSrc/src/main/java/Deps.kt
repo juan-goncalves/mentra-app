@@ -7,6 +7,7 @@ object Versions {
 
     const val kotlin_stdlib = "1.3.72"
     const val coroutines = "1.4.2"
+    const val android_gradle = "4.1.1"
 
     const val androidx_core = "1.5.0-alpha01"
     const val androidx_appcompat = "1.3.0-alpha01"
@@ -19,7 +20,6 @@ object Versions {
     const val androidx_viewpager2 = "1.0.0"
     const val androidx_work = "2.4.0"
     const val google_material = "1.2.1"
-    const val google_oss_licenses = "17.0.0"
     const val androidx_core_testing = "2.1.0"
     const val androidx_room = "2.2.5"
 
@@ -28,6 +28,10 @@ object Versions {
     const val androidx_hilt = "1.0.0-alpha01"
 
     const val firebase = "26.2.0"
+    const val firebase_crashlytics_gradle_plugin = "2.4.1"
+    const val google_services = "4.3.4"
+    const val google_oss_licenses = "17.0.0"
+    const val google_oss_licenses_gradle_plugin = "0.10.2"
 
     const val retrofit = "2.6.0"
     const val okhttp3_logging_interceptor = "4.2.1"
@@ -52,6 +56,7 @@ object Deps {
     const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val android_coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
     const val coroutines_test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
+    const val android_gradle =  "com.android.tools.build:gradle:${Versions.android_gradle}"
 
     const val androidx_core_ktx = "androidx.core:core-ktx:${Versions.androidx_core}"
     const val androidx_appcompat = "androidx.appcompat:appcompat:${Versions.androidx_appcompat}"
@@ -69,7 +74,6 @@ object Deps {
     const val androidx_work_testing = "androidx.work:work-testing:${Versions.androidx_work}"
     const val androidx_core_testing = "androidx.arch.core:core-testing:${Versions.androidx_core_testing}"
     const val google_material = "com.google.android.material:material:${Versions.google_material}"
-    const val google_oss_licenses = "com.google.android.gms:play-services-oss-licenses:${Versions.google_oss_licenses}"
 
     const val androidx_room_runtime = "androidx.room:room-runtime:${Versions.androidx_room}"
     const val androidx_room_ktx = "androidx.room:room-ktx:${Versions.androidx_room}"
@@ -89,6 +93,10 @@ object Deps {
     const val firebase_platform = "com.google.firebase:firebase-bom:${Versions.firebase}"
     const val firebase_analytics = "com.google.firebase:firebase-analytics-ktx"
     const val firebase_crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+    const val firebase_crashlytics_gradle_plugin = "com.google.firebase:firebase-crashlytics-gradle:${Versions.firebase_crashlytics_gradle_plugin}"
+    const val google_services = "com.google.gms:google-services:${Versions.google_services}"
+    const val google_oss_licenses = "com.google.android.gms:play-services-oss-licenses:${Versions.google_oss_licenses}"
+    const val google_oss_licenses_gradle_plugin = "com.google.android.gms:oss-licenses-plugin:${Versions.google_oss_licenses_gradle_plugin}"
 
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val moshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
