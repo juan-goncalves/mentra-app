@@ -14,7 +14,7 @@ interface CoinLocalDataSource {
 
     suspend fun getLastCoinPrice(coin: Coin): Price?
 
-    suspend fun storeCoinPrice(coin: Coin, price: Price)
+    suspend fun storeCoinPrices(data: List<Pair<Coin, Price>>)
 
     suspend fun findCoinBySymbol(symbol: String): Coin?
 

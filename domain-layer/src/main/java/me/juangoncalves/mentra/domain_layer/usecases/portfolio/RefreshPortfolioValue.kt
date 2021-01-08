@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Price
+import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
 import me.juangoncalves.mentra.domain_layer.repositories.WalletRepository
 import me.juangoncalves.mentra.domain_layer.usecases.VoidUseCase
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class RefreshPortfolioValue @Inject constructor(
     private val walletRepository: WalletRepository,
     private val portfolioRepository: PortfolioRepository,
+    private val coinRepository: CoinRepository,
     private val refreshWalletValue: RefreshWalletValue
 ) : VoidUseCase<Price> {
 
@@ -33,6 +35,12 @@ class RefreshPortfolioValue @Inject constructor(
             val currentValue = portfolioRepository.portfolioValue.firstOrNull()
             if (wallets.isEmpty() && currentValue == null) {
                 return@withContext Price.Zero.toRight()
+            }
+
+            val coins = wallets.map { it.coin }
+            val coinPricesOp = coinRepository.getCoinPrices(coins)
+            if (coinPricesOp.isLeft()) {
+                return@withContext coinPricesOp.requireLeft().toLeft()
             }
 
             val total = wallets.map { async { refreshWalletValue(it) } }

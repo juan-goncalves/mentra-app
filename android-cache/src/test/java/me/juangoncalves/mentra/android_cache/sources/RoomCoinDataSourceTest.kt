@@ -93,28 +93,29 @@ class RoomCoinDataSourceTest {
         }
 
     @Test
-    fun `storeCoinPrice should store the coin price in the database`() = runBlocking {
+    fun `storeCoinPrices should store the coin prices in the database`() = runBlocking {
         // Arrange
         coinDao.insertAll(BitcoinModel)
-        val price = 8765.321.toPrice()
+        val btcPrice = 8765.321.toPrice()
+        val prices = listOf(Bitcoin to btcPrice)
 
         // Act
-        sut.storeCoinPrice(Bitcoin, price)
+        sut.storeCoinPrices(prices)
 
         // Assert
-        val latestPrice = coinPriceDao.getCoinPriceHistory(Bitcoin.symbol).first()
-        latestPrice.valueInUSD shouldBeCloseTo price.value
+        val latestBtcPrice = coinPriceDao.getMostRecentCoinPrice(Bitcoin.symbol)
+        latestBtcPrice!!.valueInUSD shouldBeCloseTo btcPrice.value
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `storeCoinPrice should throw an IllegalArgumentException if the currency is not USD`() =
+    fun `storeCoinPrices should throw an IllegalArgumentException if any currency is not USD`() =
         runBlocking {
             // Arrange
             coinDao.insertAll(BitcoinModel)
             val price = 8765.321.toPrice(currency = EUR)
 
             // Act
-            sut.storeCoinPrice(Bitcoin, price)
+            sut.storeCoinPrices(listOf(Bitcoin to price))
 
             // Assert
         }
@@ -129,7 +130,7 @@ class RoomCoinDataSourceTest {
                 CoinPriceModel("BTC", 738.5.toBigDecimal(), LocalDateTime.of(2020, 8, 13, 9, 30)),
                 CoinPriceModel("BTC", 245.5.toBigDecimal(), LocalDateTime.of(2019, 1, 23, 5, 30))
             )
-            prices.forEach { coinPriceDao.insertCoinPrice(it) }
+            prices.forEach { coinPriceDao.insertCoinPrices(it) }
 
             // Act
             val result = sut.getLastCoinPrice(Bitcoin)

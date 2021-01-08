@@ -10,6 +10,7 @@ import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.ignoringFailure
 import me.juangoncalves.mentra.domain_layer.errors.runCatching
+import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
@@ -38,16 +39,31 @@ class CoinRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun getCoinPrice(coin: Coin): Either<Failure, Price> =
+    override suspend fun getCoinPrice(coin: Coin): Either<Failure, Price> {
+        val getCoinPricesOp = getCoinPrices(listOf(coin))
+        return if (getCoinPricesOp.isLeft()) {
+            getCoinPricesOp.requireLeft().toLeft()
+        } else {
+            val coinPrices = getCoinPricesOp.requireRight()
+            coinPrices[coin]!!.toRight()
+        }
+    }
+
+    override suspend fun getCoinPrices(coins: List<Coin>): Either<Failure, Map<Coin, Price>> =
         errorHandler.runCatching(Dispatchers.IO) {
-            val cachedPrice = ignoringFailure { localDataSource.getLastCoinPrice(coin) }
-            if (cachedPrice != null && cachedPrice.timestamp.elapsedMinutes() <= 5) {
-                cachedPrice
-            } else {
-                val remotePrice = remoteDataSource.fetchCoinPrice(coin)
-                ignoringFailure { localDataSource.storeCoinPrice(coin, remotePrice) }
-                remotePrice
+            val result = coins.map { coin ->
+                val cachedPrice = ignoringFailure { localDataSource.getLastCoinPrice(coin) }
+                coin to if (cachedPrice != null && cachedPrice.timestamp.elapsedMinutes() <= 5) {
+                    cachedPrice
+                } else {
+                    val remotePrice = remoteDataSource.fetchCoinPrice(coin)
+                    remotePrice
+                }
             }
+
+            ignoringFailure { localDataSource.storeCoinPrices(result) }
+
+            result.toMap()
         }
 
     override suspend fun updateCoin(coin: Coin): Either<Failure, Unit> =

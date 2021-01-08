@@ -79,7 +79,7 @@ class WalletItemCallback : DiffUtil.ItemCallback<WalletListViewState.Wallet>() {
         oldItem: WalletListViewState.Wallet,
         newItem: WalletListViewState.Wallet
     ): Boolean {
-        return oldItem == newItem
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(
