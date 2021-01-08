@@ -32,8 +32,9 @@ android {
             manifestPlaceholders.crashlyticsCollectionEnabled = false
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.debug
             resValue "string", "app_name", "Mentra"
             manifestPlaceholders.crashlyticsCollectionEnabled = true
         }
