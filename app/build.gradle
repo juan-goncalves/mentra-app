@@ -114,6 +114,7 @@ dependencies {
     kapt Deps.dagger_hilt_compiler
     kapt Deps.androidx_hilt_compiler
     kapt Deps.androidx_lifecycle_compiler
+    kapt Deps.glide_compiler
 
     kaptTest Deps.dagger_hilt_compiler
 
