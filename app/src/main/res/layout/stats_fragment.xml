@@ -64,6 +64,38 @@
 
         </com.google.android.material.chip.ChipGroup>
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/lineChartPlaceholder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="5"
+            app:layout_constraintBottom_toBottomOf="@id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chipGroup">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:text="@string/empty_line_chart_warning" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/line_chart_graphic" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/valueLineChart"
             android:layout_width="0dp"
@@ -130,6 +162,37 @@
             app:pie_colors="@array/pie_colors"
             app:pie_label_text_color="?attr/pieChartTextColor"
             app:pie_text_line_color="?attr/pieChartLineColor" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/pieChartPlaceholder"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/distributionChartTitle">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/pie_chart_graphic" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_weight="2"
+                android:text="@string/empty_coin_distribution" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

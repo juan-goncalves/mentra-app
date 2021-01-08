@@ -21,6 +21,7 @@ import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.extensions.getThemeColor
 import me.juangoncalves.mentra.extensions.handleErrorsFrom
 import me.juangoncalves.mentra.extensions.styleByTheme
+import me.juangoncalves.mentra.extensions.updateVisibility
 import me.juangoncalves.mentra.features.stats.model.StatsViewModel
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
 import java.util.*
@@ -89,6 +90,26 @@ class StatsFragment : Fragment() {
             binding.statsRefreshLayout.isRefreshing = shouldShow
         }
 
+        viewModel.shouldShowEmptyPortionsWarning.observe(viewLifecycleOwner) { shouldShow ->
+            binding.pieChartPlaceholder.updateVisibility(shouldShow)
+        }
+
+        viewModel.shouldShowPieChart.observe(viewLifecycleOwner) { shouldShow ->
+            binding.distributionPieChart.updateVisibility(shouldShow)
+        }
+
+        viewModel.shouldShowEmptyLineChartWarning.observe(viewLifecycleOwner) { shouldShow ->
+            binding.lineChartPlaceholder.updateVisibility(shouldShow)
+        }
+
+        viewModel.shouldShowLineChart.observe(viewLifecycleOwner) { shouldShow ->
+            val timeGranularity = viewModel.valueChartGranularityStream.value
+            if (timeGranularity != null) {
+                val chart = chartForGranularity(timeGranularity)
+                chart.updateVisibility(shouldShow)
+            }
+        }
+
         viewModel.valueChartGranularityStream.observe(viewLifecycleOwner) { granularity ->
             when (granularity) {
                 TimeGranularity.Daily -> binding.dailyValueChip.isChecked = true
@@ -101,11 +122,7 @@ class StatsFragment : Fragment() {
     private fun updateLineChartData(chartData: TimeChartData) {
         val (entries, labels, granularity, currency) = chartData
 
-        val applicableChart = when (granularity) {
-            TimeGranularity.Daily -> binding.valueLineChart
-            TimeGranularity.Weekly -> binding.weeklyValueLineChart
-            TimeGranularity.Monthly -> binding.monthlyValueLineChart
-        }
+        val applicableChart = chartForGranularity(granularity)
 
         valueCharts.forEach { chart ->
             chart.visibility = if (chart == applicableChart) View.VISIBLE else View.GONE
@@ -131,10 +148,18 @@ class StatsFragment : Fragment() {
         }
     }
 
+    private fun chartForGranularity(granularity: TimeGranularity): LineChart {
+        return when (granularity) {
+            TimeGranularity.Daily -> binding.valueLineChart
+            TimeGranularity.Weekly -> binding.weeklyValueLineChart
+            TimeGranularity.Monthly -> binding.monthlyValueLineChart
+        }
+    }
+
     private fun LineChart.applyDefaultStyle() = apply {
         setExtraOffsets(30f, 0f, 30f, 0f)
         setHardwareAccelerationEnabled(true)
-
+        setNoDataText("")
         isHighlightPerTapEnabled = false
         isHighlightPerDragEnabled = false
         description.isEnabled = false

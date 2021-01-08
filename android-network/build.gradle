@@ -38,19 +38,19 @@ dependencies {
     implementation project(path: ':domain-layer')
     implementation project(path: ':data-layer')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation Deps.kotlin_stdlib
+    implementation Deps.dagger_hilt
 
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    api Deps.retrofit
+    api Deps.moshi
+    api Deps.okhttp3_logging_interceptor
 
-    api "com.squareup.retrofit2:retrofit:2.6.0"
-    api "com.squareup.retrofit2:converter-moshi:2.6.0"
-    api "com.squareup.okhttp3:logging-interceptor:4.2.1"
+    kapt Deps.dagger_hilt_compiler
 
     testImplementation project(path: ':test-utils')
-    testImplementation "junit:junit:4.13"
-    testImplementation "org.hamcrest:hamcrest-library:2.2"
-    testImplementation "io.mockk:mockk:1.10.0"
-    testImplementation "androidx.arch.core:core-testing:$arch_version"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"
+    testImplementation Deps.junit
+    testImplementation Deps.hamcrest
+    testImplementation Deps.mockk
+    testImplementation Deps.androidx_core_testing
+    testImplementation Deps.coroutines_test
 }

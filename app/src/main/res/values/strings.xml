@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Mentra</string>
     <string name="default_error">An error occurred, try again later</string>
     <string name="retry">Retry</string>
     <string name="connection_error">You don\'t have an active internet connection</string>
@@ -29,8 +28,8 @@
     <string name="whoops_something_went_wrong">Whoops! Something went wrong</string>
     <string name="error_loading_wallets">An error occurred while trying to load your wallets.</string>
     <string name="error_loading_currencies">An error occurred trying to get the currency list.</string>
-    <string name="empty_wallets_title">Empty in wallets</string>
-    <string name="empty_wallets_description">Add a wallet and it will show up here.</string>
+    <string name="empty_wallets_title">You don\'t have any wallets</string>
+    <string name="empty_wallets_description">When you create one it will show up here.</string>
     <string name="coin_list_fetch_error">An error occurred while getting the list of supported coins.</string>
     <string name="currency_list_fetch_error">You can skip this step, the default currency will be US Dollars and you can change it at any time in the app settings.</string>
     <string name="coin_list_refresh_error">An error occurred refreshing the list of coins.</string>
@@ -71,4 +70,6 @@
     <string name="onboarding_finish_button">Finish</string>
     <string name="welcome">Welcome.</string>
     <string name="benefits">Track the behaviour and composition of your portfolio over time.</string>
+    <string name="empty_coin_distribution">Add a wallet to start seeing your coin distribution.</string>
+    <string name="empty_line_chart_warning">Add a wallet to start tracking your portfolio value.</string>
 </resources>
