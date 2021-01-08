@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.features.wallet_creation.model
 
+import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,17 +26,6 @@ class WalletCreationViewModel @ViewModelInject constructor(
     private val findCoinsByName: FindCoinsByName
 ) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
 
-    sealed class Step {
-        object CoinSelection : Step()
-        object AmountInput : Step()
-        object Done : Step()
-    }
-
-    sealed class Error {
-        object None : Error()
-        object CoinsNotLoaded : Error()
-    }
-
     val coinListStream = MutableLiveData<List<Coin>>(emptyList())
     val isLoadingCoinListStream = MutableLiveData<Boolean>(true)
     val isSaveActionEnabledStream = MutableLiveData<Boolean>(false)
@@ -43,7 +33,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
     val shouldShowNoMatchesWarningStream = MutableLiveData<Boolean>(false)
     val errorStateStream = MutableLiveData<Error>(Error.None)
     val currentStepStream = MutableLiveData<Step>(Step.CoinSelection)
-    val amountInputValidationStream = MutableLiveData<Int?>(null)
+    val amountInputValidationStream = MutableLiveData<Validation>(Validation.None)
     val selectedCoinStream = MutableLiveData<Coin?>(null)
 
     private var amountInput: BigDecimal? = null
@@ -74,7 +64,7 @@ class WalletCreationViewModel @ViewModelInject constructor(
 
         currentStepStream.value = when (currentStep) {
             Step.AmountInput -> {
-                amountInputValidationStream.postValue(null)
+                amountInputValidationStream.postValue(Validation.None)
                 amountInput = null
                 Step.CoinSelection
             }
@@ -84,10 +74,10 @@ class WalletCreationViewModel @ViewModelInject constructor(
     }
 
     fun amountInputChanged(text: CharSequence?) {
-        val (validationMessageId, parsedAmount) = validateAndParseAmountInput(text)
-        amountInput = if (validationMessageId != null) null else parsedAmount
-        amountInputValidationStream.value = validationMessageId
-        isSaveActionEnabledStream.value = validationMessageId == null
+        val (validation, parsedAmount) = validateAndParseAmountInput(text)
+        amountInput = if (validation != Validation.None) null else parsedAmount
+        amountInputValidationStream.value = validation
+        isSaveActionEnabledStream.value = validation == Validation.None
     }
 
     fun saveSelected() {
@@ -129,13 +119,33 @@ class WalletCreationViewModel @ViewModelInject constructor(
         isLoadingCoinListStream.value = false
     }
 
-    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Int?, BigDecimal> {
-        if (text.isNullOrEmpty()) return R.string.required_field to BigDecimal.ZERO
+    private fun validateAndParseAmountInput(text: CharSequence?): Pair<Validation, BigDecimal> {
+        if (text.isNullOrEmpty()) return Validation(R.string.required_field) to BigDecimal.ZERO
 
         val amount = text.toString().toBigDecimalOrNull()
-            ?: return R.string.invalid_number to BigDecimal.ZERO
+            ?: return Validation(R.string.invalid_number) to BigDecimal.ZERO
 
-        return if (amount <= BigDecimal.ZERO) R.string.invalid_amount_warning to BigDecimal.ZERO else null to amount
+        return when {
+            amount <= BigDecimal.ZERO -> Validation(R.string.invalid_amount_warning) to BigDecimal.ZERO
+            else -> Validation.None to amount
+        }
+    }
+
+    sealed class Step {
+        object CoinSelection : Step()
+        object AmountInput : Step()
+        object Done : Step()
+    }
+
+    sealed class Error {
+        object None : Error()
+        object CoinsNotLoaded : Error()
+    }
+
+    data class Validation(@StringRes val messageId: Int) {
+        companion object {
+            val None = Validation(0)
+        }
     }
 
 }

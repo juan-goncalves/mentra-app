@@ -82,10 +82,10 @@ class CoinAmountInputFragment : Fragment() {
             binding.saveButton.isEnabled = isEnabled
         }
 
-        viewModel.amountInputValidationStream.observe(viewLifecycleOwner) { stringId ->
-            binding.amountInputLayout.error = when (stringId) {
-                null -> null
-                else -> getString(stringId)
+        viewModel.amountInputValidationStream.observe(viewLifecycleOwner) { validation ->
+            binding.amountInputLayout.error = when (validation) {
+                WalletCreationViewModel.Validation.None -> null
+                else -> getString(validation.messageId)
             }
         }
 
