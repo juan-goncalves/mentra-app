@@ -17,6 +17,7 @@ import me.juangoncalves.mentra.domain_layer.usecases.coin.GetCoins
 import me.juangoncalves.mentra.domain_layer.usecases.wallet.CreateWallet
 import me.juangoncalves.mentra.failures.FleetingError
 import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel.Step
+import me.juangoncalves.mentra.features.wallet_creation.model.WalletCreationViewModel.Validation
 import me.juangoncalves.mentra.test_utils.MainCoroutineRule
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
@@ -60,14 +61,14 @@ class WalletCreationViewModelTest {
     }
 
     @Test
-    fun `amountInputValidationStream is initialized without a validation message code (null)`() {
+    fun `amountInputValidationStream is initialized without a validation warning`() {
         // Arrange
-        val observer = mockk<Observer<Int?>>(relaxUnitFun = true)
+        val observer = mockk<Observer<Validation>>(relaxUnitFun = true)
         sut.amountInputValidationStream.observeForever(observer)
 
         // Assert
         verifySequence {
-            observer.onChanged(null)
+            observer.onChanged(Validation.None)
         }
     }
 
@@ -108,9 +109,9 @@ class WalletCreationViewModelTest {
     @Test
     fun `amount input validations are reset when navigating to the previous step`() {
         // Arrange
-        val observer = mockk<Observer<Int?>>(relaxUnitFun = true)
+        val observer = mockk<Observer<Validation>>(relaxUnitFun = true)
         sut.currentStepStream.value = Step.AmountInput
-        sut.amountInputValidationStream.value = 1
+        sut.amountInputValidationStream.value = Validation(1)
         sut.amountInputValidationStream.observeForever(observer)
 
         // Act
@@ -119,7 +120,7 @@ class WalletCreationViewModelTest {
         // Assert
         verifySequence {
             observer.onChanged(any()) // Ignore the current value received when subscribed
-            observer.onChanged(null)
+            observer.onChanged(Validation.None)
         }
     }
 
@@ -192,7 +193,7 @@ class WalletCreationViewModelTest {
     @Test
     fun `amountInputValidationStream emits a invalid_number when the input is not a number`() {
         // Arrange
-        val observer = mockk<Observer<Int?>>(relaxUnitFun = true)
+        val observer = mockk<Observer<Validation>>(relaxUnitFun = true)
         sut.amountInputValidationStream.observeForever(observer)
 
         // Act
@@ -201,14 +202,14 @@ class WalletCreationViewModelTest {
         // Assert
         verifySequence {
             observer.onChanged(any()) // Ignore the current value received when subscribed
-            observer.onChanged(R.string.invalid_number)
+            observer.onChanged(Validation(R.string.invalid_number))
         }
     }
 
     @Test
     fun `amountInputValidationStream emits a required_field message when the input is null`() {
         // Arrange
-        val observer = mockk<Observer<Int?>>(relaxUnitFun = true)
+        val observer = mockk<Observer<Validation>>(relaxUnitFun = true)
         sut.amountInputValidationStream.observeForever(observer)
 
         // Act
@@ -217,14 +218,14 @@ class WalletCreationViewModelTest {
         // Assert
         verifySequence {
             observer.onChanged(any()) // Ignore the current value received when subscribed
-            observer.onChanged(R.string.required_field)
+            observer.onChanged(Validation(R.string.required_field))
         }
     }
 
     @Test
     fun `amountInputValidationStream emits a required_field when the input is empty`() {
         // Arrange
-        val observer = mockk<Observer<Int?>>(relaxUnitFun = true)
+        val observer = mockk<Observer<Validation>>(relaxUnitFun = true)
         sut.amountInputValidationStream.observeForever(observer)
 
         // Act
@@ -233,14 +234,14 @@ class WalletCreationViewModelTest {
         // Assert
         verifySequence {
             observer.onChanged(any()) // Ignore the current value received when subscribed
-            observer.onChanged(R.string.required_field)
+            observer.onChanged(Validation(R.string.required_field))
         }
     }
 
     @Test
     fun `amountInputValidationStream emits a invalid_amount_warning when the input is 0`() {
         // Arrange
-        val observer = mockk<Observer<Int?>>(relaxUnitFun = true)
+        val observer = mockk<Observer<Validation>>(relaxUnitFun = true)
         sut.amountInputValidationStream.observeForever(observer)
 
         // Act
@@ -249,14 +250,14 @@ class WalletCreationViewModelTest {
         // Assert
         verifySequence {
             observer.onChanged(any()) // Ignore the current value received when subscribed
-            observer.onChanged(R.string.invalid_amount_warning)
+            observer.onChanged(Validation(R.string.invalid_amount_warning))
         }
     }
 
     @Test
     fun `amountInputValidationStream emits a invalid_amount_warning when the input is less than 0`() {
         // Arrange
-        val observer = mockk<Observer<Int?>>(relaxUnitFun = true)
+        val observer = mockk<Observer<Validation>>(relaxUnitFun = true)
         sut.amountInputValidationStream.observeForever(observer)
 
         // Act
@@ -265,7 +266,7 @@ class WalletCreationViewModelTest {
         // Assert
         verifySequence {
             observer.onChanged(any()) // Ignore the current value received when subscribed
-            observer.onChanged(R.string.invalid_amount_warning)
+            observer.onChanged(Validation(R.string.invalid_amount_warning))
         }
     }
 
