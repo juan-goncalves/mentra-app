@@ -17,7 +17,7 @@ class OnboardingStepsAdapter(activity: FragmentActivity) : FragmentStateAdapter(
         lazy { OnboardingFinishedFragment.newInstance(3) }
     )
 
-    override fun getItemCount(): Int = 4
+    override fun getItemCount(): Int = fragments.size
 
     override fun createFragment(position: Int): Fragment = fragments[position].value
 
