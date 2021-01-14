@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra.features.wallet_list.models
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.util.*
 

@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.usecases.preference.FinishOnboarding
 
