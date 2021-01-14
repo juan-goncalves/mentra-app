@@ -1,9 +1,11 @@
 package me.juangoncalves.mentra.features.dashboard
 
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import kotlinx.parcelize.Parcelize
 import me.juangoncalves.mentra.common.BundleKeys
 import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.models.Price
@@ -71,7 +73,10 @@ class DashboardViewModel @ViewModelInject constructor(
         }
     }
 
-    enum class Tab { Stats, Wallets }
+    sealed class Tab : Parcelable {
+        @Parcelize object Stats : Tab()
+        @Parcelize object Wallets : Tab()
+    }
 
 }
 

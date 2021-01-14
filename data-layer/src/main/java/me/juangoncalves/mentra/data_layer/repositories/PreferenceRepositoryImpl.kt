@@ -67,10 +67,12 @@ class PreferenceRepositoryImpl @Inject constructor(
     private fun String?.toTimeGranularity(): TimeGranularity {
         if (this == null) return TimeGranularity.Daily
 
-        return try {
-            TimeGranularity.valueOf(this)
-        } catch (e: IllegalArgumentException) {
-            TimeGranularity.Daily
+        return when (this) {
+            TimeGranularity.Daily.name -> TimeGranularity.Daily
+            TimeGranularity.Weekly.name -> TimeGranularity.Weekly
+            TimeGranularity.Monthly.name -> TimeGranularity.Monthly
+            // Default value in any case
+            else -> TimeGranularity.Daily
         }
     }
 
