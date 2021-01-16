@@ -3,7 +3,6 @@ package me.juangoncalves.mentra.features.settings.ui
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.databinding.SettingsActivityBinding
 import me.juangoncalves.mentra.extensions.animateVisibility

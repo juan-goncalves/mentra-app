@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra.domain_layer.models
 
-enum class TimeGranularity {
-    Daily,
-    Weekly,
-    Monthly
+sealed class TimeGranularity(val name: String) {
+    object Daily : TimeGranularity("Daily")
+    object Weekly : TimeGranularity("Weekly")
+    object Monthly : TimeGranularity("Monthly")
 }

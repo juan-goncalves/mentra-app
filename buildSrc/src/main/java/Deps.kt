@@ -1,8 +1,8 @@
 // @formatter:off
 
 object Versions {
-    const val kotlin_stdlib = "1.3.72"
-    const val coroutines = "1.4.2"
+    const val kotlin_stdlib = "1.4.21"
+    const val coroutines = "1.4.1"
     const val android_gradle = "4.1.1"
 
     const val androidx_core = "1.5.0-alpha01"
