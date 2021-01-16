@@ -12,6 +12,8 @@ fun Fragment.handleErrorsFrom(
     anchor: View? = null
 ) {
     failurePublisher.fleetingErrorStream.observe(viewLifecycleOwner) { event ->
+        if (isHidden) return@observe
+
         event.use { fleetingError ->
             Snackbar.make(requireView(), fleetingError.message, Snackbar.LENGTH_LONG)
                 .applyErrorStyle()
