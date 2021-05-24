@@ -1,6 +1,6 @@
 package me.juangoncalves.mentra.android_network.mapper
 
-import me.juangoncalves.mentra.android_network.models.CoinSchema
+import me.juangoncalves.mentra.android_network.services.crypto_compare.models.CoinSchema
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.IconType
 import javax.inject.Inject

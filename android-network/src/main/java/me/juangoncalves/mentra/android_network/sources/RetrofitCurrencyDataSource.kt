@@ -3,31 +3,33 @@ package me.juangoncalves.mentra.android_network.sources
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.android_network.error.ExchangeRatesApiException
-import me.juangoncalves.mentra.android_network.services.ExchangeRateService
+import me.juangoncalves.mentra.android_network.error.CurrencyLayerApiException
+import me.juangoncalves.mentra.android_network.services.currency_layer.CurrencyLayerApi
+import me.juangoncalves.mentra.android_network.services.currency_layer.models.CurrencyListResponse
+import me.juangoncalves.mentra.android_network.services.currency_layer.models.ExchangeRatesResponse
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyRemoteDataSource
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 
 class RetrofitCurrencyDataSource @Inject constructor(
-    private val exchangeRateService: ExchangeRateService
+    private val currenciesApi: CurrencyLayerApi
 ) : CurrencyRemoteDataSource {
 
     override suspend fun fetchCurrencies(): Set<Currency> = withContext(Dispatchers.Default) {
-        val exchangeRatesSchema = exchangeRateService.getExchangeRates("USD")
+        val response = currenciesApi.getCurrencies()
 
-        if (!exchangeRatesSchema.wasSuccessful) {
-            throw ExchangeRatesApiException(
-                code = exchangeRatesSchema.error.code,
-                message = exchangeRatesSchema.error.message,
-            )
+        if (!response.wasSuccessful) {
+            throw response.toException()
         }
 
-        exchangeRatesSchema.rates.keys
-            .mapNotNull { currencyCode ->
+        response.currencies
+            .mapNotNull { (currencyCode, _) ->
+                ensureActive()
                 try {
-                    Currency.getInstance(currencyCode)
+                    val currency = Currency.getInstance(currencyCode)
+                    val hasNumbers = currency.displayName.contains(Regex("[0-9]+"))
+                    if (!hasNumbers) currency else null
                 } catch (e: Exception) {
                     null
                 }
@@ -37,19 +39,16 @@ class RetrofitCurrencyDataSource @Inject constructor(
 
     override suspend fun fetchExchangeRates(base: Currency): Map<Currency, BigDecimal> =
         withContext(Dispatchers.Default) {
-            val exchangeRatesSchema = exchangeRateService.getExchangeRates(base.currencyCode)
+            val response = currenciesApi.getExchangeRates(base.currencyCode)
 
-            if (!exchangeRatesSchema.wasSuccessful) {
-                throw ExchangeRatesApiException(
-                    code = exchangeRatesSchema.error.code,
-                    message = exchangeRatesSchema.error.message,
-                )
+            if (!response.wasSuccessful) {
+                throw response.toException()
             }
 
-            exchangeRatesSchema.rates
+            response.quotes
                 .mapKeys { entry ->
                     ensureActive()
-                    Currency.getInstance(entry.key)
+                    Currency.getInstance(entry.key.substring(3))
                 }
                 .mapValues { entry ->
                     ensureActive()
@@ -57,4 +56,18 @@ class RetrofitCurrencyDataSource @Inject constructor(
                 }
         }
 
+
+    private fun CurrencyListResponse.toException(): CurrencyLayerApiException {
+        return CurrencyLayerApiException(
+            error?.code ?: -1,
+            error?.message ?: "",
+        )
+    }
+
+    private fun ExchangeRatesResponse.toException(): CurrencyLayerApiException {
+        return CurrencyLayerApiException(
+            error?.code ?: -1,
+            error?.message ?: "",
+        )
+    }
 }

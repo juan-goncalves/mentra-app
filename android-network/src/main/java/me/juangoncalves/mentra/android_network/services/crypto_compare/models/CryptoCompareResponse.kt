@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.android_network.models
+package me.juangoncalves.mentra.android_network.services.crypto_compare.models
 
 import com.squareup.moshi.Json
 
