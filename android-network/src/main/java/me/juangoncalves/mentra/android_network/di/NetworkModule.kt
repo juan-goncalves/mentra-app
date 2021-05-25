@@ -4,9 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import me.juangoncalves.mentra.android_network.services.CryptoCompareService
-import me.juangoncalves.mentra.android_network.services.CryptoIconsService
-import me.juangoncalves.mentra.android_network.services.ExchangeRateService
+import me.juangoncalves.mentra.android_network.services.crypto_compare.CryptoCompareApi
+import me.juangoncalves.mentra.android_network.services.crypto_icons.CryptoIconsService
+import me.juangoncalves.mentra.android_network.services.currency_layer.CurrencyLayerApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -30,13 +30,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideCryptoCompareService(httpClient: OkHttpClient): CryptoCompareService {
+    fun provideCryptoCompareService(httpClient: OkHttpClient): CryptoCompareApi {
         return Retrofit.Builder()
             .baseUrl("https://min-api.cryptocompare.com/") // TODO: Make build config variable for different flavors
             .addConverterFactory(MoshiConverterFactory.create())
             .client(httpClient)
             .build()
-            .create(CryptoCompareService::class.java)
+            .create(CryptoCompareApi::class.java)
     }
 
     @Provides
@@ -52,13 +52,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideExchangeRateService(httpClient: OkHttpClient): ExchangeRateService {
+    fun provideCurrencyLayerApi(httpClient: OkHttpClient): CurrencyLayerApi {
         return Retrofit.Builder()
-            .baseUrl("https://api.exchangeratesapi.io/")
+            .baseUrl("http://api.currencylayer.com/")
             .addConverterFactory(MoshiConverterFactory.create())
             .client(httpClient)
             .build()
-            .create(ExchangeRateService::class.java)
+            .create(CurrencyLayerApi::class.java)
     }
 
 }

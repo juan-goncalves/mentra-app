@@ -1,6 +1,6 @@
 package me.juangoncalves.mentra.android_network.sources
 
-import me.juangoncalves.mentra.android_network.services.CryptoIconsService
+import me.juangoncalves.mentra.android_network.services.crypto_icons.CryptoIconsService
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinIconDataSource
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import java.util.*

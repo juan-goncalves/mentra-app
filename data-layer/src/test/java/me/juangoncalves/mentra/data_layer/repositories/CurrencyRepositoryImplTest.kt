@@ -227,6 +227,25 @@ class CurrencyRepositoryImplTest {
             result.requireRight() shouldBe null
         }
 
+    @Test
+    fun `exchange returns the received money if it already uses the target currency without hitting the cache or network`() =
+        runBlocking {
+            // Arrange
+            val original = 10.2.toPrice(currency = USD)
+
+            // Act
+            val result = sut.exchange(original, USD)
+
+            // Assert
+            with(result.requireRight() ?: Price.None) {
+                value shouldBeCloseTo 10.2
+                currency shouldBe USD
+            }
+
+            verify { localDsMock wasNot Called }
+            verify { remoteDsMock wasNot Called }
+        }
+
     //region Helpers
     //endregion
 
