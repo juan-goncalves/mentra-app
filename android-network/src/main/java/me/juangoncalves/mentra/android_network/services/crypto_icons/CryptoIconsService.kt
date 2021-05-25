@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.android_network.services
+package me.juangoncalves.mentra.android_network.services.crypto_icons
 
 import retrofit2.Response
 import retrofit2.http.HEAD

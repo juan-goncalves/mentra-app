@@ -25,6 +25,10 @@ class CurrencyRepositoryImpl @Inject constructor(
 
     override suspend fun exchange(price: Price, target: Currency): Either<Failure, Price?> =
         errorHandler.runCatching {
+            if (price.currency == target) {
+                return@runCatching price
+            }
+
             val cachedRate = ignoringFailure { localSource.getExchangeRate(price.currency, target) }
 
             val exchangeRate = if (cachedRate != null && cachedRate.timestamp.elapsedDays() <= 7) {

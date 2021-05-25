@@ -9,11 +9,11 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.android_network.*
 import me.juangoncalves.mentra.android_network.error.CryptoCompareResponseException
 import me.juangoncalves.mentra.android_network.mapper.CoinMapper
-import me.juangoncalves.mentra.android_network.models.CoinListSchema
-import me.juangoncalves.mentra.android_network.models.CoinSchema
-import me.juangoncalves.mentra.android_network.models.CryptoCompareResponse
-import me.juangoncalves.mentra.android_network.models.PriceSchema
-import me.juangoncalves.mentra.android_network.services.CryptoCompareService
+import me.juangoncalves.mentra.android_network.services.crypto_compare.CryptoCompareApi
+import me.juangoncalves.mentra.android_network.services.crypto_compare.models.CoinListSchema
+import me.juangoncalves.mentra.android_network.services.crypto_compare.models.CoinSchema
+import me.juangoncalves.mentra.android_network.services.crypto_compare.models.CryptoCompareResponse
+import me.juangoncalves.mentra.android_network.services.crypto_compare.models.PriceSchema
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
@@ -25,7 +25,7 @@ class RetrofitCoinDataSourceTest {
     //endregion
 
     //region Mocks
-    @MockK lateinit var apiServiceMock: CryptoCompareService
+    @MockK lateinit var apiServiceMock: CryptoCompareApi
     //endregion
 
     private lateinit var sut: RetrofitCoinDataSource
