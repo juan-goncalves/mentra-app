@@ -1,8 +1,6 @@
 {
   "Response": "Success",
   "Message": "Coin list successfully returned!",
-  "BaseImageUrl": "http://url.com",
-  "BaseLinkUrl": "https://www.cryptocompare.com",
   "Data": {
     "BTC": {
       "Id": "1182",

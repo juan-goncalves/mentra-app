@@ -12,6 +12,8 @@ import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 
+private const val CryptoCompareImageUrl = "https://www.cryptocompare.com"
+
 class RetrofitCoinDataSource @Inject constructor(
     private val apiService: CryptoCompareApi,
     private val coinMapper: CoinMapper
@@ -24,7 +26,7 @@ class RetrofitCoinDataSource @Inject constructor(
             State.Error -> throw CryptoCompareResponseException("CryptoCompare error response with code: ${resource.status}")
             State.Success -> resource.data.values
                 .filterNot { it.sponsored }
-                .map(buildImageUrl(resource.baseImageUrl))
+                .map { schema -> schema.copy(imageUrl = CryptoCompareImageUrl + schema.imageUrl) }
                 .map(coinMapper::map)
                 .filterNot { it == Coin.Invalid }
         }
@@ -38,12 +40,6 @@ class RetrofitCoinDataSource @Inject constructor(
             Currency.getInstance("USD"),
             LocalDateTime.now()
         )
-    }
-
-    private fun buildImageUrl(baseUrl: String): (CoinSchema) -> CoinSchema {
-        return { schema: CoinSchema ->
-            schema.copy(imageUrl = baseUrl + schema.imageUrl)
-        }
     }
 
 }
