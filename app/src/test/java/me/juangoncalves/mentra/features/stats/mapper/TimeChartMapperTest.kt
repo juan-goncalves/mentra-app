@@ -39,7 +39,7 @@ class TimeChartMapperTest {
     @Test
     fun `returns the appropriate labels for the received daily history`() = runBlocking {
         // Arrange
-        coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
+        coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Daily.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
             10 at LocalDateTime.of(2020, 10, 20, 10, 23),
@@ -63,7 +63,7 @@ class TimeChartMapperTest {
     @Test
     fun `returns the appropriate entries for the received daily history`() = runBlocking {
         // Arrange
-        coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
+        coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Daily.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
             10 at LocalDateTime.of(2020, 10, 20, 10, 23),
@@ -87,7 +87,7 @@ class TimeChartMapperTest {
     @Test
     fun `returns the time granularity value available at the time`() = runBlocking {
         // Arrange
-        coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Daily.toRight()
+        coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Daily.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
             10 at LocalDateTime.of(2020, 10, 20, 10, 23),
@@ -106,7 +106,7 @@ class TimeChartMapperTest {
     @Test
     fun `returns the appropriate labels for the weekly history`() = runBlocking {
         // Arrange
-        coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Weekly.toRight()
+        coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Weekly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
             11 at LocalDateTime.of(2020, 10, 11, 1, 15),
@@ -129,7 +129,7 @@ class TimeChartMapperTest {
     @Test
     fun `returns the appropriate entries for the weekly history`() = runBlocking {
         // Arrange
-        coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Weekly.toRight()
+        coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Weekly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
             11 at LocalDateTime.of(2020, 10, 11, 1, 15),
@@ -152,7 +152,7 @@ class TimeChartMapperTest {
     @Test
     fun `returns the appropriate entries for the monthly history`() = runBlocking {
         // Arrange
-        coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
+        coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Monthly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
             11 at LocalDateTime.of(2020, 11, 11, 1, 15),
@@ -175,7 +175,7 @@ class TimeChartMapperTest {
     @Test
     fun `returns the appropriate labels for the monthly history`() = runBlocking {
         // Arrange
-        coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
+        coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Monthly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
             11 at LocalDateTime.of(2020, 11, 11, 1, 15),
@@ -199,7 +199,7 @@ class TimeChartMapperTest {
     fun `returns an empty list of labels and entries when the price history is empty`() =
         runBlocking {
             // Arrange
-            coEvery { getTimeUnitPreferenceMock.invoke(any()) } returns TimeGranularity.Monthly.toRight()
+            coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Monthly.toRight()
             coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
 
             // Act

@@ -1,11 +1,11 @@
 package me.juangoncalves.mentra.features.wallet_edit
 
 import android.os.Bundle
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.common.BundleKeys
@@ -18,8 +18,10 @@ import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import java.math.BigDecimal
 import java.util.*
+import javax.inject.Inject
 
-class EditWalletViewModel @ViewModelInject constructor(
+@HiltViewModel
+class EditWalletViewModel @Inject constructor(
     private val updateWallet: UpdateWallet
 ) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
 

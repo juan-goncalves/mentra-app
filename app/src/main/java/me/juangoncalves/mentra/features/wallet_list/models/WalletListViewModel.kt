@@ -1,9 +1,9 @@
 package me.juangoncalves.mentra.features.wallet_list.models
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain_layer.models.Coin
@@ -17,8 +17,10 @@ import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.wallet_list.mappers.WalletMapper
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState.Error
+import javax.inject.Inject
 
-class WalletListViewModel @ViewModelInject constructor(
+@HiltViewModel
+class WalletListViewModel @Inject constructor(
     private val activeCoinsPriceStream: GetActiveCoinsPriceStream,
     private val walletListStream: GetWalletListStream,
     private val refreshPortfolioValue: RefreshPortfolioValue,

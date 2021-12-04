@@ -1,15 +1,16 @@
 package me.juangoncalves.mentra.workers
 
 import android.content.Context
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.RefreshPortfolioValue
 
-
-class PortfolioSnapshotWorker @WorkerInject constructor(
+@HiltWorker
+class PortfolioSnapshotWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val refreshPortfolioValue: RefreshPortfolioValue

@@ -1,10 +1,10 @@
 package me.juangoncalves.mentra.features.settings.model
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.common.Event
@@ -13,8 +13,10 @@ import me.juangoncalves.mentra.domain_layer.usecases.currency.GetSupportedCurren
 import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import java.util.*
+import javax.inject.Inject
 
-class SettingsViewModel @ViewModelInject constructor(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val getSupportedCurrencies: GetSupportedCurrencies,
     private val refreshSupportedCoins: RefreshSupportedCoins
 ) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {

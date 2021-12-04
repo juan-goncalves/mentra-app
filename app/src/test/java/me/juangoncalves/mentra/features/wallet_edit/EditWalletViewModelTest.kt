@@ -112,28 +112,28 @@ class EditWalletViewModelTest {
     fun `estimatedValueStream emits the correct estimation when the amount input changes`() {
         // Arrange
         initSutWithFakeWallet()
-        val captor = slot<Price>()
+        val captor = mutableListOf<Price>()
 
         // Act
         sut.amountInputChanged("1.0")
 
         // Assert
         verify(exactly = 2) { estimateObserver.onChanged(capture(captor)) }
-        captor.captured.value shouldBeCloseTo 11384.23
+        captor.last().value shouldBeCloseTo 11384.23
     }
 
     @Test
     fun `estimatedValueStream emits 0 when the input amount is invalid`() {
         // Arrange
         initSutWithFakeWallet()
-        val captor = slot<Price>()
+        val captor = mutableListOf<Price>()
 
         // Act
         sut.amountInputChanged("invalid")
 
         // Assert
         verify(exactly = 2) { estimateObserver.onChanged(capture(captor)) }
-        captor.captured.value shouldBeCloseTo 0.0
+        captor.last().value shouldBeCloseTo 0.0
     }
 
     @Test

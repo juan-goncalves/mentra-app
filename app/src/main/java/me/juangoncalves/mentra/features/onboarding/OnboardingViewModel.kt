@@ -1,17 +1,18 @@
 package me.juangoncalves.mentra.features.onboarding
 
 import android.os.Parcelable
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import me.juangoncalves.mentra.common.Notification
 import me.juangoncalves.mentra.domain_layer.usecases.preference.FinishOnboarding
+import javax.inject.Inject
 
-class OnboardingViewModel @ViewModelInject constructor(
+@HiltViewModel
+class OnboardingViewModel @Inject constructor(
     private val finishOnboarding: FinishOnboarding,
-    @Assisted private val handle: SavedStateHandle
+    handle: SavedStateHandle
 ) : ViewModel() {
 
     private object Keys {

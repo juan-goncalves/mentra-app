@@ -1,11 +1,11 @@
 package me.juangoncalves.mentra.features.wallet_deletion
 
 import android.os.Bundle
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.common.BundleKeys
 import me.juangoncalves.mentra.common.Notification
@@ -13,8 +13,10 @@ import me.juangoncalves.mentra.domain_layer.usecases.wallet.DeleteWallet
 import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
+import javax.inject.Inject
 
-class DeleteWalletViewModel @ViewModelInject constructor(
+@HiltViewModel
+class DeleteWalletViewModel @Inject constructor(
     private val deleteWallet: DeleteWallet
 ) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
 

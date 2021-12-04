@@ -1,10 +1,10 @@
 package me.juangoncalves.mentra.features.onboarding.currency
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
@@ -14,8 +14,10 @@ import me.juangoncalves.mentra.domain_layer.usecases.preference.UpdateCurrencyPr
 import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import java.util.*
+import javax.inject.Inject
 
-class OnboardingCurrencyViewModel @ViewModelInject constructor(
+@HiltViewModel
+class OnboardingCurrencyViewModel @Inject constructor(
     private val getSupportedCurrencies: GetSupportedCurrencies,
     private val updateCurrencyPreference: UpdateCurrencyPreference
 ) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {

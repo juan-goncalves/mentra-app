@@ -182,7 +182,7 @@ class WalletListViewModelTest {
         val captor = slot<Event<FleetingError>>()
         val observer = mockk<Observer<Event<FleetingError>>>(relaxUnitFun = true)
         sut.fleetingErrorStream.observeForever(observer)
-        coEvery { refreshPortfolioValueMock.invoke(any()) } returns Failure.Unknown.toLeft()
+        coEvery { refreshPortfolioValueMock(Unit) } returns Failure.Unknown.toLeft()
 
         // Act
         sut.refreshSelected()
@@ -308,7 +308,7 @@ class WalletListViewModelTest {
     private fun setupSuccessMocks() {
         coEvery { walletListStreamMock.invoke() } returns flowOf(wallets)
         coEvery { activeCoinsPriceStreamMock.invoke() } returns flowOf(prices)
-        coEvery { refreshPortfolioValueMock.invoke(any()) } returns 10.0.toPrice().toRight()
+        coEvery { refreshPortfolioValueMock(Unit) } returns 10.0.toPrice().toRight()
         coEvery { walletMapper.map(any(), any()) } returns WalletListViewState.Wallet(
             id = 0,
             iconUrl = "",

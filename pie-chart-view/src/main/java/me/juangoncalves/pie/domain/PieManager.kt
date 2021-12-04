@@ -14,7 +14,7 @@ internal class PieManager {
         val invalidPortions = portions.filterNot { it.percentage.compareTo(MIN_PORTION) > 0 }
 
         return if (invalidPortions.size > 1) {
-            val mergedPercentage = invalidPortions.sumByDouble { it.percentage }
+            val mergedPercentage = invalidPortions.sumOf { it.percentage }
             val validPortionsWithMerged =
                 validPortions + PiePortion(
                     mergedPercentage,

@@ -1,7 +1,7 @@
 package me.juangoncalves.mentra.features.stats.model
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -18,8 +18,10 @@ import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.stats.mapper.PiePortionMapper
 import me.juangoncalves.mentra.features.stats.mapper.TimeChartMapper
+import javax.inject.Inject
 
-class StatsViewModel @ViewModelInject constructor(
+@HiltViewModel
+class StatsViewModel @Inject constructor(
     getPortfolioValueHistory: GetPortfolioValueHistoryStream,
     getPortfolioDistribution: GetPortfolioDistributionStream,
     getTimeUnitPrefStream: GetTimeUnitPreferenceStream,

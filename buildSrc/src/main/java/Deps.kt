@@ -1,9 +1,10 @@
 // @formatter:off
 
 object Versions {
-    const val kotlin_stdlib = "1.4.21"
-    const val coroutines = "1.4.1"
-    const val android_gradle = "4.1.1"
+    const val kotlin_stdlib = "1.6.0"
+    const val coroutines = "1.5.2"
+    const val android_gradle = "7.0.3"
+    const val r8 = "3.1.42"
 
     const val androidx_core = "1.5.0-alpha01"
     const val androidx_appcompat = "1.3.0-alpha01"
@@ -12,22 +13,22 @@ object Versions {
     const val androidx_preference = "1.1.1"
     const val androidx_constraint_layout = "2.0.0-rc1"
     const val androidx_swipe_refresh_layout = "1.1.0"
-    const val androidx_lifecycle = "2.3.0-alpha05"
+    const val androidx_lifecycle = "2.4.0"
     const val androidx_viewpager2 = "1.0.0"
     const val androidx_work = "2.4.0"
     const val google_material = "1.2.1"
     const val androidx_core_testing = "2.1.0"
-    const val androidx_room = "2.2.5"
+    const val androidx_room = "2.4.0-beta02"
 
     const val dagger = "2.28.3"
-    const val dagger_hilt = "2.28-alpha"
-    const val androidx_hilt = "1.0.0-alpha01"
+    const val dagger_hilt = "2.40.4"
+    const val androidx_hilt = "1.0.0"
 
     const val firebase = "26.2.0"
     const val firebase_crashlytics_gradle_plugin = "2.4.1"
     const val google_services = "4.3.4"
     const val google_oss_licenses = "17.0.0"
-    const val google_oss_licenses_gradle_plugin = "0.10.2"
+    const val google_oss_licenses_gradle_plugin = "0.10.4"
 
     const val retrofit = "2.6.0"
     const val okhttp3_logging_interceptor = "4.2.1"
@@ -39,8 +40,8 @@ object Versions {
 
     const val junit = "4.13.1"
     const val hamcrest = "2.2"
-    const val mockk = "1.10.0"
-    const val robolectric = "4.3"
+    const val mockk = "1.12.1"
+    const val robolectric = "4.7"
     const val androidx_junit = "1.1.1"
     const val espresso = "3.2.0"
 }
@@ -53,6 +54,7 @@ object Deps {
     const val android_coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
     const val coroutines_test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
     const val android_gradle =  "com.android.tools.build:gradle:${Versions.android_gradle}"
+    const val r8 = "com.android.tools:r8:${Versions.r8}"
 
     const val androidx_core_ktx = "androidx.core:core-ktx:${Versions.androidx_core}"
     const val androidx_appcompat = "androidx.appcompat:appcompat:${Versions.androidx_appcompat}"
@@ -83,7 +85,6 @@ object Deps {
     const val dagger_hilt_compiler = "com.google.dagger:hilt-android-compiler:${Versions.dagger_hilt}"
     const val androidx_hilt_compiler = "androidx.hilt:hilt-compiler:${Versions.androidx_hilt}"
     const val androidx_hilt_work = "androidx.hilt:hilt-work:${Versions.androidx_hilt}"
-    const val androidx_hilt_lifecycle_viewmodel = "androidx.hilt:hilt-lifecycle-viewmodel:${Versions.androidx_hilt}"
     const val dagger_hilt_android_testing = "com.google.dagger:hilt-android-testing:${Versions.dagger_hilt}"
 
     const val firebase_platform = "com.google.firebase:firebase-bom:${Versions.firebase}"

@@ -12,26 +12,30 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.Mentra">
+        android:theme="@style/Theme.Mentra"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".features.onboarding.OnboardingActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Mentra.Onboarding" />
 
         <activity
             android:name=".features.dashboard.DashboardActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
 
         <activity
             android:name=".features.settings.ui.SettingsActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Mentra.Settings" />
 
         <activity
             android:name=".features.splash.SplashActivity"
+            android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Mentra.Splash">
@@ -44,16 +48,19 @@
 
         <activity
             android:name=".features.wallet_creation.ui.WalletCreationActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Mentra.LightStatusBarIcons" />
 
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Mentra.Licenses" />
 
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Mentra.Licenses" />
 

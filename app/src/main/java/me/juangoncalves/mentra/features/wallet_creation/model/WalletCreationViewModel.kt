@@ -1,10 +1,10 @@
 package me.juangoncalves.mentra.features.wallet_creation.model
 
 import androidx.annotation.StringRes
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.R
@@ -19,8 +19,10 @@ import me.juangoncalves.mentra.domain_layer.usecases.wallet.CreateWallet
 import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import java.math.BigDecimal
+import javax.inject.Inject
 
-class WalletCreationViewModel @ViewModelInject constructor(
+@HiltViewModel
+class WalletCreationViewModel @Inject constructor(
     private val getCoins: GetCoins,
     private val createWallet: CreateWallet,
     private val findCoinsByName: FindCoinsByName

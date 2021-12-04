@@ -3,7 +3,7 @@ package me.juangoncalves.mentra.android_network.di
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import me.juangoncalves.mentra.android_network.services.crypto_compare.CryptoCompareApi
 import me.juangoncalves.mentra.android_network.services.crypto_icons.CryptoIconsService
 import me.juangoncalves.mentra.android_network.services.currency_layer.CurrencyLayerApi
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object NetworkModule {
 
     @Provides

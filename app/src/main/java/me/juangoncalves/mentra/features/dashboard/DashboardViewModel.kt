@@ -2,9 +2,8 @@ package me.juangoncalves.mentra.features.dashboard
 
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import me.juangoncalves.mentra.common.BundleKeys
 import me.juangoncalves.mentra.common.Notification
@@ -14,14 +13,15 @@ import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangePriceStrea
 import me.juangoncalves.mentra.domain_layer.usecases.currency.ExchangeVariationStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueStream
 import me.juangoncalves.mentra.domain_layer.usecases.portfolio.GetPortfolioValueVariationStream
+import javax.inject.Inject
 
-
-class DashboardViewModel @ViewModelInject constructor(
+@HiltViewModel
+class DashboardViewModel @Inject constructor(
     getPortfolioValue: GetPortfolioValueStream,
     getPortfolioValueVariation: GetPortfolioValueVariationStream,
     exchangeExchangePriceStream: ExchangePriceStream,
     exchangeExchangeVariationStream: ExchangeVariationStream,
-    @Assisted private val handle: SavedStateHandle
+    handle: SavedStateHandle
 ) : ViewModel() {
 
     private object Keys {
