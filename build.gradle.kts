@@ -29,3 +29,15 @@ allprojects {
 tasks.create<Delete>("clean") {
     delete(rootProject.buildDir)
 }
+
+tasks.register("lintAndUnitTest") {
+    dependsOn(":app:lint", subprojects.testTasks)
+    group = "custom"
+    description = "$ ./gradlew lintAndUnitTest # runs on GitHub Action"
+}
+
+val Set<Project>.testTasks: List<String>
+    get() = map { module ->
+        val tasks = module.tasks.withType<Test>()
+        tasks.names.map { task -> "${module.name}:$task" }
+    }.flatten()

@@ -8,8 +8,13 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+}
+
+if (gradle.startParameter.taskRequests.toString().contains("release")) {
+    plugins {
+        id("com.google.gms.google-services")
+        id("com.google.firebase.crashlytics")
+    }
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -37,7 +42,7 @@ android {
         create("release") {
             keyAlias = keystoreProperties.getProperty("keyAlias")
             keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = File(keystoreProperties.getProperty("storeFile"))
+            storeFile = keystoreProperties.getProperty("storeFile")?.let { File(it) }
             storePassword = keystoreProperties.getProperty("storePassword")
         }
     }

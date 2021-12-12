@@ -1,6 +1,7 @@
 package me.juangoncalves.mentra.platform
 
 import android.app.Application
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.Bitcoin
@@ -18,11 +19,13 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE, application = Application::class)
 class CoinIconResourceDataSourceTest {
 
+    private lateinit var context: Context
     private lateinit var sut: CoinIconResourceDataSource
 
     @Before
     fun setUp() {
-        sut = CoinIconResourceDataSource(ApplicationProvider.getApplicationContext())
+        context = ApplicationProvider.getApplicationContext()
+        sut = CoinIconResourceDataSource(context)
     }
 
     @Test
@@ -34,7 +37,7 @@ class CoinIconResourceDataSourceTest {
 
             // Assert
             assertEquals(
-                "android.resource://me.juangoncalves.mentra.debug/raw/${R.raw.btc}",
+                "android.resource://${context.packageName}/raw/${R.raw.btc}",
                 result
             )
         }
