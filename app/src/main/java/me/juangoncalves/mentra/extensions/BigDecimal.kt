@@ -1,9 +1,10 @@
 package me.juangoncalves.mentra.extensions
 
+import kotlinx.datetime.LocalDateTime
+import me.juangoncalves.mentra.domain_layer.extensions.now
 import me.juangoncalves.mentra.domain_layer.models.Price
 import java.math.BigDecimal
 import java.text.DecimalFormat
-import java.time.LocalDateTime
 import java.util.*
 
 fun BigDecimal.toPrice(
