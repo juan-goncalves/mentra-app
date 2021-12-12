@@ -23,7 +23,7 @@ Preview images were created with <a href="https://previewed.app/">Previewed</a>
 ### Dependencies
 - **Kotlin Coroutines** to handle asynchronous work and reactive streams.
 - **Retrofit** for HTTP requests.
-- **Glide** for image loading and caching.
+- **Coil** for image loading and caching.
 - **Dagger Hilt** for dependency injection.
 - **MPAndroidChart** to display the different line charts.
 - **CryptoCompare** API to fetch the list of coins and their prices.
