@@ -22,6 +22,3 @@ jobs:
       - uses: eskatos/gradle-command-action@v2
         with:
           arguments: runOnGitHub
-          distributions-cache-enabled: true
-          dependencies-cache-enabled: true
-          configuration-cache-enabled: true
