@@ -29,14 +29,14 @@ abstract class SingleChoiceAdapter<T> constructor(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = with(holder.binding) {
-        val currency = data[position]
-        radioButton.isChecked = position == lastSelectedIndex
+        val currency = data[holder.adapterPosition]
+        radioButton.isChecked = holder.adapterPosition == lastSelectedIndex
         radioButton.text = getTextForItem(root.context, currency)
 
         radioButton.setOnClickListener {
             listener.onOptionSelected(currency)
             val copyOfLastCheckedPosition = lastSelectedIndex
-            lastSelectedIndex = position
+            lastSelectedIndex = holder.adapterPosition
             notifyItemChanged(copyOfLastCheckedPosition)
             notifyItemChanged(lastSelectedIndex)
         }
