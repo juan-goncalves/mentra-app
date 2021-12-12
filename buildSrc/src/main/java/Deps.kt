@@ -18,7 +18,7 @@ object Versions {
     const val androidx_work = "2.4.0"
     const val google_material = "1.2.1"
     const val androidx_core_testing = "2.1.0"
-    const val androidx_room = "2.4.0-beta02"
+    const val androidx_room = "2.4.0-alpha01"
 
     const val dagger = "2.28.3"
     const val dagger_hilt = "2.40.4"

@@ -4,6 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
 import me.juangoncalves.mentra.android_cache.daos.WalletDao
 import me.juangoncalves.mentra.android_cache.daos.WalletValueDao
 import me.juangoncalves.mentra.android_cache.mappers.WalletMapper
@@ -49,7 +51,11 @@ class RoomWalletDataSource @Inject constructor(
         if (currentWallet != updates) walletDao.update(updates)
 
         if (price != null) {
-            val valueModel = WalletValueModel(wallet.id, price.value, price.timestamp.toLocalDate())
+            val valueModel = WalletValueModel(
+                wallet.id,
+                price.value,
+                price.timestamp.toJavaLocalDateTime().toLocalDate(),
+            )
             walletValueDao.insert(valueModel)
         }
     }
@@ -57,7 +63,11 @@ class RoomWalletDataSource @Inject constructor(
     // TODO: Remove method (use the regular update)
     override suspend fun updateValue(wallet: Wallet, price: Price) =
         withContext(Dispatchers.Default) {
-            val model = WalletValueModel(wallet.id, price.value, price.timestamp.toLocalDate())
+            val model = WalletValueModel(
+                wallet.id,
+                price.value,
+                price.timestamp.toJavaLocalDateTime().toLocalDate(),
+            )
             walletValueDao.insert(model)
         }
 
@@ -68,7 +78,7 @@ class RoomWalletDataSource @Inject constructor(
                     Price(
                         valueModel.valueInUSD,
                         Currency.getInstance("USD"),
-                        valueModel.date.atStartOfDay()
+                        valueModel.date.atStartOfDay().toKotlinLocalDateTime()
                     )
                 }
         }

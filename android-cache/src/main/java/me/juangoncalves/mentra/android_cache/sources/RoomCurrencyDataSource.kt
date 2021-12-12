@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.android_cache.sources
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toKotlinLocalDateTime
 import me.juangoncalves.mentra.android_cache.daos.CurrencyDao
 import me.juangoncalves.mentra.android_cache.models.CurrencyEntity
 import me.juangoncalves.mentra.android_cache.models.ExchangeRateEntity
@@ -29,7 +30,11 @@ class RoomCurrencyDataSource @Inject constructor(
     override suspend fun getExchangeRate(from: Currency, to: Currency): Price? =
         withContext(Dispatchers.Default) {
             val record = currencyDao.getExchangeRate(from.currencyCode, to.currencyCode)
-            if (record != null) Price(record.rate, record.target, record.timestamp) else null
+            if (record != null) Price(
+                record.rate,
+                record.target,
+                record.timestamp.toKotlinLocalDateTime(),
+            ) else null
         }
 
     override suspend fun saveExchangeRates(base: Currency, rates: List<Price>) =

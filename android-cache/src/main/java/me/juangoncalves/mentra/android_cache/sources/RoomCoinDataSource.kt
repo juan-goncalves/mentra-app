@@ -4,6 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
 import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
@@ -36,7 +38,11 @@ class RoomCoinDataSource @Inject constructor(
     override suspend fun getLastCoinPrice(coin: Coin): Price? = withContext(Dispatchers.Default) {
         when (val model = coinPriceDao.getMostRecentCoinPrice(coin.symbol)) {
             null -> null
-            else -> Price(model.valueInUSD, Currency.getInstance("USD"), model.timestamp)
+            else -> Price(
+                model.valueInUSD,
+                Currency.getInstance("USD"),
+                model.timestamp.toKotlinLocalDateTime(),
+            )
         }
     }
 
@@ -46,7 +52,7 @@ class RoomCoinDataSource @Inject constructor(
                 require(price.currency == Currency.getInstance("USD")) {
                     "Prices to be stored in the database must be in USD"
                 }
-                CoinPriceModel(coin.symbol, price.value, price.timestamp)
+                CoinPriceModel(coin.symbol, price.value, price.timestamp.toJavaLocalDateTime())
             }
 
             coinPriceDao.insertCoinPrices(*models.toTypedArray())
@@ -76,7 +82,7 @@ class RoomCoinDataSource @Inject constructor(
                 coinPricesMap[coin] = Price(
                     priceModel.valueInUSD,
                     Currency.getInstance("USD"),
-                    priceModel.timestamp
+                    priceModel.timestamp.toKotlinLocalDateTime()
                 )
             }
 

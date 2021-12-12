@@ -18,7 +18,7 @@ import me.juangoncalves.mentra.android_cache.models.*
         ExchangeRateEntity::class
     ],
     version = 17,
-    exportSchema = false
+    exportSchema = true,
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
