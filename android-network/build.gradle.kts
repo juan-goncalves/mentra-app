@@ -1,5 +1,5 @@
 import java.io.FileInputStream
-import java.util.Properties
+import java.util.*
 
 plugins {
     id("com.android.library")
@@ -31,7 +31,7 @@ android {
             buildConfigField(
                 "String",
                 "CurrencyLayerApiKey",
-                keystoreProperties.getProperty("currencyLayerApiKey"),
+                keystoreProperties.getProperty("currencyLayerApiKey") ?: "",
             )
         }
         getByName("release") {
@@ -45,7 +45,7 @@ android {
             buildConfigField(
                 "String",
                 "CurrencyLayerApiKey",
-                keystoreProperties.getProperty("currencyLayerApiKey"),
+                keystoreProperties.getProperty("currencyLayerApiKey") ?: "",
             )
         }
     }
