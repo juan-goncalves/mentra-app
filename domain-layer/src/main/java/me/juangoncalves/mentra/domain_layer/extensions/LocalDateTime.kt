@@ -12,15 +12,15 @@ fun LocalDateTime.Companion.now(): LocalDateTime {
 fun LocalDateTime.minutesBetween(other: LocalDateTime): Long {
     val thisInstant = toInstant(currentSystemDefault())
     val otherInstant = other.toInstant(currentSystemDefault())
-    val period = otherInstant.periodUntil(thisInstant, currentSystemDefault())
-    return abs(period.minutes.toLong())
+    val period = thisInstant.until(otherInstant, DateTimeUnit.MINUTE, currentSystemDefault())
+    return abs(period)
 }
 
 fun LocalDateTime.daysBetween(other: LocalDateTime): Long {
     val thisInstant = toInstant(currentSystemDefault())
     val otherInstant = other.toInstant(currentSystemDefault())
-    val days = otherInstant.daysUntil(thisInstant, currentSystemDefault())
-    return abs(days.toLong())
+    val period = otherInstant.until(thisInstant, DateTimeUnit.DAY, currentSystemDefault())
+    return abs(period)
 }
 
 fun LocalDateTime.elapsedMinutes(): Long = this.minutesBetween(LocalDateTime.now())

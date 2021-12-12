@@ -19,53 +19,53 @@ class LocalDateTimeKtTest {
     @Test
     fun `minutesBetween calculates the difference correctly when the other date is after the current one`() {
         // Arrange
-        val a = LocalDateTime(2021, 12, 12, 9, 30)
+        val a = LocalDateTime(2021, 12, 12, 8, 30)
         val b = LocalDateTime(2021, 12, 12, 9, 45)
 
         // Act
         val result = a.minutesBetween(b)
 
         // Assert
-        assertEquals(15, result)
+        assertEquals(75, result)
     }
 
     @Test
     fun `minutesBetween calculates the difference correctly when the other date is before the current one`() {
         // Arrange
         val a = LocalDateTime(2021, 12, 12, 9, 45)
-        val b = LocalDateTime(2021, 12, 12, 9, 30)
+        val b = LocalDateTime(2021, 12, 12, 8, 30)
 
         // Act
         val result = a.minutesBetween(b)
 
         // Assert
-        assertEquals(15, result)
+        assertEquals(75, result)
     }
 
     @Test
     fun `daysBetween calculates the difference correctly when the other date is after the current one`() {
         // Arrange
         val a = LocalDateTime(2021, 12, 12, 9, 30)
-        val b = LocalDateTime(2021, 12, 20, 9, 45)
+        val b = LocalDateTime(2021, 11, 12, 9, 45)
 
         // Act
         val result = a.daysBetween(b)
 
         // Assert
-        assertEquals(8, result)
+        assertEquals(29, result)
     }
 
     @Test
-    fun `minutesBetween calculates the minute difference correctly when the other date is before the current one`() {
+    fun `daysBetween calculates the minute difference correctly when the other date is before the current one`() {
         // Arrange
-        val a = LocalDateTime(2021, 12, 20, 9, 45)
+        val a = LocalDateTime(2021, 11, 12, 9, 45)
         val b = LocalDateTime(2021, 12, 12, 9, 30)
 
         // Act
         val result = a.daysBetween(b)
 
         // Assert
-        assertEquals(8, result)
+        assertEquals(29, result)
     }
 
     @Test

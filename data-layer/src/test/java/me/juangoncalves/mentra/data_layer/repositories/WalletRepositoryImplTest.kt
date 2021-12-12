@@ -4,6 +4,7 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDateTime
 import me.juangoncalves.mentra.data_layer.*
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
@@ -21,7 +22,6 @@ import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class WalletRepositoryImplTest {
@@ -238,8 +238,8 @@ class WalletRepositoryImplTest {
             // Arrange
             val wallet = Wallet(Bitcoin, 11.234, 32)
             val history = listOf(
-                Price(1_000.0.toBigDecimal(), USD, LocalDateTime.of(2020, 10, 13, 22, 30)),
-                Price(927.0.toBigDecimal(), USD, LocalDateTime.of(2020, 10, 12, 22, 10))
+                Price(1_000.0.toBigDecimal(), USD, LocalDateTime(2020, 10, 13, 22, 30)),
+                Price(927.0.toBigDecimal(), USD, LocalDateTime(2020, 10, 12, 22, 10))
             )
             coEvery { walletLocalSourceMock.getValueHistory(wallet) } returns history
 
