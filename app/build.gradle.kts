@@ -37,7 +37,7 @@ android {
         create("release") {
             keyAlias = keystoreProperties.getProperty("keyAlias")
             keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = File(keystoreProperties.getProperty("storeFile"))
+            storeFile = keystoreProperties.getProperty("storeFile")?.let { File(it) }
             storePassword = keystoreProperties.getProperty("storePassword")
         }
     }
