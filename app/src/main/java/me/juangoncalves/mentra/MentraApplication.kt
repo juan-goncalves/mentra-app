@@ -3,6 +3,9 @@ package me.juangoncalves.mentra
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.*
+import coil.Coil
+import coil.ImageLoader
+import coil.decode.SvgDecoder
 import dagger.hilt.android.HiltAndroidApp
 import either.fold
 import kotlinx.coroutines.GlobalScope
@@ -22,6 +25,14 @@ class MentraApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         schedulePortfolioSnapshots()
+        configureCoil()
+    }
+
+    private fun configureCoil() {
+        ImageLoader.Builder(this)
+            .componentRegistry { add(SvgDecoder(this@MentraApplication)) }
+            .build()
+            .also { Coil.setImageLoader(it) }
     }
 
     override fun getWorkManagerConfiguration(): Configuration =

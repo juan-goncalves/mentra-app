@@ -8,9 +8,10 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
+import coil.Coil
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import dagger.hilt.android.AndroidEntryPoint
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.CoinAmountInputFragmentBinding
@@ -25,10 +26,6 @@ class CoinAmountInputFragment : Fragment() {
 
     private var _binding: CoinAmountInputFragmentBinding? = null
     private val binding get() = _binding!!
-
-    private val crossFadeFactory = DrawableCrossFadeFactory.Builder()
-        .setCrossFadeEnabled(true)
-        .build()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,13 +93,17 @@ class CoinAmountInputFragment : Fragment() {
     private fun bindSelectedCoinPreview(selectedCoin: Coin?) {
         selectedCoin ?: error("We need a selected coin to reach this fragment")
 
-        Glide.with(this)
-            .load(selectedCoin.imageUrl)
+        val context = binding.root.context
+
+        ImageRequest.Builder(context)
+            .diskCachePolicy(CachePolicy.ENABLED)
             .placeholder(R.drawable.coin_placeholder)
-            .circleCrop()
-            .transition(DrawableTransitionOptions.withCrossFade(crossFadeFactory))
-            .error(R.drawable.coin_placeholder)
-            .into(binding.selectedCoinImageView)
+            .data(selectedCoin.imageUrl)
+            .target(binding.selectedCoinImageView)
+            .transformations(CircleCropTransformation())
+            .crossfade(context.resources.getInteger(android.R.integer.config_shortAnimTime))
+            .build()
+            .also { request -> Coil.enqueue(request) }
 
         binding.selectedCoinNameTextView.text = selectedCoin.name
     }

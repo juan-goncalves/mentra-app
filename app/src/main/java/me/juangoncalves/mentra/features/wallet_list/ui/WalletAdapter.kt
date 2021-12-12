@@ -1,13 +1,15 @@
 package me.juangoncalves.mentra.features.wallet_list.ui
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
+import coil.Coil
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.databinding.WalletListItemBinding
 import me.juangoncalves.mentra.extensions.asCoinAmount
@@ -23,10 +25,6 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
 
     private val differ: AsyncListDiffer<WalletListViewState.Wallet> =
         AsyncListDiffer(this, WalletItemCallback())
-
-    private val crossFadeFactory = DrawableCrossFadeFactory.Builder()
-        .setCrossFadeEnabled(true)
-        .build()
 
     override fun getItemCount() = differ.currentList.size
 
@@ -47,12 +45,15 @@ class WalletAdapter : RecyclerView.Adapter<WalletAdapter.ViewHolder>() {
             coinPriceTextView.text = wallet.coin.value.asCurrencyAmount()
             walletValueTextView.text = wallet.value.asCurrencyAmount()
 
-            Glide.with(root)
-                .load(wallet.iconUrl)
+            ImageRequest.Builder(root.context)
+                .diskCachePolicy(CachePolicy.ENABLED)
                 .placeholder(R.drawable.coin_placeholder)
-                .circleCrop()
-                .transition(DrawableTransitionOptions.withCrossFade(crossFadeFactory))
-                .into(logoImageView)
+                .data(Uri.parse(wallet.iconUrl))
+                .target(logoImageView)
+                .transformations(CircleCropTransformation())
+                .crossfade(root.resources.getInteger(android.R.integer.config_shortAnimTime))
+                .build()
+                .also { request -> Coil.enqueue(request) }
         }
     }
 

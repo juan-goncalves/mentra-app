@@ -1,5 +1,5 @@
 import java.io.FileInputStream
-import java.util.Properties
+import java.util.*
 
 plugins {
     id("com.android.application")
@@ -110,7 +110,8 @@ dependencies {
     implementation(Deps.dagger_hilt)
     implementation(Deps.androidx_hilt_work)
 
-    implementation(Deps.glide)
+    implementation(Deps.coil)
+    implementation(Deps.coil_svg)
     implementation(Deps.fading_edge_layout)
     implementation(Deps.mp_android_chart)
 
@@ -121,7 +122,6 @@ dependencies {
     kapt(Deps.dagger_hilt_compiler)
     kapt(Deps.androidx_hilt_compiler)
     kapt(Deps.androidx_lifecycle_compiler)
-    kapt(Deps.glide_compiler)
 
     kaptTest(Deps.dagger_hilt_compiler)
 

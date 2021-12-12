@@ -33,7 +33,7 @@ object Versions {
     const val retrofit = "2.6.0"
     const val okhttp3_logging_interceptor = "4.2.1"
 
-    const val glide = "4.11.0"
+    const val coil = "1.4.0"
     const val fading_edge_layout = "1.0.0"
     const val mp_android_chart = "v3.1.0"
     const val either = "3.0.0"
@@ -99,8 +99,8 @@ object Deps {
     const val moshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
     const val okhttp3_logging_interceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp3_logging_interceptor}"
 
-    const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
-    const val glide_compiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
+    const val coil = "io.coil-kt:coil:${Versions.coil}"
+    const val coil_svg = "io.coil-kt:coil-svg:${Versions.coil}"
     const val fading_edge_layout = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:${Versions.fading_edge_layout}"
     const val mp_android_chart = "com.github.PhilJay:MPAndroidChart:${Versions.mp_android_chart}"
     const val either = "com.github.adelnizamutdinov:kotlin-either:${Versions.either}"
