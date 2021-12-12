@@ -39,3 +39,15 @@ subprojects {
         }
     }
 }
+
+tasks.register("runOnGitHub") {
+    dependsOn(":app:lint", subprojects.testTasks)
+    group = "custom"
+    description = "$ ./gradlew runOnGitHub # runs on GitHub Action"
+}
+
+val Set<Project>.testTasks: List<String>
+    get() = map { module ->
+        val tasks = module.tasks.withType<Test>()
+        tasks.names.map { task -> "${module.name}:$task" }
+    }.flatten()
