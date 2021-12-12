@@ -31,7 +31,7 @@ android {
             buildConfigField(
                 "String",
                 "CurrencyLayerApiKey",
-                keystoreProperties.getProperty("currencyLayerApiKey") ?: "",
+                keystoreProperties.getProperty("currencyLayerApiKey") ?: "\"\"",
             )
         }
         getByName("release") {
@@ -45,7 +45,7 @@ android {
             buildConfigField(
                 "String",
                 "CurrencyLayerApiKey",
-                keystoreProperties.getProperty("currencyLayerApiKey") ?: "",
+                keystoreProperties.getProperty("currencyLayerApiKey") ?: "\"\"",
             )
         }
     }
