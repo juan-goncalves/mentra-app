@@ -8,8 +8,14 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+
+}
+
+if (gradle.startParameter.taskRequests.toString().contains("release")) {
+    plugins {
+        id("com.google.gms.google-services")
+        id("com.google.firebase.crashlytics")
+    }
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
