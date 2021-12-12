@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestLogEvent.*
-
 buildscript {
     repositories {
         google()
@@ -30,14 +28,6 @@ allprojects {
 
 tasks.create<Delete>("clean") {
     delete(rootProject.buildDir)
-}
-
-subprojects {
-    tasks.withType<Test> {
-        testLogging {
-            events = setOf(PASSED, SKIPPED, FAILED)
-        }
-    }
 }
 
 tasks.register("runOnGitHub") {

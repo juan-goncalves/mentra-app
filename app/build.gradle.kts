@@ -8,7 +8,6 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
-
 }
 
 if (gradle.startParameter.taskRequests.toString().contains("release")) {
