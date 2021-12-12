@@ -6,6 +6,7 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDateTime
 import me.juangoncalves.mentra.domain_layer.*
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
@@ -18,7 +19,6 @@ import me.juangoncalves.mentra.test_utils.shouldBeA
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
 
 class RefreshWalletValueTest {
 

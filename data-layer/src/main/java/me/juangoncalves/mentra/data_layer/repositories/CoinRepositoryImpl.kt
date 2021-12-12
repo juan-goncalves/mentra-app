@@ -3,7 +3,6 @@ package me.juangoncalves.mentra.data_layer.repositories
 import either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import me.juangoncalves.mentra.data_layer.extensions.elapsedMinutes
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinRemoteDataSource
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler

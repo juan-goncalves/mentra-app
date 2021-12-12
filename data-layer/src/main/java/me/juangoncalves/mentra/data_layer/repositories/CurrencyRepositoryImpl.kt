@@ -2,13 +2,13 @@ package me.juangoncalves.mentra.data_layer.repositories
 
 import either.Either
 import kotlinx.coroutines.Dispatchers
-import me.juangoncalves.mentra.data_layer.extensions.elapsedDays
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyLocalDataSource
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyRemoteDataSource
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.errors.ignoringFailure
 import me.juangoncalves.mentra.domain_layer.errors.runCatching
+import me.juangoncalves.mentra.domain_layer.extensions.elapsedDays
 import me.juangoncalves.mentra.domain_layer.extensions.toPrice
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.repositories.CurrencyRepository

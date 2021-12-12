@@ -1,9 +1,10 @@
 package me.juangoncalves.mentra.domain_layer
 
+import kotlinx.datetime.LocalDateTime
+import me.juangoncalves.mentra.domain_layer.extensions.now
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.domain_layer.models.Price
-import java.time.LocalDateTime
 import java.util.*
 
 
