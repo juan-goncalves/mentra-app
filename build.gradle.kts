@@ -30,10 +30,10 @@ tasks.create<Delete>("clean") {
     delete(rootProject.buildDir)
 }
 
-tasks.register("runOnGitHub") {
+tasks.register("lintAndUnitTest") {
     dependsOn(":app:lint", subprojects.testTasks)
     group = "custom"
-    description = "$ ./gradlew runOnGitHub # runs on GitHub Action"
+    description = "$ ./gradlew lintAndUnitTest # runs on GitHub Action"
 }
 
 val Set<Project>.testTasks: List<String>
