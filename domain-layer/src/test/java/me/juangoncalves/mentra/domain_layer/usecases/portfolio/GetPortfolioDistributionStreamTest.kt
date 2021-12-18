@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.datetime.LocalDateTime
 import me.juangoncalves.mentra.domain_layer.Bitcoin
 import me.juangoncalves.mentra.domain_layer.Ethereum
 import me.juangoncalves.mentra.domain_layer.Ripple
@@ -21,7 +22,6 @@ import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class GetPortfolioDistributionStreamTest {
@@ -78,7 +78,7 @@ class GetPortfolioDistributionStreamTest {
     }
 
     @Test
-    fun `assigns 0% to coins that don't have any values`() = runBlockingTest {
+    fun `assigns 0 to coins that don't have any values`() = runBlockingTest {
         // Arrange
         coEvery { portfolioRepositoryMock.portfolioValue } returns flowOf(300.0.toPrice())
         coEvery { walletRepositoryMock.getWallets() } returns wallets.subList(0, 2).toRight()
@@ -147,8 +147,8 @@ class GetPortfolioDistributionStreamTest {
     )
 
     private val days = listOf(
-        LocalDateTime.of(2020, 10, 17, 1, 30),
-        LocalDateTime.of(2020, 10, 16, 12, 30)
+        LocalDateTime(2020, 10, 17, 1, 30),
+        LocalDateTime(2020, 10, 16, 12, 30)
     )
     //endregion
 

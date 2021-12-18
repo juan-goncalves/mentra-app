@@ -3,6 +3,11 @@ package me.juangoncalves.mentra.data_layer.repositories
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit.Companion.DAY
+import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 import me.juangoncalves.mentra.data_layer.CAD
 import me.juangoncalves.mentra.data_layer.EUR
 import me.juangoncalves.mentra.data_layer.USD
@@ -20,7 +25,6 @@ import me.juangoncalves.mentra.test_utils.shouldBeA
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime.now
 
 class CurrencyRepositoryImplTest {
 
@@ -163,7 +167,12 @@ class CurrencyRepositoryImplTest {
         runBlocking {
             // Arrange
             val original = 10.2.toPrice(currency = USD)
-            val expiredRate = 1.2.toPrice(currency = EUR, timestamp = now().minusDays(9))
+            val expiredRate = 1.2.toPrice(
+                currency = EUR,
+                timestamp = Clock.System.now()
+                    .minus(9, DAY, currentSystemDefault())
+                    .toLocalDateTime(currentSystemDefault())
+            )
             coEvery { localDsMock.getExchangeRate(USD, EUR) } returns expiredRate
             coEvery { remoteDsMock.fetchExchangeRates(USD) } returns mapOf(EUR to 1.1.toBigDecimal())
 

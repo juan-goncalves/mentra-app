@@ -14,6 +14,7 @@ dependencies {
     api(Deps.coroutines)
     api(Deps.either)
     api(Deps.dagger)
+    api(Deps.kotlinx_datetime)
 
     kapt(Deps.dagger_compiler)
 

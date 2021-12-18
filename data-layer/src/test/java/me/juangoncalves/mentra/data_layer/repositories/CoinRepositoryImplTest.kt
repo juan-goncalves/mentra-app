@@ -4,6 +4,12 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit.Companion.HOUR
+import kotlinx.datetime.DateTimeUnit.Companion.MINUTE
+import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 import me.juangoncalves.mentra.data_layer.Bitcoin
 import me.juangoncalves.mentra.data_layer.Ethereum
 import me.juangoncalves.mentra.data_layer.Ripple
@@ -21,7 +27,6 @@ import me.juangoncalves.mentra.test_utils.shouldBeA
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class CoinRepositoryImplTest {
@@ -160,7 +165,11 @@ class CoinRepositoryImplTest {
     fun `getCoinPrice returns the cached coin price if it was fetched less than 5 minutes ago`() =
         runBlocking {
             // Arrange
-            val price = 321.98.toPrice(timestamp = LocalDateTime.now().minusMinutes(2))
+            val price = 321.98.toPrice(
+                timestamp = Clock.System.now()
+                    .minus(2, MINUTE)
+                    .toLocalDateTime(currentSystemDefault())
+            )
             coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } returns price
 
             // Act
@@ -176,7 +185,11 @@ class CoinRepositoryImplTest {
     fun `getCoinPrice fetches the coin price if the cached one is more than 5 minutes old`() =
         runBlocking {
             // Arrange
-            val localPrice = 321.98.toPrice(timestamp = LocalDateTime.now().minusHours(1))
+            val localPrice = 321.98.toPrice(
+                timestamp = Clock.System.now()
+                    .minus(1, HOUR)
+                    .toLocalDateTime(currentSystemDefault())
+            )
             val remotePrice = 500.32.toPrice()
             coEvery { localSourceMock.getLastCoinPrice(Bitcoin) } returns localPrice
             coEvery { remoteSourceMock.fetchCoinPrice(Bitcoin) } returns remotePrice
@@ -195,7 +208,11 @@ class CoinRepositoryImplTest {
     fun `getCoinPrice returns a Failure when it has to fetch the coin price and it fails`() =
         runBlocking {
             // Arrange
-            val localPrice = 0.123.toPrice(timestamp = LocalDateTime.now().minusHours(2))
+            val localPrice = 0.123.toPrice(
+                timestamp = Clock.System.now()
+                    .minus(2, HOUR, currentSystemDefault())
+                    .toLocalDateTime(currentSystemDefault())
+            )
             coEvery { remoteSourceMock.fetchCoinPrice(Ripple) } throws RuntimeException()
             coEvery { localSourceMock.getLastCoinPrice(Ripple) } returns localPrice
 

@@ -18,7 +18,7 @@ object Versions {
     const val androidx_work = "2.4.0"
     const val google_material = "1.2.1"
     const val androidx_core_testing = "2.1.0"
-    const val androidx_room = "2.4.0-beta02"
+    const val androidx_room = "2.4.0-alpha01"
 
     const val dagger = "2.28.3"
     const val dagger_hilt = "2.40.4"
@@ -37,6 +37,7 @@ object Versions {
     const val fading_edge_layout = "1.0.0"
     const val mp_android_chart = "v3.1.0"
     const val either = "3.0.0"
+    const val kotlinx_datetime = "0.3.1"
 
     const val junit = "4.13.1"
     const val hamcrest = "2.2"
@@ -104,6 +105,7 @@ object Deps {
     const val fading_edge_layout = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout:${Versions.fading_edge_layout}"
     const val mp_android_chart = "com.github.PhilJay:MPAndroidChart:${Versions.mp_android_chart}"
     const val either = "com.github.adelnizamutdinov:kotlin-either:${Versions.either}"
+    const val kotlinx_datetime = "org.jetbrains.kotlinx:kotlinx-datetime:${Versions.kotlinx_datetime}"
 
     const val junit = "junit:junit:${Versions.junit}"
     const val hamcrest = "org.hamcrest:hamcrest-library:${Versions.hamcrest}"

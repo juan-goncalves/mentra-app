@@ -1,5 +1,6 @@
 package me.juangoncalves.mentra.android_cache
 
+import kotlinx.datetime.toKotlinLocalDateTime
 import me.juangoncalves.mentra.android_cache.models.CoinModel
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.IconType
@@ -34,4 +35,4 @@ internal val RippleModel = CoinModel(
 internal fun Double.toPrice(
     currency: Currency = USD,
     timestamp: LocalDateTime = LocalDateTime.now()
-): Price = Price(toBigDecimal(), currency, timestamp)
+): Price = Price(toBigDecimal(), currency, timestamp.toKotlinLocalDateTime())

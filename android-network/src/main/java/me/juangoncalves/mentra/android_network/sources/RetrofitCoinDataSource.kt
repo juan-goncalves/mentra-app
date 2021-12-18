@@ -1,14 +1,14 @@
 package me.juangoncalves.mentra.android_network.sources
 
+import kotlinx.datetime.LocalDateTime
 import me.juangoncalves.mentra.android_network.error.CryptoCompareResponseException
 import me.juangoncalves.mentra.android_network.mapper.CoinMapper
 import me.juangoncalves.mentra.android_network.services.crypto_compare.CryptoCompareApi
-import me.juangoncalves.mentra.android_network.services.crypto_compare.models.CoinSchema
 import me.juangoncalves.mentra.android_network.services.crypto_compare.models.CryptoCompareResponse.State
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinRemoteDataSource
+import me.juangoncalves.mentra.domain_layer.extensions.now
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
-import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 

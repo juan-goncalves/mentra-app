@@ -1,7 +1,8 @@
 package me.juangoncalves.mentra.domain_layer.models
 
+import kotlinx.datetime.LocalDateTime
+import me.juangoncalves.mentra.domain_layer.extensions.now
 import java.math.BigDecimal
-import java.time.LocalDateTime
 import java.util.*
 
 data class Price(
@@ -14,5 +15,4 @@ data class Price(
         val None: Price = Price(BigDecimal(-1), Currency.getInstance("USD"), LocalDateTime.now())
         val Zero: Price = Price(BigDecimal.ZERO, Currency.getInstance("USD"), LocalDateTime.now())
     }
-
 }

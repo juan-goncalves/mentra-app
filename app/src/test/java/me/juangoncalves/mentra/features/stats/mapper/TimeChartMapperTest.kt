@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDateTime
 import me.juangoncalves.mentra.USD
 import me.juangoncalves.mentra.at
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
@@ -15,7 +16,6 @@ import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import me.juangoncalves.mentra.toRight
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class TimeChartMapperTest {
@@ -42,10 +42,10 @@ class TimeChartMapperTest {
         coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Daily.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
-            10 at LocalDateTime.of(2020, 10, 20, 10, 23),
-            15 at LocalDateTime.of(2020, 10, 21, 7, 12),
-            13 at LocalDateTime.of(2020, 10, 22, 22, 23),
-            17 at LocalDateTime.of(2020, 10, 23, 1, 15)
+            10 at LocalDateTime(2020, 10, 20, 10, 23),
+            15 at LocalDateTime(2020, 10, 21, 7, 12),
+            13 at LocalDateTime(2020, 10, 22, 22, 23),
+            17 at LocalDateTime(2020, 10, 23, 1, 15)
         )
 
         // Act
@@ -66,10 +66,10 @@ class TimeChartMapperTest {
         coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Daily.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
-            10 at LocalDateTime.of(2020, 10, 20, 10, 23),
-            15 at LocalDateTime.of(2020, 10, 21, 7, 12),
-            13 at LocalDateTime.of(2020, 10, 22, 22, 23),
-            17 at LocalDateTime.of(2020, 10, 23, 1, 15)
+            10 at LocalDateTime(2020, 10, 20, 10, 23),
+            15 at LocalDateTime(2020, 10, 21, 7, 12),
+            13 at LocalDateTime(2020, 10, 22, 22, 23),
+            17 at LocalDateTime(2020, 10, 23, 1, 15)
         )
 
         // Act
@@ -90,10 +90,10 @@ class TimeChartMapperTest {
         coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Daily.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
-            10 at LocalDateTime.of(2020, 10, 20, 10, 23),
-            15 at LocalDateTime.of(2020, 10, 21, 7, 12),
-            13 at LocalDateTime.of(2020, 10, 22, 22, 23),
-            17 at LocalDateTime.of(2020, 10, 23, 1, 15)
+            10 at LocalDateTime(2020, 10, 20, 10, 23),
+            15 at LocalDateTime(2020, 10, 21, 7, 12),
+            13 at LocalDateTime(2020, 10, 22, 22, 23),
+            17 at LocalDateTime(2020, 10, 23, 1, 15)
         )
 
         // Act
@@ -109,9 +109,9 @@ class TimeChartMapperTest {
         coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Weekly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
-            11 at LocalDateTime.of(2020, 10, 11, 1, 15),
-            21 at LocalDateTime.of(2020, 10, 21, 1, 15),
-            27 at LocalDateTime.of(2020, 10, 26, 1, 15)
+            11 at LocalDateTime(2020, 10, 11, 1, 15),
+            21 at LocalDateTime(2020, 10, 21, 1, 15),
+            27 at LocalDateTime(2020, 10, 26, 1, 15)
         )
 
         // Act
@@ -132,9 +132,9 @@ class TimeChartMapperTest {
         coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Weekly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
-            11 at LocalDateTime.of(2020, 10, 11, 1, 15),
-            21 at LocalDateTime.of(2020, 10, 21, 1, 15),
-            27 at LocalDateTime.of(2020, 10, 26, 1, 15)
+            11 at LocalDateTime(2020, 10, 11, 1, 15),
+            21 at LocalDateTime(2020, 10, 21, 1, 15),
+            27 at LocalDateTime(2020, 10, 26, 1, 15)
         )
 
         // Act
@@ -155,9 +155,9 @@ class TimeChartMapperTest {
         coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Monthly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
-            11 at LocalDateTime.of(2020, 11, 11, 1, 15),
-            21 at LocalDateTime.of(2020, 12, 21, 1, 15),
-            27 at LocalDateTime.of(2021, 1, 26, 1, 15)
+            11 at LocalDateTime(2020, 11, 11, 1, 15),
+            21 at LocalDateTime(2020, 12, 21, 1, 15),
+            27 at LocalDateTime(2021, 1, 26, 1, 15)
         )
 
         // Act
@@ -178,9 +178,9 @@ class TimeChartMapperTest {
         coEvery { getTimeUnitPreferenceMock(Unit) } returns TimeGranularity.Monthly.toRight()
         coEvery { getCurrencyPreferenceMock() } returns USD.toRight()
         val prices = listOf(
-            11 at LocalDateTime.of(2020, 11, 11, 1, 15),
-            21 at LocalDateTime.of(2020, 12, 21, 1, 15),
-            27 at LocalDateTime.of(2021, 1, 26, 1, 15)
+            11 at LocalDateTime(2020, 11, 11, 1, 15),
+            21 at LocalDateTime(2020, 12, 21, 1, 15),
+            27 at LocalDateTime(2021, 1, 26, 1, 15)
         )
 
         // Act

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDateTime
 import me.juangoncalves.mentra.domain_layer.at
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity.*
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
@@ -17,7 +18,6 @@ import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeLessThanOrEqualTo
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class GetPortfolioValueHistoryStreamTest {
@@ -46,10 +46,10 @@ class GetPortfolioValueHistoryStreamTest {
         runBlocking {
             // Arrange
             val prices = listOf(
-                10 at LocalDateTime.of(2020, 10, 20, 10, 23),
-                15 at LocalDateTime.of(2020, 10, 21, 7, 12),
-                13 at LocalDateTime.of(2020, 10, 22, 22, 23),
-                17 at LocalDateTime.of(2020, 10, 23, 1, 15)
+                10 at LocalDateTime(2020, 10, 20, 10, 23),
+                15 at LocalDateTime(2020, 10, 21, 7, 12),
+                13 at LocalDateTime(2020, 10, 22, 22, 23),
+                17 at LocalDateTime(2020, 10, 23, 1, 15)
             )
             coEvery { portfolioRepositoryMock.portfolioDailyValueHistory } returns flowOf(prices)
             coEvery { prefRepositoryMock.valueChartTimeUnitStream } returns flowOf(Daily)
@@ -67,15 +67,15 @@ class GetPortfolioValueHistoryStreamTest {
             // Arrange
             val prices = listOf(
                 // Week 1
-                11 at LocalDateTime.of(2020, 10, 11, 10, 23),
-                12 at LocalDateTime.of(2020, 10, 12, 7, 12),
-                16 at LocalDateTime.of(2020, 10, 16, 22, 23),
+                11 at LocalDateTime(2020, 10, 11, 10, 23),
+                12 at LocalDateTime(2020, 10, 12, 7, 12),
+                16 at LocalDateTime(2020, 10, 16, 22, 23),
                 // Week 2
-                19 at LocalDateTime.of(2020, 10, 19, 10, 23),
-                23 at LocalDateTime.of(2020, 10, 23, 7, 12),
+                19 at LocalDateTime(2020, 10, 19, 10, 23),
+                23 at LocalDateTime(2020, 10, 23, 7, 12),
                 // Week 3
-                25 at LocalDateTime.of(2020, 10, 25, 22, 23),
-                27 at LocalDateTime.of(2020, 10, 27, 22, 23)
+                25 at LocalDateTime(2020, 10, 25, 22, 23),
+                27 at LocalDateTime(2020, 10, 27, 22, 23)
             )
             coEvery { portfolioRepositoryMock.portfolioDailyValueHistory } returns flowOf(prices)
             coEvery { prefRepositoryMock.valueChartTimeUnitStream } returns flowOf(Weekly)
@@ -95,15 +95,15 @@ class GetPortfolioValueHistoryStreamTest {
             // Arrange
             val prices = listOf(
                 // Month 1
-                11 at LocalDateTime.of(2020, 11, 1, 10, 23),
-                12 at LocalDateTime.of(2020, 11, 7, 7, 12),
-                16 at LocalDateTime.of(2020, 11, 24, 22, 23),
+                11 at LocalDateTime(2020, 11, 1, 10, 23),
+                12 at LocalDateTime(2020, 11, 7, 7, 12),
+                16 at LocalDateTime(2020, 11, 24, 22, 23),
                 // Month 2
-                19 at LocalDateTime.of(2020, 12, 19, 10, 23),
-                23 at LocalDateTime.of(2020, 12, 23, 7, 12),
+                19 at LocalDateTime(2020, 12, 19, 10, 23),
+                23 at LocalDateTime(2020, 12, 23, 7, 12),
                 // Month 3
-                25 at LocalDateTime.of(2021, 1, 25, 22, 23),
-                27 at LocalDateTime.of(2021, 1, 27, 22, 23)
+                25 at LocalDateTime(2021, 1, 25, 22, 23),
+                27 at LocalDateTime(2021, 1, 27, 22, 23)
             )
             coEvery { portfolioRepositoryMock.portfolioDailyValueHistory } returns flowOf(prices)
             coEvery { prefRepositoryMock.valueChartTimeUnitStream } returns flowOf(Monthly)
@@ -122,9 +122,9 @@ class GetPortfolioValueHistoryStreamTest {
         runBlocking {
             // Arrange
             val prices = listOf(
-                10 at LocalDateTime.of(2020, 10, 20, 10, 23),
-                15 at LocalDateTime.of(2020, 10, 21, 7, 12),
-                13 at LocalDateTime.of(2020, 10, 22, 22, 23)
+                10 at LocalDateTime(2020, 10, 20, 10, 23),
+                15 at LocalDateTime(2020, 10, 21, 7, 12),
+                13 at LocalDateTime(2020, 10, 22, 22, 23)
             )
             coEvery { portfolioRepositoryMock.portfolioDailyValueHistory } returns flowOf(prices)
             coEvery { prefRepositoryMock.valueChartTimeUnitStream } returns flow {
@@ -146,9 +146,9 @@ class GetPortfolioValueHistoryStreamTest {
         runBlocking {
             // Arrange
             val prices = listOf(
-                10 at LocalDateTime.of(2020, 10, 20, 10, 23),
-                15 at LocalDateTime.of(2020, 10, 21, 7, 12),
-                13 at LocalDateTime.of(2020, 10, 22, 22, 23)
+                10 at LocalDateTime(2020, 10, 20, 10, 23),
+                15 at LocalDateTime(2020, 10, 21, 7, 12),
+                13 at LocalDateTime(2020, 10, 22, 22, 23)
             )
             coEvery { portfolioRepositoryMock.portfolioDailyValueHistory } returns flowOf(prices)
             coEvery { prefRepositoryMock.valueChartTimeUnitStream } returns flow {

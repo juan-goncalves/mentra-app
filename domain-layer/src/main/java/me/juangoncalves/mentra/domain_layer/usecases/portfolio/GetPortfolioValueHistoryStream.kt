@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toJavaLocalDateTime
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.repositories.PortfolioRepository
@@ -35,8 +36,9 @@ class GetPortfolioValueHistoryStream @Inject constructor(
         val weekFields = WeekFields.of(Locale.getDefault())
 
         val byWeek = associateBy { price ->
-            val week = price.timestamp.get(weekFields.weekOfWeekBasedYear())
-            val year = price.timestamp.get(weekFields.weekBasedYear())
+            val javaDate = price.timestamp.toJavaLocalDateTime()
+            val week = javaDate.get(weekFields.weekOfWeekBasedYear())
+            val year = javaDate.get(weekFields.weekBasedYear())
             Pair(week, year)
         }
 
@@ -45,8 +47,9 @@ class GetPortfolioValueHistoryStream @Inject constructor(
 
     private suspend fun List<Price>.toMonthly(): List<Price> = withContext(Dispatchers.Default) {
         val byMonth = associateBy { price ->
-            val month = price.timestamp.monthValue
-            val year = price.timestamp.year
+            val javaDate = price.timestamp.toJavaLocalDateTime()
+            val month = javaDate.monthValue
+            val year = javaDate.year
             Pair(month, year)
         }
 

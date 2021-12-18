@@ -3,6 +3,7 @@ package me.juangoncalves.mentra.features.stats.mapper
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toJavaLocalDateTime
 import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
@@ -37,15 +38,17 @@ class TimeChartMapper @Inject constructor(
         granularity: TimeGranularity
     ): List<String> = withContext(Dispatchers.Default) {
         prices.map { price ->
+            val javaDateTime = price.timestamp.toJavaLocalDateTime()
+
             when (granularity) {
-                TimeGranularity.Daily -> dateFormatter.format(price.timestamp.toLocalDate())
+                TimeGranularity.Daily -> dateFormatter.format(javaDateTime)
                     ?: ""
                 TimeGranularity.Weekly -> {
                     val month = price.timestamp.month.getDisplayName(
                         TextStyle.SHORT,
                         Locale.getDefault()
                     )
-                    val week = price.timestamp.get(weekFields.weekOfMonth())
+                    val week = javaDateTime.get(weekFields.weekOfMonth())
                     "$month ${price.timestamp.year} - W$week"
                 }
                 TimeGranularity.Monthly -> {
@@ -65,5 +68,4 @@ class TimeChartMapper @Inject constructor(
                 Entry(index.toFloat(), price.value.toFloat())
             }
         }
-
 }
