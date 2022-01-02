@@ -190,8 +190,9 @@ class StatsFragment : Fragment() {
         xAxis.apply {
             position = XAxis.XAxisPosition.BOTTOM
             textColor = requireContext().getThemeColor(R.attr.colorOnSurface)
-            setDrawGridLines(false)
             setDrawAxisLine(false)
+            setDrawGridLines(true)
+            enableGridDashedLine(20f, 10f, 0f)
         }
 
         onChartGestureListener = object : StartEndChartGestureListener() {
