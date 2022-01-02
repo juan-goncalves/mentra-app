@@ -2,6 +2,7 @@ package me.juangoncalves.mentra.features.stats.mapper
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -11,6 +12,7 @@ import me.juangoncalves.mentra.at
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreference
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetTimeUnitPreference
+import me.juangoncalves.mentra.platform.DateTimePatternProvider
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import me.juangoncalves.mentra.toRight
@@ -24,8 +26,14 @@ class TimeChartMapperTest {
     //endregion
 
     //region Mocks
-    @MockK lateinit var getTimeUnitPreferenceMock: GetTimeUnitPreference
-    @MockK lateinit var getCurrencyPreferenceMock: GetCurrencyPreference
+    @MockK
+    lateinit var getTimeUnitPreferenceMock: GetTimeUnitPreference
+
+    @MockK
+    lateinit var getCurrencyPreferenceMock: GetCurrencyPreference
+
+    @MockK
+    lateinit var dateTimePatternProvider: DateTimePatternProvider
     //endregion
 
     private lateinit var sut: TimeChartMapper
@@ -33,7 +41,13 @@ class TimeChartMapperTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        sut = TimeChartMapper(getTimeUnitPreferenceMock, getCurrencyPreferenceMock)
+        configureDefaultMocks()
+
+        sut = TimeChartMapper(
+            getTimeUnitPreferenceMock,
+            getCurrencyPreferenceMock,
+            dateTimePatternProvider,
+        )
     }
 
     @Test
@@ -143,9 +157,9 @@ class TimeChartMapperTest {
         // Assert
         with(result) {
             entries.size shouldBe 3
-            labels[0] shouldBe "Oct 20 - W3"
-            labels[1] shouldBe "Oct 20 - W4"
-            labels[2] shouldBe "Oct 20 - W5"
+            labels[0] shouldBe "11/10 - 17/10"
+            labels[1] shouldBe "18/10 - 24/10"
+            labels[2] shouldBe "25/10 - 31/10"
         }
     }
 
@@ -213,6 +227,8 @@ class TimeChartMapperTest {
         }
 
     //region Helpers
+    private fun configureDefaultMocks() {
+        every { dateTimePatternProvider.generatePattern(any(), any()) } returns "dd/MM"
+    }
     //endregion
-
 }

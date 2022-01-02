@@ -10,20 +10,27 @@ import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetCurrencyPreference
 import me.juangoncalves.mentra.domain_layer.usecases.preference.GetTimeUnitPreference
 import me.juangoncalves.mentra.features.stats.model.TimeChartData
+import me.juangoncalves.mentra.platform.DateTimePatternProvider
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.*
+import java.util.Locale.getDefault
 import javax.inject.Inject
 
 class TimeChartMapper @Inject constructor(
     private val getTimeUnitPreference: GetTimeUnitPreference,
-    private val getCurrencyPreference: GetCurrencyPreference
+    private val getCurrencyPreference: GetCurrencyPreference,
+    dateTimePatternProvider: DateTimePatternProvider,
 ) {
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-    private val weekFields = WeekFields.of(Locale.getDefault())
+
+    private val shortDateFormatter = DateTimeFormatter.ofPattern(
+        dateTimePatternProvider.generatePattern(getDefault(), "MM dd"),
+        getDefault()
+    )
 
     suspend fun map(prices: List<Price>): TimeChartData {
         val granularity = getTimeUnitPreference(Unit).rightValue ?: TimeGranularity.Daily
@@ -44,17 +51,14 @@ class TimeChartMapper @Inject constructor(
                 TimeGranularity.Daily -> dateFormatter.format(javaDateTime)
                     ?: ""
                 TimeGranularity.Weekly -> {
-                    val month = price.timestamp.month.getDisplayName(
-                        TextStyle.SHORT,
-                        Locale.getDefault()
-                    )
-                    val week = javaDateTime.get(weekFields.weekOfMonth())
-                    "$month ${price.timestamp.year % 100} - W$week"
+                    val firstDay = javaDateTime.with(WeekFields.of(getDefault()).dayOfWeek(), 1L)
+                    val lastDay = firstDay.with(WeekFields.of(getDefault()).dayOfWeek(), 7L)
+                    "${shortDateFormatter.format(firstDay)} - ${shortDateFormatter.format(lastDay)}"
                 }
                 TimeGranularity.Monthly -> {
                     val month = price.timestamp.month.getDisplayName(
                         TextStyle.SHORT,
-                        Locale.getDefault()
+                        getDefault()
                     )
                     "$month ${price.timestamp.year}"
                 }
