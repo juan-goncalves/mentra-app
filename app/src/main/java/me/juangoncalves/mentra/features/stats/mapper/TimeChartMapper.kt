@@ -49,7 +49,7 @@ class TimeChartMapper @Inject constructor(
                         Locale.getDefault()
                     )
                     val week = javaDateTime.get(weekFields.weekOfMonth())
-                    "$month ${price.timestamp.year} - W$week"
+                    "$month ${price.timestamp.year % 100} - W$week"
                 }
                 TimeGranularity.Monthly -> {
                     val month = price.timestamp.month.getDisplayName(

@@ -54,7 +54,9 @@ class StatsFragment : Fragment() {
         binding.monthlyValueLineChart.applyDefaultStyle()
 
         binding.weeklyValueLineChart.applyDefaultStyle().apply {
-            xAxis.setAvoidFirstLastClipping(true)
+            xAxis.isGranularityEnabled = true
+            xAxis.granularity = 1.0f
+            xAxis.labelCount = resources.getInteger(R.integer.weekly_chart_labels)
         }
 
         binding.statsRefreshLayout.styleByTheme().setOnRefreshListener {

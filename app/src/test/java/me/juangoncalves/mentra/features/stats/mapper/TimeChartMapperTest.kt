@@ -143,9 +143,9 @@ class TimeChartMapperTest {
         // Assert
         with(result) {
             entries.size shouldBe 3
-            labels[0] shouldBe "Oct 2020 - W3"
-            labels[1] shouldBe "Oct 2020 - W4"
-            labels[2] shouldBe "Oct 2020 - W5"
+            labels[0] shouldBe "Oct 20 - W3"
+            labels[1] shouldBe "Oct 20 - W4"
+            labels[2] shouldBe "Oct 20 - W5"
         }
     }
 
