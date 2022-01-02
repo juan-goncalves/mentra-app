@@ -54,7 +54,9 @@ class StatsFragment : Fragment() {
         binding.monthlyValueLineChart.applyDefaultStyle()
 
         binding.weeklyValueLineChart.applyDefaultStyle().apply {
-            xAxis.setAvoidFirstLastClipping(true)
+            xAxis.isGranularityEnabled = true
+            xAxis.granularity = 1.0f
+            xAxis.labelCount = resources.getInteger(R.integer.weekly_chart_labels)
         }
 
         binding.statsRefreshLayout.styleByTheme().setOnRefreshListener {
@@ -188,8 +190,9 @@ class StatsFragment : Fragment() {
         xAxis.apply {
             position = XAxis.XAxisPosition.BOTTOM
             textColor = requireContext().getThemeColor(R.attr.colorOnSurface)
-            setDrawGridLines(false)
             setDrawAxisLine(false)
+            setDrawGridLines(true)
+            enableGridDashedLine(20f, 10f, 0f)
         }
 
         onChartGestureListener = object : StartEndChartGestureListener() {
