@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.TimeGranularity
@@ -18,6 +19,8 @@ import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
 import me.juangoncalves.mentra.features.stats.mapper.PiePortionMapper
 import me.juangoncalves.mentra.features.stats.mapper.TimeChartMapper
+import me.juangoncalves.pie.PiePortion
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,11 +33,20 @@ class StatsViewModel @Inject constructor(
     private val updatePortfolioValueTimeGranularity: UpdatePortfolioValueTimeGranularity,
     private val timeChartMapper: TimeChartMapper,
     private val piePortionMapper: PiePortionMapper
-) : ViewModel(),
-    FailurePublisher by GeneralFailurePublisher() {
+) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
+
+    private val portfolioValueHistory = getPortfolioValueHistory()
 
     val valueChartData = with(exchangePriceStream) {
-        getPortfolioValueHistory()
+        portfolioValueHistory
+            .exchangeWhenPreferredCurrencyChanges()
+            .toTimeChartData()
+            .asLiveData()
+    }
+
+    val placeholderData = with(exchangePriceStream) {
+        portfolioValueHistory
+            .map { data -> if (data.isEmpty()) placeholderPrices else emptyList() }
             .exchangeWhenPreferredCurrencyChanges()
             .toTimeChartData()
             .asLiveData()
@@ -46,11 +58,13 @@ class StatsViewModel @Inject constructor(
     val shouldShowEmptyPortionsWarning: LiveData<Boolean> = pieChartData.map { it.isEmpty() }
     val shouldShowPieChart: LiveData<Boolean> = pieChartData.map { it.isNotEmpty() }
 
-    val shouldShowEmptyLineChartWarning: LiveData<Boolean> = valueChartData.map { data ->
-        data.entries.isEmpty()
-    }
+    val shouldShowHistoricPortfolioValuePlaceholder: LiveData<Boolean> =
+        portfolioValueHistory.map(List<Price>::isEmpty).asLiveData()
 
-    val shouldShowLineChart: LiveData<Boolean> = valueChartData.map { data ->
+    val enableTimeGranularitySelection: LiveData<Boolean> =
+        portfolioValueHistory.map(List<Price>::isNotEmpty).asLiveData()
+
+    val shouldShowHistoricPortfolioValue: LiveData<Boolean> = valueChartData.map { data ->
         data.entries.isNotEmpty()
     }
 
@@ -68,4 +82,17 @@ class StatsViewModel @Inject constructor(
 
     private fun Flow<Map<Coin, Double>>.toPiePortions() = map { piePortionMapper.map(it) }
 
+}
+
+private val placeholderPrices: List<Price> = Currency.getInstance("USD").let { usd ->
+    listOf(
+        Price(2643.4.toBigDecimal(), usd, LocalDateTime(2022, 3, 12, 23, 59)),
+        Price(2932.0.toBigDecimal(), usd, LocalDateTime(2022, 3, 13, 23, 59)),
+        Price(3156.9.toBigDecimal(), usd, LocalDateTime(2022, 3, 14, 23, 59)),
+        Price(2832.4.toBigDecimal(), usd, LocalDateTime(2022, 3, 15, 23, 59)),
+        Price(2687.7.toBigDecimal(), usd, LocalDateTime(2022, 3, 16, 23, 59)),
+        Price(3000.4.toBigDecimal(), usd, LocalDateTime(2022, 3, 17, 23, 59)),
+        Price(2892.4.toBigDecimal(), usd, LocalDateTime(2022, 3, 18, 23, 59)),
+        Price(3212.9.toBigDecimal(), usd, LocalDateTime(2022, 3, 19, 23, 59)),
+    )
 }
