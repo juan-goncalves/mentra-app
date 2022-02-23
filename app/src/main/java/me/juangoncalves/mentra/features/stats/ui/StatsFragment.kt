@@ -50,7 +50,7 @@ class StatsFragment : Fragment() {
     }
 
     private fun configureView() {
-        binding.valueLineChart.applyDefaultStyle()
+        binding.dailyValueLineChart.applyDefaultStyle()
         binding.monthlyValueLineChart.applyDefaultStyle()
         binding.placeholderLineChart.applyPlaceholderStyle()
 
@@ -157,7 +157,7 @@ class StatsFragment : Fragment() {
 
     private fun chartForGranularity(granularity: TimeGranularity): LineChart {
         return when (granularity) {
-            TimeGranularity.Daily -> binding.valueLineChart
+            TimeGranularity.Daily -> binding.dailyValueLineChart
             TimeGranularity.Weekly -> binding.weeklyValueLineChart
             TimeGranularity.Monthly -> binding.monthlyValueLineChart
         }
@@ -267,7 +267,7 @@ class StatsFragment : Fragment() {
 
     private val valueCharts: List<LineChart>
         get() = listOf(
-            binding.valueLineChart,
+            binding.dailyValueLineChart,
             binding.weeklyValueLineChart,
             binding.monthlyValueLineChart
         )
