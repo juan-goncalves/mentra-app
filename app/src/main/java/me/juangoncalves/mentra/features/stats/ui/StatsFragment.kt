@@ -232,8 +232,7 @@ class StatsFragment : Fragment() {
 
     private fun LineChart.applyPlaceholderStyle() = apply {
         applyDefaultStyle()
-        onChartGestureListener = null
-        isDragEnabled = false
+        setTouchEnabled(false)
 
         renderer = MentraLineChartRenderer(
             context.getThemeColor(R.attr.colorDisabled),
