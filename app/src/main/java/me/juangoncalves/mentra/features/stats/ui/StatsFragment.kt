@@ -50,8 +50,9 @@ class StatsFragment : Fragment() {
     }
 
     private fun configureView() {
-        binding.valueLineChart.applyDefaultStyle()
+        binding.dailyValueLineChart.applyDefaultStyle()
         binding.monthlyValueLineChart.applyDefaultStyle()
+        binding.placeholderLineChart.applyPlaceholderStyle()
 
         binding.weeklyValueLineChart.applyDefaultStyle().apply {
             xAxis.isGranularityEnabled = true
@@ -79,9 +80,8 @@ class StatsFragment : Fragment() {
     private fun initObservers() {
         handleErrorsFrom(viewModel)
 
-        viewModel.valueChartData.observe(viewLifecycleOwner) { data ->
-            updateLineChartData(data)
-        }
+        viewModel.valueChartData.observe(viewLifecycleOwner, ::loadLineChartData)
+        viewModel.placeholderData.observe(viewLifecycleOwner, ::loadPlaceholderLineChartData)
 
         viewModel.pieChartData.observe(viewLifecycleOwner) { entries ->
             binding.distributionPieChart.setPortions(entries)
@@ -99,11 +99,17 @@ class StatsFragment : Fragment() {
             binding.distributionPieChart.updateVisibility(shouldShow)
         }
 
-        viewModel.shouldShowEmptyLineChartWarning.observe(viewLifecycleOwner) { shouldShow ->
-            binding.lineChartPlaceholder.updateVisibility(shouldShow)
+        viewModel.shouldShowHistoricPortfolioValuePlaceholder.observe(viewLifecycleOwner) { shouldShow ->
+            binding.placeholderLineChart.updateVisibility(shouldShow)
         }
 
-        viewModel.shouldShowLineChart.observe(viewLifecycleOwner) { shouldShow ->
+        viewModel.enableTimeGranularitySelection.observe(viewLifecycleOwner) { shouldEnable ->
+            binding.dailyValueChip.isEnabled = shouldEnable
+            binding.weeklyValueChip.isEnabled = shouldEnable
+            binding.monthlyValueChip.isEnabled = shouldEnable
+        }
+
+        viewModel.shouldShowHistoricPortfolioValue.observe(viewLifecycleOwner) { shouldShow ->
             val timeGranularity = viewModel.valueChartGranularityStream.value
             if (timeGranularity != null) {
                 val chart = chartForGranularity(timeGranularity)
@@ -120,38 +126,38 @@ class StatsFragment : Fragment() {
         }
     }
 
-    private fun updateLineChartData(chartData: TimeChartData) {
-        val (entries, labels, granularity, currency) = chartData
-
-        val applicableChart = chartForGranularity(granularity)
+    private fun loadLineChartData(chartData: TimeChartData) {
+        val applicableChart = chartForGranularity(chartData.granularity)
 
         valueCharts.forEach { chart ->
             chart.visibility = if (chart == applicableChart) View.VISIBLE else View.GONE
         }
 
-        val dateAxisFormatter = IndexAxisFormatter(labels)
-        val dataSet = LineDataSet(entries, "value").applyDefaultStyle(currency)
-        val lineData = LineData(dataSet)
+        val dataSet = LineDataSet(chartData.entries, "value").applyDefaultStyle(chartData.currency)
 
         applicableChart.apply {
-            data = lineData
-
-            xAxis.apply {
-                valueFormatter = dateAxisFormatter
-                axisMinimum = 0f
-                axisMaximum = entries.lastIndex.toFloat()
-                isGranularityEnabled = true
-                setGranularity(1.0f)
-            }
-
+            data = LineData(dataSet)
+            xAxis.applyDefaultStyle(chartData)
             setVisibleXRangeMaximum(5f)
-            entries.lastOrNull()?.let { last -> moveViewToX(last.x) }
+            chartData.entries.lastOrNull()?.let { last -> moveViewToX(last.x) }
+        }
+    }
+
+    private fun loadPlaceholderLineChartData(chartData: TimeChartData) {
+        val dataSet = LineDataSet(chartData.entries, "value")
+            .applyPlaceholderStyle(chartData.currency)
+
+        binding.placeholderLineChart.apply {
+            data = LineData(dataSet)
+            xAxis.applyDefaultStyle(chartData)
+            setVisibleXRangeMaximum(5f)
+            invalidate()
         }
     }
 
     private fun chartForGranularity(granularity: TimeGranularity): LineChart {
         return when (granularity) {
-            TimeGranularity.Daily -> binding.valueLineChart
+            TimeGranularity.Daily -> binding.dailyValueLineChart
             TimeGranularity.Weekly -> binding.weeklyValueLineChart
             TimeGranularity.Monthly -> binding.monthlyValueLineChart
         }
@@ -224,6 +230,35 @@ class StatsFragment : Fragment() {
         setDrawFilled(true)
     }
 
+    private fun LineChart.applyPlaceholderStyle() = apply {
+        applyDefaultStyle()
+        setTouchEnabled(false)
+
+        renderer = MentraLineChartRenderer(
+            context.getThemeColor(R.attr.colorDisabled),
+            context.getThemeColor(R.attr.colorOnDisabled),
+            this,
+            animator,
+            viewPortHandler
+        )
+    }
+
+    private fun LineDataSet.applyPlaceholderStyle(currency: Currency): LineDataSet = apply {
+        applyDefaultStyle(currency)
+        val placeholderColor = requireContext().getThemeColor(R.attr.colorDisabled)
+        color = placeholderColor
+        setCircleColor(placeholderColor)
+        fillDrawable = getDrawable(requireContext(), R.drawable.line_chart_placeholder_background)
+    }
+
+    private fun XAxis.applyDefaultStyle(chartData: TimeChartData) {
+        valueFormatter = IndexAxisFormatter(chartData.labels)
+        axisMinimum = 0f
+        axisMaximum = chartData.entries.lastIndex.toFloat()
+        isGranularityEnabled = true
+        granularity = 1.0f
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -231,7 +266,7 @@ class StatsFragment : Fragment() {
 
     private val valueCharts: List<LineChart>
         get() = listOf(
-            binding.valueLineChart,
+            binding.dailyValueLineChart,
             binding.weeklyValueLineChart,
             binding.monthlyValueLineChart
         )

@@ -64,40 +64,8 @@
 
         </com.google.android.material.chip.ChipGroup>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/lineChartPlaceholder"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:weightSum="5"
-            app:layout_constraintBottom_toBottomOf="@id/guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chipGroup">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:layout_weight="2"
-                android:gravity="end"
-                android:text="@string/empty_line_chart_warning" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                app:srcCompat="@drawable/line_chart_graphic" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
         <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/valueLineChart"
+            android:id="@+id/dailyValueLineChart"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginHorizontal="4dp"
@@ -131,12 +99,24 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chipGroup" />
 
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/placeholderLineChart"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chipGroup" />
+
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/valueLineChartBarrier"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="monthlyValueLineChart,weeklyValueLineChart,valueLineChart"
+            app:constraint_referenced_ids="monthlyValueLineChart,weeklyValueLineChart,dailyValueLineChart"
             tools:layout_editor_absoluteY="107dp" />
 
         <androidx.appcompat.widget.AppCompatTextView
