@@ -44,7 +44,7 @@ class StatsViewModel @Inject constructor(
             .asLiveData()
     }
 
-    val placeholderData = with(exchangePriceStream) {
+    val placeholderPortfolioChartData = with(exchangePriceStream) {
         portfolioValueHistory
             .map { data -> if (data.isEmpty()) placeholderPrices else emptyList() }
             .exchangeWhenPreferredCurrencyChanges()
@@ -53,10 +53,15 @@ class StatsViewModel @Inject constructor(
     }
 
     val pieChartData = getPortfolioDistribution().toPiePortions().asLiveData()
+
+    val placeholderPieChartData = pieChartData.map { portions ->
+        if (portions.isEmpty()) placeholderPortions else portions
+    }
+
     val valueChartGranularityStream = getTimeUnitPrefStream().asLiveData()
     val shouldShowRefreshIndicator = MutableLiveData(false)
-    val shouldShowEmptyPortionsWarning: LiveData<Boolean> = pieChartData.map { it.isEmpty() }
-    val shouldShowPieChart: LiveData<Boolean> = pieChartData.map { it.isNotEmpty() }
+    val shouldShowDistributionPlaceholder: LiveData<Boolean> = pieChartData.map { it.isEmpty() }
+    val shouldShowDistributionChart: LiveData<Boolean> = pieChartData.map { it.isNotEmpty() }
 
     val shouldShowHistoricPortfolioValuePlaceholder: LiveData<Boolean> =
         portfolioValueHistory.map(List<Price>::isEmpty).asLiveData()
@@ -96,3 +101,9 @@ private val placeholderPrices: List<Price> = Currency.getInstance("USD").let { u
         Price(3212.9.toBigDecimal(), usd, LocalDateTime(2022, 3, 19, 23, 59)),
     )
 }
+
+private val placeholderPortions: Array<PiePortion> = arrayOf(
+    PiePortion(0.6, "BTC"),
+    PiePortion(0.25, "ETH"),
+    PiePortion(0.15, "ADA"),
+)
