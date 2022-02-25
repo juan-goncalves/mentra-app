@@ -15,4 +15,13 @@
         <item>@color/darkGreen</item>
     </array>
 
+    <array name="placeholder_pie_colors">
+        <item>@color/knight_armor</item>
+        <item>@color/knight_armor</item>
+        <item>@color/lunar_base</item>
+        <item>@color/lunar_base</item>
+        <item>@color/silver</item>
+        <item>@color/silver</item>
+    </array>
+
 </resources>

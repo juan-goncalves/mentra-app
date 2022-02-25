@@ -77,39 +77,43 @@ class StatsFragment : Fragment() {
         }
     }
 
-    private fun initObservers() {
-        handleErrorsFrom(viewModel)
+    private fun initObservers() = with(viewModel) {
+        handleErrorsFrom(this)
 
-        viewModel.valueChartData.observe(viewLifecycleOwner, ::loadLineChartData)
-        viewModel.placeholderData.observe(viewLifecycleOwner, ::loadPlaceholderLineChartData)
+        valueChartData.observe(viewLifecycleOwner, ::loadLineChartData)
+        placeholderPortfolioChartData.observe(viewLifecycleOwner, ::loadPlaceholderLineChartData)
 
-        viewModel.pieChartData.observe(viewLifecycleOwner) { entries ->
+        pieChartData.observe(viewLifecycleOwner) { entries ->
             binding.distributionPieChart.setPortions(entries)
         }
 
-        viewModel.shouldShowRefreshIndicator.observe(viewLifecycleOwner) { shouldShow ->
+        placeholderPieChartData.observe(viewLifecycleOwner) { entries ->
+            binding.placeholderDistributionPieChart.setPortions(entries)
+        }
+
+        shouldShowRefreshIndicator.observe(viewLifecycleOwner) { shouldShow ->
             binding.statsRefreshLayout.isRefreshing = shouldShow
         }
 
-        viewModel.shouldShowEmptyPortionsWarning.observe(viewLifecycleOwner) { shouldShow ->
-            binding.pieChartPlaceholder.updateVisibility(shouldShow)
+        shouldShowDistributionPlaceholder.observe(viewLifecycleOwner) { shouldShow ->
+            binding.placeholderDistributionPieChart.updateVisibility(shouldShow)
         }
 
-        viewModel.shouldShowPieChart.observe(viewLifecycleOwner) { shouldShow ->
+        shouldShowDistributionChart.observe(viewLifecycleOwner) { shouldShow ->
             binding.distributionPieChart.updateVisibility(shouldShow)
         }
 
-        viewModel.shouldShowHistoricPortfolioValuePlaceholder.observe(viewLifecycleOwner) { shouldShow ->
+        shouldShowHistoricPortfolioValuePlaceholder.observe(viewLifecycleOwner) { shouldShow ->
             binding.placeholderLineChart.updateVisibility(shouldShow)
         }
 
-        viewModel.enableTimeGranularitySelection.observe(viewLifecycleOwner) { shouldEnable ->
+        enableTimeGranularitySelection.observe(viewLifecycleOwner) { shouldEnable ->
             binding.dailyValueChip.isEnabled = shouldEnable
             binding.weeklyValueChip.isEnabled = shouldEnable
             binding.monthlyValueChip.isEnabled = shouldEnable
         }
 
-        viewModel.shouldShowHistoricPortfolioValue.observe(viewLifecycleOwner) { shouldShow ->
+        shouldShowHistoricPortfolioValue.observe(viewLifecycleOwner) { shouldShow ->
             val timeGranularity = viewModel.valueChartGranularityStream.value
             if (timeGranularity != null) {
                 val chart = chartForGranularity(timeGranularity)
@@ -117,7 +121,7 @@ class StatsFragment : Fragment() {
             }
         }
 
-        viewModel.valueChartGranularityStream.observe(viewLifecycleOwner) { granularity ->
+        valueChartGranularityStream.observe(viewLifecycleOwner) { granularity ->
             when (granularity) {
                 TimeGranularity.Daily -> binding.dailyValueChip.isChecked = true
                 TimeGranularity.Weekly -> binding.weeklyValueChip.isChecked = true

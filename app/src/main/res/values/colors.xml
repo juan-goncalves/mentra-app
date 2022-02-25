@@ -23,4 +23,9 @@
     <color name="dark_tan">#6E0F22</color>
     <color name="screaming_green">#7BF946</color>
     <color name="tobasco">#E53935</color>
+    <color name="knight_armor">#5C5C5C</color>
+    <color name="lunar_base">#878686</color>
+    <color name="silver">#BFBFBF</color>
+    <color name="cerebral_gray">#50CCCCCC</color>
+    <color name="industrial_revolution">#70737373</color>
 </resources>
