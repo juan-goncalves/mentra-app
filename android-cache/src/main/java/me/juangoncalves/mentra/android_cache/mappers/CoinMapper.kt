@@ -8,6 +8,7 @@ class CoinMapper @Inject constructor() {
 
     fun map(coin: Coin): CoinModel = CoinModel(coin.symbol, coin.imageUrl, coin.name, coin.iconType)
 
-    fun map(model: CoinModel): Coin = Coin(model.name, model.symbol, model.imageUrl, model.iconType)
+    fun map(model: CoinModel): Coin =
+        Coin(model.name, model.symbol, model.imageUrl, model.iconType, model.position)
 
 }

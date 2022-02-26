@@ -41,5 +41,4 @@ class RetrofitCoinDataSource @Inject constructor(
             LocalDateTime.now()
         )
     }
-
 }

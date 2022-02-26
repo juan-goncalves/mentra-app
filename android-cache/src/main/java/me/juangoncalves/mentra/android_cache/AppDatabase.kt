@@ -6,7 +6,6 @@ import androidx.room.TypeConverters
 import me.juangoncalves.mentra.android_cache.daos.*
 import me.juangoncalves.mentra.android_cache.models.*
 
-
 @Database(
     entities = [
         CoinModel::class,
@@ -17,7 +16,7 @@ import me.juangoncalves.mentra.android_cache.models.*
         CurrencyEntity::class,
         ExchangeRateEntity::class
     ],
-    version = 17,
+    version = 18,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)

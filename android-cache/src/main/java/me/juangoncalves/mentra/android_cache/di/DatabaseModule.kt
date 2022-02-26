@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import me.juangoncalves.mentra.android_cache.AppDatabase
 import me.juangoncalves.mentra.android_cache.daos.*
+import me.juangoncalves.mentra.android_cache.migrations.Migrations
 import javax.inject.Singleton
 
 @Module
@@ -19,6 +20,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "mentra.db")
+            .addMigrations(*Migrations.all)
             .build()
     }
 
