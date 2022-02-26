@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.Bitcoin
 import me.juangoncalves.mentra.R
 import me.juangoncalves.mentra.domain_layer.models.Coin
-import org.junit.Assert.assertEquals
+import me.juangoncalves.mentra.test_utils.shouldBe
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,10 +36,9 @@ class CoinIconResourceDataSourceTest {
             val result = sut.getAlternativeIconFor(Bitcoin)
 
             // Assert
-            assertEquals(
-                "android.resource://${context.packageName}/raw/${R.raw.btc}",
-                result
-            )
+            val expected = "android.resource://${context.packageName}/raw/${R.raw.btc}"
+
+            result shouldBe expected
         }
 
     @Test
@@ -50,13 +49,14 @@ class CoinIconResourceDataSourceTest {
                 name = "Unit Test Coin",
                 symbol = "UTC",
                 imageUrl = "https://juangoncalves.me/utcc.svg",
+                position = 1,
             )
 
             // Act
             val result = sut.getAlternativeIconFor(coin)
 
             // Assert
-            assertEquals(null, result)
+            result shouldBe null
         }
 
 }
