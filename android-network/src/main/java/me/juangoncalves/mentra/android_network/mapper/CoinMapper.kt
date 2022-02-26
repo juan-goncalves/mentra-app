@@ -14,5 +14,4 @@ class CoinMapper @Inject constructor() {
 
         return Coin(name, symbol, imageUrl, IconType.Unknown, position)
     }
-
 }
