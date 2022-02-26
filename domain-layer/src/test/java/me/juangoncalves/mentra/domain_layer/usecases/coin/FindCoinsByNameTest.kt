@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Coin
+import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeA
@@ -21,7 +22,8 @@ class FindCoinsByNameTest {
     //endregion
 
     //region Mocks
-    @MockK lateinit var coinRepositoryMock: CoinRepository
+    @MockK
+    lateinit var coinRepositoryMock: CoinRepository
     //endregion
 
     private lateinit var sut: FindCoinsByName
@@ -147,13 +149,13 @@ class FindCoinsByNameTest {
 
     //region Helpers
     private val availableCoins = listOf(
-        Coin("Bitcoin", "BTC", ""),
-        Coin("BitRow", "BTR", ""),
-        Coin("Ethereum", "ETH", ""),
-        Coin("Ripple", "XRP", ""),
-        Coin("Bitcoin Gold", "BTG", ""),
-        Coin("Monero", "MNR", ""),
-        Coin("Ripple Sanctum", "XZP", "")
+        Coin("Bitcoin", "BTC", "", IconType.Unknown, 1),
+        Coin("BitRow", "BTR", "", IconType.Unknown, 4),
+        Coin("Ethereum", "ETH", "", IconType.Unknown, 2),
+        Coin("Ripple", "XRP", "", IconType.Unknown, 3),
+        Coin("Bitcoin Gold", "BTG", "", IconType.Unknown, 5),
+        Coin("Monero", "MNR", "", IconType.Unknown, 6),
+        Coin("Ripple Sanctum", "XZP", "", IconType.Unknown, 7)
     )
     //endregion
 

@@ -30,7 +30,7 @@ class RoomCoinDataSource @Inject constructor(
 
     override suspend fun storeCoins(coins: List<Coin>) = withContext(Dispatchers.Default) {
         val models = coins.map(coinMapper::map)
-        coinDao.insertAll(*models.toTypedArray())
+        coinDao.upsertAll(*models.toTypedArray())
     }
 
     override suspend fun clearCoins() = coinDao.clearAll()

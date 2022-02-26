@@ -10,5 +10,6 @@ data class CoinModel(
     @PrimaryKey val symbol: String,
     @ColumnInfo(name = "image_url") val imageUrl: String,
     val name: String,
-    val iconType: IconType = IconType.Unknown
+    val iconType: IconType = IconType.Unknown,
+    val position: Int = Int.MAX_VALUE,
 )

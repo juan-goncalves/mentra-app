@@ -12,24 +12,27 @@ import java.util.*
 internal val USD: Currency = Currency.getInstance("USD")
 internal val EUR: Currency = Currency.getInstance("EUR")
 
-internal val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png", IconType.Unknown)
-internal val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png", IconType.Unknown)
-internal val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.png", IconType.Unknown)
+internal val Bitcoin = Coin("Bitcoin", "BTC", "http://url.com/btc.png", IconType.Unknown, 1)
+internal val Ethereum = Coin("Ethereum", "ETH", "http://url.com/eth.png", IconType.Unknown, 2)
+internal val Ripple = Coin("Ripple", "XRP", "http://url.com/xrp.png", IconType.Unknown, 3)
 
 internal val BitcoinModel = CoinModel(
     "BTC",
     "http://url.com/btc.png",
-    "Bitcoin"
+    "Bitcoin",
+    position = 1,
 )
 internal val EthereumModel = CoinModel(
     "ETH",
     "http://url.com/eth.png",
-    "Ethereum"
+    "Ethereum",
+    position = 2,
 )
 internal val RippleModel = CoinModel(
     "XRP",
     "http://url.com/xrp.png",
-    "Ripple"
+    "Ripple",
+    position = 3,
 )
 
 internal fun Double.toPrice(

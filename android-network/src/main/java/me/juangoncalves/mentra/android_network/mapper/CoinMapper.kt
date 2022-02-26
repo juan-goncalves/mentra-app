@@ -8,10 +8,10 @@ import javax.inject.Inject
 class CoinMapper @Inject constructor() {
 
     fun map(schema: CoinSchema): Coin = with(schema) {
-        if (name.isEmpty() || symbol.isEmpty()) {
-            return Coin.Invalid
-        }
-        return Coin(name, symbol, imageUrl, IconType.Unknown)
-    }
+        if (name.isEmpty() || symbol.isEmpty()) return Coin.Invalid
 
+        val position = schema.sortPosition.toIntOrNull() ?: return Coin.Invalid
+
+        return Coin(name, symbol, imageUrl, IconType.Unknown, position)
+    }
 }

@@ -25,7 +25,7 @@ class CoinMapperTest {
     @Test
     fun `map should return a valid coin model based on the coin object`() {
         // Arrange
-        val coin = Coin("Bitcoin", "BTC", "http://hola.com/btc.png", IconType.Unknown)
+        val coin = Coin("Bitcoin", "BTC", "http://hola.com/btc.png", IconType.Unknown, 1)
 
         // Act
         val result = sut.map(coin)
@@ -34,12 +34,13 @@ class CoinMapperTest {
         result.symbol shouldBe "BTC"
         result.name shouldBe "Bitcoin"
         result.imageUrl shouldBe "http://hola.com/btc.png"
+        result.position shouldBe 1
     }
 
     @Test
     fun `map should return a valid coin based on the coin model object`() {
         // Arrange
-        val model = CoinModel("BTC", "http://hola.com/btc.png", "Bitcoin")
+        val model = CoinModel("BTC", "http://hola.com/btc.png", "Bitcoin", IconType.Unknown, 1)
 
         // Act
         val result = sut.map(model)
@@ -48,6 +49,7 @@ class CoinMapperTest {
         result.symbol shouldBe "BTC"
         result.name shouldBe "Bitcoin"
         result.imageUrl shouldBe "http://hola.com/btc.png"
+        result.position shouldBe model.position
     }
 
     //region Helpers
