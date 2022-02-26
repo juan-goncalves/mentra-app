@@ -186,7 +186,7 @@ class RoomWalletDataSourceTest {
     private fun insertDefaultCoins() = runBlocking {
         val mapper = CoinMapper()
         val models = listOf(Bitcoin, Ripple, Ethereum).map { mapper.map(it) }
-        coinDao.insertAll(*models.toTypedArray())
+        coinDao.upsertAll(*models.toTypedArray())
     }
 
     private fun initializeSut() {
