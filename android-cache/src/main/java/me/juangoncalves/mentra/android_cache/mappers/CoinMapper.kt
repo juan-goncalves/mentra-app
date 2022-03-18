@@ -7,9 +7,9 @@ import javax.inject.Inject
 class CoinMapper @Inject constructor() {
 
     fun map(coin: Coin): CoinModel =
-        CoinModel(coin.symbol, coin.imageUrl, coin.name, coin.iconType, coin.position)
+        CoinModel(coin.symbol, coin.imageUrl, coin.name, coin.position)
 
     fun map(model: CoinModel): Coin =
-        Coin(model.name, model.symbol, model.imageUrl, model.iconType, model.position)
+        Coin(model.name, model.symbol, model.imageUrl, model.position)
 
 }

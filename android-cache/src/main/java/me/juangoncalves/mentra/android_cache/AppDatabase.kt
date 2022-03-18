@@ -16,7 +16,7 @@ import me.juangoncalves.mentra.android_cache.models.*
         CurrencyEntity::class,
         ExchangeRateEntity::class
     ],
-    version = 18,
+    version = 1,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -33,5 +33,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun portfolioDao(): PortfolioDao
 
     abstract fun exchangeRateDao(): CurrencyDao
-
 }
