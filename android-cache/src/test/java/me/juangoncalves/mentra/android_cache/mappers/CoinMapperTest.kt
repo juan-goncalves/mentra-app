@@ -2,7 +2,6 @@ package me.juangoncalves.mentra.android_cache.mappers
 
 import me.juangoncalves.mentra.android_cache.models.CoinModel
 import me.juangoncalves.mentra.domain_layer.models.Coin
-import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.test_utils.shouldBe
 import org.junit.Before
 import org.junit.Test
@@ -25,7 +24,7 @@ class CoinMapperTest {
     @Test
     fun `map should return a valid coin model based on the coin object`() {
         // Arrange
-        val coin = Coin("Bitcoin", "BTC", "http://hola.com/btc.png", IconType.Unknown, 1)
+        val coin = Coin("Bitcoin", "BTC", "http://hola.com/btc.png", 1)
 
         // Act
         val result = sut.map(coin)
@@ -40,7 +39,7 @@ class CoinMapperTest {
     @Test
     fun `map should return a valid coin based on the coin model object`() {
         // Arrange
-        val model = CoinModel("BTC", "http://hola.com/btc.png", "Bitcoin", IconType.Unknown, 1)
+        val model = CoinModel("BTC", "http://hola.com/btc.png", "Bitcoin", 1)
 
         // Act
         val result = sut.map(model)

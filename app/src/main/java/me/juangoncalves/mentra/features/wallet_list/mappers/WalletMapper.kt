@@ -1,16 +1,17 @@
 package me.juangoncalves.mentra.features.wallet_list.mappers
 
+import either.fold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.juangoncalves.mentra.domain_layer.extensions.rightValue
 import me.juangoncalves.mentra.domain_layer.models.Price
 import me.juangoncalves.mentra.domain_layer.models.Wallet
-import me.juangoncalves.mentra.domain_layer.usecases.coin.DeterminePrimaryIcon
+import me.juangoncalves.mentra.domain_layer.usecases.coin.GetPrimaryCoinIcon
 import me.juangoncalves.mentra.features.wallet_list.models.WalletListViewState
 import javax.inject.Inject
 
+// todo: update unit tests
 class WalletMapper @Inject constructor(
-    private val determinePrimaryIcon: DeterminePrimaryIcon
+    private val getPrimaryCoinIcon: GetPrimaryCoinIcon,
 ) {
 
     suspend fun map(wallet: Wallet, coinPrice: Price): WalletListViewState.Wallet {
@@ -35,9 +36,14 @@ class WalletMapper @Inject constructor(
                 coinPrice == Price.None
             )
 
+            val iconUrls = getPrimaryCoinIcon(wallet.coin).fold(
+                left = { "" },
+                right = { it }
+            )
+
             WalletListViewState.Wallet(
                 id = wallet.id,
-                iconUrl = determinePrimaryIcon(wallet.coin).rightValue ?: "",
+                iconUrl = iconUrls,
                 value = mappedWalletValue,
                 coin = WalletListViewState.Coin(wallet.coin.name, mappedCoinPrice),
                 amountOfCoin = wallet.amount

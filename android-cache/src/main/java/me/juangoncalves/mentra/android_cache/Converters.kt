@@ -1,7 +1,6 @@
 package me.juangoncalves.mentra.android_cache
 
 import androidx.room.TypeConverter
-import me.juangoncalves.mentra.domain_layer.models.IconType
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,23 +34,6 @@ class Converters {
     }
 
     @TypeConverter
-    fun iconTypeToInt(value: IconType?): Int? {
-        if (value == null) return null
-        return value.ordinal
-    }
-
-    @TypeConverter
-    fun intToIconType(value: Int?): IconType? {
-        if (value == null) return null
-        return when (value) {
-            0 -> IconType.Gradient
-            1 -> IconType.Regular
-            2 -> IconType.Unknown
-            else -> null
-        }
-    }
-
-    @TypeConverter
     fun bigDecimalToString(value: BigDecimal?): String? = value?.toString()
 
     @TypeConverter
@@ -68,5 +50,4 @@ class Converters {
         if (value == null) return null
         return Currency.getInstance(value)
     }
-
 }

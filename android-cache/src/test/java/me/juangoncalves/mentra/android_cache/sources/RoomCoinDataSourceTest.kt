@@ -10,7 +10,6 @@ import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
 import me.juangoncalves.mentra.android_cache.models.CoinPriceModel
-import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.After
@@ -100,8 +99,8 @@ class RoomCoinDataSourceTest {
             coinDao.upsertAll(BitcoinModel, EthereumModel, RippleModel)
 
             val updates = listOf(
-                Bitcoin.copy(iconType = IconType.Gradient, position = 10),
-                Ethereum.copy(iconType = IconType.Regular, position = 11)
+                Bitcoin.copy(name = "Bitcoin2", position = 10),
+                Ethereum.copy(position = 11)
             )
 
             // Act
@@ -110,8 +109,8 @@ class RoomCoinDataSourceTest {
             // Assert
             val expected = listOf(
                 RippleModel,
-                BitcoinModel.copy(iconType = IconType.Gradient, position = 10),
-                EthereumModel.copy(iconType = IconType.Regular, position = 11),
+                BitcoinModel.copy(name = "Bitcoin2", position = 10),
+                EthereumModel.copy(position = 11),
             )
 
             coinDao.getAll() shouldBe expected
