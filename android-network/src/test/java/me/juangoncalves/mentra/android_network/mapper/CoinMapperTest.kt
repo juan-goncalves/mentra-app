@@ -2,7 +2,6 @@ package me.juangoncalves.mentra.android_network.mapper
 
 import me.juangoncalves.mentra.android_network.services.crypto_compare.models.CoinSchema
 import me.juangoncalves.mentra.domain_layer.models.Coin
-import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.test_utils.shouldBe
 import org.junit.Before
 import org.junit.Test
@@ -93,7 +92,6 @@ class CoinMapperTest {
             name = "Bitcoin",
             symbol = "BTC",
             imageUrl = "https://sample.com/btc.jpg",
-            iconType = IconType.Unknown,
             position = 1,
         )
 

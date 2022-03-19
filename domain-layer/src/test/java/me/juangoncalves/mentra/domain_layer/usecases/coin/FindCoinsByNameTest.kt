@@ -8,7 +8,6 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.domain_layer.errors.Failure
 import me.juangoncalves.mentra.domain_layer.extensions.*
 import me.juangoncalves.mentra.domain_layer.models.Coin
-import me.juangoncalves.mentra.domain_layer.models.IconType
 import me.juangoncalves.mentra.domain_layer.repositories.CoinRepository
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeA
@@ -149,13 +148,13 @@ class FindCoinsByNameTest {
 
     //region Helpers
     private val availableCoins = listOf(
-        Coin("Bitcoin", "BTC", "", IconType.Unknown, 1),
-        Coin("BitRow", "BTR", "", IconType.Unknown, 4),
-        Coin("Ethereum", "ETH", "", IconType.Unknown, 2),
-        Coin("Ripple", "XRP", "", IconType.Unknown, 3),
-        Coin("Bitcoin Gold", "BTG", "", IconType.Unknown, 5),
-        Coin("Monero", "MNR", "", IconType.Unknown, 6),
-        Coin("Ripple Sanctum", "XZP", "", IconType.Unknown, 7)
+        Coin("Bitcoin", "BTC", "", 1),
+        Coin("BitRow", "BTR", "", 4),
+        Coin("Ethereum", "ETH", "", 2),
+        Coin("Ripple", "XRP", "", 3),
+        Coin("Bitcoin Gold", "BTG", "", 5),
+        Coin("Monero", "MNR", "", 6),
+        Coin("Ripple Sanctum", "XZP", "", 7)
     )
     //endregion
 
