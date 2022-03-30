@@ -11,8 +11,9 @@ class CurrencyAdapter(listener: Listener<Currency>) : SingleChoiceAdapter<Curren
         return context.getString(
             R.string.onboarding_currency,
             item.getDisplayName(Locale.getDefault()),
-            item.currencyCode
-        )
+            item.currencyCode,
+        ).titleCase()
     }
 
+    private fun String.titleCase(): String = replaceFirstChar { it.titlecase(Locale.getDefault()) }
 }

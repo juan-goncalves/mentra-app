@@ -8,6 +8,8 @@ import me.juangoncalves.mentra.data_layer.error.GeneralErrorHandler
 import me.juangoncalves.mentra.domain_layer.errors.ErrorHandler
 import me.juangoncalves.mentra.domain_layer.log.MentraLogger
 import me.juangoncalves.mentra.log.AndroidLogger
+import me.juangoncalves.mentra.platform.locale.DefaultLocaleProvider
+import me.juangoncalves.mentra.platform.locale.LocaleProvider
 import javax.inject.Singleton
 
 @Module
@@ -22,4 +24,7 @@ abstract class AndroidModule {
     @Singleton
     abstract fun bindErrorHandler(impl: GeneralErrorHandler): ErrorHandler
 
+    @Binds
+    @Singleton
+    abstract fun bindLocaleProvider(impl: DefaultLocaleProvider): LocaleProvider
 }
