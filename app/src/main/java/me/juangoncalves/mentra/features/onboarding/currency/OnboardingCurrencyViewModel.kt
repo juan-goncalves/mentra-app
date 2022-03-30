@@ -8,18 +8,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.juangoncalves.mentra.domain_layer.extensions.isLeft
+import me.juangoncalves.mentra.domain_layer.extensions.orUSD
 import me.juangoncalves.mentra.domain_layer.extensions.requireRight
 import me.juangoncalves.mentra.domain_layer.usecases.currency.GetSupportedCurrencies
 import me.juangoncalves.mentra.domain_layer.usecases.preference.UpdateCurrencyPreference
 import me.juangoncalves.mentra.failures.FailurePublisher
 import me.juangoncalves.mentra.failures.GeneralFailurePublisher
+import me.juangoncalves.mentra.platform.locale.LocaleProvider
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingCurrencyViewModel @Inject constructor(
     private val getSupportedCurrencies: GetSupportedCurrencies,
-    private val updateCurrencyPreference: UpdateCurrencyPreference
+    private val updateCurrencyPreference: UpdateCurrencyPreference,
+    private val localeProvider: LocaleProvider,
 ) : ViewModel(), FailurePublisher by GeneralFailurePublisher() {
 
     private val _currenciesStream: MutableLiveData<List<Currency>> = MutableLiveData(emptyList())
@@ -45,12 +48,19 @@ class OnboardingCurrencyViewModel @Inject constructor(
         _showLoadingIndicatorStream.postValue(true)
         _errorStateStream.postValue(Error.None)
 
-        val currenciesOp = getSupportedCurrencies()
-        if (currenciesOp.isLeft()) {
+        val currenciesOperation = getSupportedCurrencies()
+
+        if (currenciesOperation.isLeft()) {
             _errorStateStream.postValue(Error.CurrenciesNotLoaded)
         } else {
-            val sorted = currenciesOp.requireRight().toList().sortedBy { it.displayName }.reversed()
-            _currenciesStream.postValue(sorted)
+            val localCurrency = Currency.getInstance(localeProvider.getDefault()).orUSD()
+
+            currenciesOperation.requireRight()
+                .filter { it != localCurrency }
+                .sortedBy { it.displayName }
+                .reversed()
+                .let { currencies -> listOf(localCurrency) + currencies }
+                .also { currencies -> _currenciesStream.postValue(currencies) }
         }
 
         _showLoadingIndicatorStream.postValue(false)
@@ -60,5 +70,4 @@ class OnboardingCurrencyViewModel @Inject constructor(
         object CurrenciesNotLoaded : Error()
         object None : Error()
     }
-
 }

@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.log
+package me.juangoncalves.mentra.platform
 
 import android.util.Log
 import me.juangoncalves.mentra.domain_layer.log.MentraLogger
