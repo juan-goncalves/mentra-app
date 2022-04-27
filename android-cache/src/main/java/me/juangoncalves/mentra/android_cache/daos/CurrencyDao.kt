@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import me.juangoncalves.mentra.android_cache.models.CurrencyEntity
-import me.juangoncalves.mentra.android_cache.models.ExchangeRateEntity
+import me.juangoncalves.mentra.android_cache.entities.CurrencyEntity
+import me.juangoncalves.mentra.android_cache.entities.ExchangeRateEntity
 
 @Dao
 interface CurrencyDao {

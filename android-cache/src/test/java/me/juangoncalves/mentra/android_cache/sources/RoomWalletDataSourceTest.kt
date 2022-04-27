@@ -10,10 +10,10 @@ import me.juangoncalves.mentra.android_cache.*
 import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.WalletDao
 import me.juangoncalves.mentra.android_cache.daos.WalletValueDao
+import me.juangoncalves.mentra.android_cache.entities.WalletEntity
+import me.juangoncalves.mentra.android_cache.entities.WalletValueEntity
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
 import me.juangoncalves.mentra.android_cache.mappers.WalletMapper
-import me.juangoncalves.mentra.android_cache.models.WalletModel
-import me.juangoncalves.mentra.android_cache.models.WalletValueModel
 import me.juangoncalves.mentra.domain_layer.models.Wallet
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
@@ -58,8 +58,8 @@ class RoomWalletDataSourceTest {
     @Test
     fun `getAll returns every stored wallet in the database`() = runBlocking {
         // Arrange
-        val btcWallet = WalletModel("BTC", 0.53)
-        val ethWallet = WalletModel("ETH", 1.0)
+        val btcWallet = WalletEntity("BTC", 0.53)
+        val ethWallet = WalletEntity("ETH", 1.0)
         walletDao.insertAll(btcWallet, ethWallet)
 
         // Act
@@ -93,9 +93,9 @@ class RoomWalletDataSourceTest {
     fun `findByCoin returns all the wallets that hold the specified coin`() =
         runBlocking {
             // Arrange
-            val btcWallet1 = WalletModel("BTC", 0.22)
-            val btcWallet2 = WalletModel("BTC", 1.233)
-            val ethWallet = WalletModel("ETH", 3.982)
+            val btcWallet1 = WalletEntity("BTC", 0.22)
+            val btcWallet2 = WalletEntity("BTC", 1.233)
+            val ethWallet = WalletEntity("ETH", 3.982)
             walletDao.insertAll(btcWallet1, ethWallet, btcWallet2)
 
             // Act
@@ -111,9 +111,9 @@ class RoomWalletDataSourceTest {
     @Test
     fun `updateValue inserts the wallet value into the database`() = runBlocking {
         // Arrange
-        val model = WalletModel("BTC", 0.22, 1)
-        walletDao.insertAll(model)
-        val wallet = Wallet(Bitcoin, model.amount, model.id)
+        val entity = WalletEntity("BTC", 0.22, 1)
+        walletDao.insertAll(entity)
+        val wallet = Wallet(Bitcoin, entity.amount, entity.id)
         val newValue = 1235.11.toPrice()
 
         // Act
@@ -130,11 +130,11 @@ class RoomWalletDataSourceTest {
     fun `updateValue replaces the wallet value of the day if it already exists`() =
         runBlocking {
             // Arrange
-            val model = WalletModel("BTC", 0.22, 1)
-            walletDao.insertAll(model)
-            val wallet = Wallet(Bitcoin, model.amount, model.id)
+            val entity = WalletEntity("BTC", 0.22, 1)
+            walletDao.insertAll(entity)
+            val wallet = Wallet(Bitcoin, entity.amount, entity.id)
             val repeatedDay = LocalDate.of(2020, 5, 10)
-            walletValueDao.insert(WalletValueModel(wallet.id, 144.45.toBigDecimal(), repeatedDay))
+            walletValueDao.insert(WalletValueEntity(wallet.id, 144.45.toBigDecimal(), repeatedDay))
             val newValue = 432.11.toPrice(timestamp = repeatedDay.atStartOfDay())
 
             // Act
@@ -150,13 +150,13 @@ class RoomWalletDataSourceTest {
     @Test
     fun `delete removes the wallet from the database`() = runBlocking {
         // Arrange
-        val btcWalletModel = WalletModel("BTC", 0.22, 1)
-        val ethWalletModel = WalletModel("ETH", 1.233, 2)
-        val xrpWalletModel = WalletModel("XRP", 23.982, 3)
-        walletDao.insertAll(btcWalletModel, ethWalletModel, xrpWalletModel)
+        val btcWalletEntity = WalletEntity("BTC", 0.22, 1)
+        val ethWalletEntity = WalletEntity("ETH", 1.233, 2)
+        val xrpWalletEntity = WalletEntity("XRP", 23.982, 3)
+        walletDao.insertAll(btcWalletEntity, ethWalletEntity, xrpWalletEntity)
 
         // Act
-        val toDelete = walletMapper.map(ethWalletModel)
+        val toDelete = walletMapper.map(ethWalletEntity)
         sut.delete(toDelete)
 
         // Assert
@@ -185,8 +185,8 @@ class RoomWalletDataSourceTest {
 
     private fun insertDefaultCoins() = runBlocking {
         val mapper = CoinMapper()
-        val models = listOf(Bitcoin, Ripple, Ethereum).map { mapper.map(it) }
-        coinDao.upsertAll(*models.toTypedArray())
+        val entities = listOf(Bitcoin, Ripple, Ethereum).map { mapper.map(it) }
+        coinDao.upsertAll(*entities.toTypedArray())
     }
 
     private fun initializeSut() {

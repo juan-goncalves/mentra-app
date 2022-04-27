@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import me.juangoncalves.mentra.android_cache.models.CoinPriceModel
+import me.juangoncalves.mentra.android_cache.entities.CoinPriceEntity
 
 @Dao
 interface CoinPriceDao {
@@ -18,12 +18,12 @@ interface CoinPriceDao {
         GROUP BY p.coin_symbol
         """
     )
-    fun getActiveCoinPricesStream(): Flow<List<CoinPriceModel>>
+    fun getActiveCoinPricesStream(): Flow<List<CoinPriceEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCoinPrices(vararg prices: CoinPriceModel)
+    suspend fun insertCoinPrices(vararg prices: CoinPriceEntity)
 
     @Query("SELECT * FROM CoinPrice WHERE coin_symbol = :symbol ORDER BY timestamp DESC LIMIT 1")
-    suspend fun getMostRecentCoinPrice(symbol: String): CoinPriceModel?
+    suspend fun getMostRecentCoinPrice(symbol: String): CoinPriceEntity?
 
 }

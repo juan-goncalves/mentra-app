@@ -4,15 +4,15 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import me.juangoncalves.mentra.android_cache.daos.*
-import me.juangoncalves.mentra.android_cache.models.*
+import me.juangoncalves.mentra.android_cache.entities.*
 
 @Database(
     entities = [
-        CoinModel::class,
-        CoinPriceModel::class,
-        WalletModel::class,
-        WalletValueModel::class,
-        PortfolioValueModel::class,
+        CoinEntity::class,
+        CoinPriceEntity::class,
+        WalletEntity::class,
+        WalletValueEntity::class,
+        PortfolioValueEntity::class,
         CurrencyEntity::class,
         ExchangeRateEntity::class
     ],
