@@ -15,7 +15,7 @@ object Versions {
     const val androidx_swipe_refresh_layout = "1.1.0"
     const val androidx_lifecycle = "2.4.0"
     const val androidx_viewpager2 = "1.0.0"
-    const val androidx_work = "2.4.0"
+    const val androidx_work = "2.7.1"
     const val google_material = "1.2.1"
     const val androidx_core_testing = "2.1.0"
     const val androidx_room = "2.4.0-alpha03"
@@ -28,7 +28,7 @@ object Versions {
     const val firebase_crashlytics_gradle_plugin = "2.4.1"
     const val google_services = "4.3.4"
     const val google_oss_licenses = "17.0.0"
-    const val google_oss_licenses_gradle_plugin = "0.10.4"
+    const val google_oss_licenses_gradle_plugin = "0.10.5"
 
     const val retrofit = "2.6.0"
     const val okhttp3_logging_interceptor = "4.2.1"
