@@ -43,8 +43,8 @@ object Versions {
     const val hamcrest = "2.2"
     const val mockk = "1.12.1"
     const val robolectric = "4.7"
-    const val androidx_junit = "1.1.1"
-    const val espresso = "3.2.0"
+    const val androidx_junit = "1.1.3"
+    const val espresso = "3.4.0"
 }
 
 @Suppress("unused")
