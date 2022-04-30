@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.android_cache.models
+package me.juangoncalves.mentra.android_cache.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

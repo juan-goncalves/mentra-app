@@ -1,11 +1,11 @@
-package me.juangoncalves.mentra.android_cache.models
+package me.juangoncalves.mentra.android_cache.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "Coin")
-data class CoinModel(
+data class CoinEntity(
     @PrimaryKey val symbol: String,
     @ColumnInfo(name = "image_url") val imageUrl: String,
     val name: String,

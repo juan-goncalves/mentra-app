@@ -8,8 +8,8 @@ import kotlinx.coroutines.runBlocking
 import me.juangoncalves.mentra.android_cache.*
 import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
+import me.juangoncalves.mentra.android_cache.entities.CoinPriceEntity
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
-import me.juangoncalves.mentra.android_cache.models.CoinPriceModel
 import me.juangoncalves.mentra.test_utils.shouldBe
 import me.juangoncalves.mentra.test_utils.shouldBeCloseTo
 import org.junit.After
@@ -52,7 +52,7 @@ class RoomCoinDataSourceTest {
     @Test
     fun `getStoredCoins should return every coin stored on the database`() = runBlocking {
         // Arrange
-        coinDao.upsertAll(BitcoinModel, EthereumModel, RippleModel)
+        coinDao.upsertAll(BitcoinEntity, EthereumEntity, RippleEntity)
 
         // Act
         val result = sut.getStoredCoins()
@@ -64,7 +64,7 @@ class RoomCoinDataSourceTest {
     @Test
     fun `clearCoins should delete every coin in the database`() = runBlocking {
         // Arrange
-        coinDao.upsertAll(BitcoinModel, EthereumModel, RippleModel)
+        coinDao.upsertAll(BitcoinEntity, EthereumEntity, RippleEntity)
 
         // Act
         sut.clearCoins()
@@ -96,7 +96,7 @@ class RoomCoinDataSourceTest {
     fun `storeCoins should update the coins on conflicts`() =
         runBlocking {
             // Arrange
-            coinDao.upsertAll(BitcoinModel, EthereumModel, RippleModel)
+            coinDao.upsertAll(BitcoinEntity, EthereumEntity, RippleEntity)
 
             val updates = listOf(
                 Bitcoin.copy(name = "Bitcoin2", position = 10),
@@ -108,9 +108,9 @@ class RoomCoinDataSourceTest {
 
             // Assert
             val expected = listOf(
-                RippleModel,
-                BitcoinModel.copy(name = "Bitcoin2", position = 10),
-                EthereumModel.copy(position = 11),
+                RippleEntity,
+                BitcoinEntity.copy(name = "Bitcoin2", position = 10),
+                EthereumEntity.copy(position = 11),
             )
 
             coinDao.getAll() shouldBe expected
@@ -119,7 +119,7 @@ class RoomCoinDataSourceTest {
     @Test
     fun `storeCoinPrices should store the coin prices in the database`() = runBlocking {
         // Arrange
-        coinDao.upsertAll(BitcoinModel)
+        coinDao.upsertAll(BitcoinEntity)
         val btcPrice = 8765.321.toPrice()
         val prices = listOf(Bitcoin to btcPrice)
 
@@ -135,7 +135,7 @@ class RoomCoinDataSourceTest {
     fun `storeCoinPrices should throw an IllegalArgumentException if any currency is not USD`() =
         runBlocking {
             // Arrange
-            coinDao.upsertAll(BitcoinModel)
+            coinDao.upsertAll(BitcoinEntity)
             val price = 8765.321.toPrice(currency = EUR)
 
             // Act
@@ -148,11 +148,11 @@ class RoomCoinDataSourceTest {
     fun `getLastCoinPrice should return the most recent coin price stored in the database`() =
         runBlocking {
             // Arrange
-            coinDao.upsertAll(BitcoinModel)
+            coinDao.upsertAll(BitcoinEntity)
             val prices = arrayOf(
-                CoinPriceModel("BTC", 20.5.toBigDecimal(), LocalDateTime.of(2020, 6, 23, 5, 30)),
-                CoinPriceModel("BTC", 738.5.toBigDecimal(), LocalDateTime.of(2020, 8, 13, 9, 30)),
-                CoinPriceModel("BTC", 245.5.toBigDecimal(), LocalDateTime.of(2019, 1, 23, 5, 30))
+                CoinPriceEntity("BTC", 20.5.toBigDecimal(), LocalDateTime.of(2020, 6, 23, 5, 30)),
+                CoinPriceEntity("BTC", 738.5.toBigDecimal(), LocalDateTime.of(2020, 8, 13, 9, 30)),
+                CoinPriceEntity("BTC", 245.5.toBigDecimal(), LocalDateTime.of(2019, 1, 23, 5, 30))
             )
             prices.forEach { coinPriceDao.insertCoinPrices(it) }
 
@@ -167,7 +167,7 @@ class RoomCoinDataSourceTest {
     @Test
     fun `findCoinBySymbol should return the coin if is stored in the database`() = runBlocking {
         // Arrange
-        coinDao.upsertAll(BitcoinModel, EthereumModel, RippleModel)
+        coinDao.upsertAll(BitcoinEntity, EthereumEntity, RippleEntity)
 
         // Act
         val result = sut.findCoinBySymbol("BTC")
@@ -179,7 +179,7 @@ class RoomCoinDataSourceTest {
     @Test
     fun `findCoinBySymbol should return null if the coin is not in the database`() = runBlocking {
         // Arrange
-        coinDao.upsertAll(BitcoinModel, EthereumModel, RippleModel)
+        coinDao.upsertAll(BitcoinEntity, EthereumEntity, RippleEntity)
 
         // Act
         val result = sut.findCoinBySymbol("NONE")

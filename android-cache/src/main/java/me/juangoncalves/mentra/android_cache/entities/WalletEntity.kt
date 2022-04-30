@@ -1,4 +1,4 @@
-package me.juangoncalves.mentra.android_cache.models
+package me.juangoncalves.mentra.android_cache.entities
 
 import androidx.room.*
 import java.math.BigDecimal
@@ -7,7 +7,7 @@ import java.math.BigDecimal
     tableName = "Wallet",
     foreignKeys = [
         ForeignKey(
-            entity = CoinModel::class,
+            entity = CoinEntity::class,
             parentColumns = ["symbol"],
             childColumns = ["coin_symbol"],
             onDelete = ForeignKey.RESTRICT
@@ -15,7 +15,7 @@ import java.math.BigDecimal
     ],
     indices = [Index("coin_symbol")]
 )
-data class WalletModel(
+data class WalletEntity(
     @ColumnInfo(name = "coin_symbol") val coinSymbol: String,
     @ColumnInfo(name = "amount") val amount: BigDecimal,
     @PrimaryKey(autoGenerate = true) val id: Long = 0

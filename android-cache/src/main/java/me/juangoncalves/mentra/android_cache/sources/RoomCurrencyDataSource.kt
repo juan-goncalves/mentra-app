@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.toKotlinLocalDateTime
 import me.juangoncalves.mentra.android_cache.daos.CurrencyDao
-import me.juangoncalves.mentra.android_cache.models.CurrencyEntity
-import me.juangoncalves.mentra.android_cache.models.ExchangeRateEntity
+import me.juangoncalves.mentra.android_cache.entities.CurrencyEntity
+import me.juangoncalves.mentra.android_cache.entities.ExchangeRateEntity
 import me.juangoncalves.mentra.data_layer.sources.currency.CurrencyLocalDataSource
 import me.juangoncalves.mentra.domain_layer.models.Price
 import java.util.*

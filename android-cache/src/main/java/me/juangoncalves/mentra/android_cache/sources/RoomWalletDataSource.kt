@@ -8,8 +8,8 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import me.juangoncalves.mentra.android_cache.daos.WalletDao
 import me.juangoncalves.mentra.android_cache.daos.WalletValueDao
+import me.juangoncalves.mentra.android_cache.entities.WalletValueEntity
 import me.juangoncalves.mentra.android_cache.mappers.WalletMapper
-import me.juangoncalves.mentra.android_cache.models.WalletValueModel
 import me.juangoncalves.mentra.data_layer.sources.wallet.WalletLocalDataSource
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
@@ -51,7 +51,7 @@ class RoomWalletDataSource @Inject constructor(
         if (currentWallet != updates) walletDao.update(updates)
 
         if (price != null) {
-            val valueModel = WalletValueModel(
+            val valueModel = WalletValueEntity(
                 wallet.id,
                 price.value,
                 price.timestamp.toJavaLocalDateTime().toLocalDate(),
@@ -63,7 +63,7 @@ class RoomWalletDataSource @Inject constructor(
     // TODO: Remove method (use the regular update)
     override suspend fun updateValue(wallet: Wallet, price: Price) =
         withContext(Dispatchers.Default) {
-            val model = WalletValueModel(
+            val model = WalletValueEntity(
                 wallet.id,
                 price.value,
                 price.timestamp.toJavaLocalDateTime().toLocalDate(),

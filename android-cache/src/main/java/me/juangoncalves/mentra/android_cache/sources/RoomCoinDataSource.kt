@@ -8,8 +8,8 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import me.juangoncalves.mentra.android_cache.daos.CoinDao
 import me.juangoncalves.mentra.android_cache.daos.CoinPriceDao
+import me.juangoncalves.mentra.android_cache.entities.CoinPriceEntity
 import me.juangoncalves.mentra.android_cache.mappers.CoinMapper
-import me.juangoncalves.mentra.android_cache.models.CoinPriceModel
 import me.juangoncalves.mentra.data_layer.sources.coin.CoinLocalDataSource
 import me.juangoncalves.mentra.domain_layer.models.Coin
 import me.juangoncalves.mentra.domain_layer.models.Price
@@ -52,7 +52,7 @@ class RoomCoinDataSource @Inject constructor(
                 require(price.currency == Currency.getInstance("USD")) {
                     "Prices to be stored in the database must be in USD"
                 }
-                CoinPriceModel(coin.symbol, price.value, price.timestamp.toJavaLocalDateTime())
+                CoinPriceEntity(coin.symbol, price.value, price.timestamp.toJavaLocalDateTime())
             }
 
             coinPriceDao.insertCoinPrices(*models.toTypedArray())
@@ -72,7 +72,7 @@ class RoomCoinDataSource @Inject constructor(
     override fun getActiveCoinPricesStream(): Flow<Map<Coin, Price>> =
         coinPriceDao.getActiveCoinPricesStream().associateByCoin()
 
-    private fun Flow<List<CoinPriceModel>>.associateByCoin(): Flow<Map<Coin, Price>> =
+    private fun Flow<List<CoinPriceEntity>>.associateByCoin(): Flow<Map<Coin, Price>> =
         mapLatest { prices ->
             val coinPricesMap = hashMapOf<Coin, Price>()
 
